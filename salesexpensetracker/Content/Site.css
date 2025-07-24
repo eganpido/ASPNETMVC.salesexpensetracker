@@ -1,4 +1,8 @@
-﻿body {
+﻿* {
+    font-family: 'Open Sans', sans-serif;
+}
+
+body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -22,3 +26,41 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.navbar-default {
+    -webkit-transition: all .35s;
+    -moz-transition: all .35s;
+    transition: all .35s;
+    box-shadow: 0 0px 5px #1d3149;
+    border-bottom: none;
+    background-color: white;
+}
+
+    .navbar-default .nav > li > a {
+        font-size: 16px;
+        font-weight: 400;
+        color: #1c6c74;
+    }
+        .navbar-default .nav > li > a:hover {
+            background-color: #1ddda8;
+        }
+        .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            color: #1c6c74;
+            font-size: 16px;
+        }
+.navbar-brand > img {
+     margin-top: 0px; 
+    height: 40px;
+}
+.btn-primary {
+    background: #149c7c;
+    border-color: #1d7e74;
+}
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #24e0ad;
+        border-color: #24e0ad;
+    }
+
