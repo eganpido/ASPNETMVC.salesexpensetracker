@@ -211,6 +211,7 @@
     <Content Include="Images\coverImages\headerbg2.png" />
     <Content Include="Images\coverImages\landingpagebg-new.png" />
     <Content Include="Images\coverImages\landingpagebg.png" />
+    <Content Include="Images\coverImages\loginbackground.png" />
     <Content Include="Images\coverImages\templateHeader.jpg" />
     <Content Include="Images\customers\abomar.png" />
     <Content Include="Images\customers\cmm.png" />

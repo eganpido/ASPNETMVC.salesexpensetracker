@@ -4,7 +4,7 @@
 {
     @Html.AntiForgeryToken()
     <section>
-        @{ Response.Redirect("~/Manage/Index");}
+        @{ Response.Redirect("~/Home/Index");}
     </section>
 }
 else
@@ -17,62 +17,47 @@ else
                     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "", role = "form" }))
                     {
                         <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <a href="/Home">
-                                    <img src="~/Images/logo/liteclerklogo.png" height="25" />
-                                    <br />
-                                    <br />
-                                </a>
-                                <span>Sign in to continue to application</span>
+                            <div class="panel-heading" style="text-align: center; padding: 20px 0;">
+                                <span style="font-size:21px;">Welcome Back!</span>
                             </div>
+                            <br/>
                             <div class="panel-body">
                                 @Html.AntiForgeryToken()
-                                <div class="form-group">
+                                <div class="form-group" style="margin-bottom: 25px !important;">
                                     <label>Username</label>
                                     <div>
                                         @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Username" })
                                         @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="margin-bottom: 25px !important;">
                                     <label>Password</label>
                                     <div>
                                         @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
                                         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                @*<div class="form-group">
                                     <div>
                                         @Html.CheckBoxFor(m => m.RememberMe)
                                         @Html.LabelFor(m => m.RememberMe)
                                     </div>
-                                </div>
+                                </div>*@
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary btn-block btn-lg">Login</button>
                                 </div>
-                                <div class="text-danger text-center" style="padding-top: 7px;">
+                                <div class="text-danger text-center" style="margin-bottom: 25px !important;">
                                     @if (ViewData.ModelState.Keys.Any(k => ViewData.ModelState[k].Errors.Any()))
                                     {
                                         @Html.ValidationMessage("LoginError", new { @class = "text-danger" })
                                     }
                                 </div>
                             </div>
-                            <div class="panel-footer">
-                                @*<div class="text-center">
-                                        <span><b>LITECLERK</b></span>
-                                        <br />
-                                        <small>Version 3.202004062034</small>
-                                        <br />
-                                        <small>© 2021 LITECLERK | www.liteclerk.com</small>
-                                    </div>*@
-                                <div class="container" style="margin-top:3px">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label><img src="~/Images/logo/liteclerklogo.png" style="height:15px; margin-bottom:6px;" /></label>
-                                            <label class="label-footer">© 2021, Liteclerk Corporation</label>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="panel-footer" style="text-align: center; padding: 10px 0;">
+                                <img src="~/Images/logo/STREETSMART.png" style="height: 30px; opacity: 70%; vertical-align: middle;" alt="Logo" />
+                                <span style="color: darkslategray; font-size: 12px; margin-left: 2px; vertical-align: middle;">
+                                    © 2025, Streetsmart Corporation
+                                </span>
                             </div>
                         </div>
                     }
