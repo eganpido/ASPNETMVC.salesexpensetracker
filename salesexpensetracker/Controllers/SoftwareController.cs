@@ -175,7 +175,7 @@ namespace salesexpensetracker.Controllers
         public ActionResult SupplierDetail() { return UserRights("SupplierDetail"); }
         public ActionResult Customer() { return UserRights("CustomerList"); }
         public ActionResult CustomerDetail() { return UserRights("CustomerDetail"); }
-        public ActionResult Item() { return UserRights("ItemList"); }
+        public ActionResult ProductList() { return View(); }
         public ActionResult ItemDetail() { return UserRights("ItemDetail"); }
         public ActionResult Bank() { return UserRights("BankList"); }
         public ActionResult ChartOfAccounts() { return UserRights("ChartOfAccounts"); }
