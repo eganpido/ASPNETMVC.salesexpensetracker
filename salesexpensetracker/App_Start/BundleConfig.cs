@@ -39,7 +39,8 @@ namespace salesexpensetracker
                       "~/Content/font-awesome.min.css",
                       "~/Content/wijmo.min.css",
                       "~/Content/nprogress.css",
-                      "~/Content/software.css"));
+                      "~/Content/software.css",
+                      "~/Content/Site.css"));
 
             // System - css
             bundles.Add(new StyleBundle("~/Content/System-css").Include(

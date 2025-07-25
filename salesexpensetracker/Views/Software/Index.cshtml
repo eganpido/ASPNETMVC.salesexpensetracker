@@ -4,256 +4,214 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="shortcut icon" href="~/Images/icon/liteclerkicon.ico">
-    <title>Liteclerk - Main Menu </title>
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Sales & Expense Tracker - Main Menu </title>
 
     @Styles.Render("~/Content/Software-css")
+
+    <style>
+        .title {
+            font-size: 19px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            color: #1c6c74;
+            margin-left: 10px;
+        }
+
+        .icon-card-setup {
+            display: inline-block;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background-color: #65828c;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+            .icon-card-setup:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px #65828c;
+            }
+
+            .icon-card-setup h4 {
+                margin: 10px 0 0 0;
+                font-size: 16px;
+                color: whitesmoke;
+            }
+
+            .icon-card-setup .emoji {
+                font-size: 36px;
+            }
+        .icon-card-activity {
+            display: inline-block;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background-color: #21c1a3;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+            .icon-card-activity:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px #21c1a3;
+            }
+
+            .icon-card-activity h4 {
+                margin: 10px 0 0 0;
+                font-size: 16px;
+                color: whitesmoke;
+            }
+
+            .icon-card-activity .emoji {
+                font-size: 36px;
+            }
+        .icon-card-report {
+            display: inline-block;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background-color: #1e6969;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+            .icon-card-report:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px #1e6969;
+            }
+
+            .icon-card-report h4 {
+                margin: 10px 0 0 0;
+                font-size: 16px;
+                color: whitesmoke;
+            }
+
+            .icon-card-report .emoji {
+                font-size: 36px;
+            }
+
+        .a-icon {
+            margin-left: 40px;
+        }
+    </style>
 </head>
 <body>
     <div id="o-wrapper" class="o-wrapper">
         <main class="o-content">
             @Html.Partial("_SoftwareHeader")
-
-            <section class="content-header">
-                <div class="container">
-                    <h3>
-                        Main Menu
-                    </h3>
-                    <p>
-                        <i class="fa fa-building-o fa-fw"></i> &nbsp; @ViewData["Company"] <br />
-                        <i class="fa fa-home fa-fw"></i> &nbsp; <a href="#" onclick="getUserBranches()" style="color: white;">@ViewData["Branch"]</a>
-                    </p>
-                </div>
-            </section>
-            <section class="container">
-                @{
-                    if (Convert.ToBoolean(ViewData["ActivateChampion"]) == true)
-                    {
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <a onclick="btnAccountsPayablePastDues()">
-                                        <div style="cursor:pointer; color:red">
-                                            <h4 style="color:darkred" id="pastDueAP"> </h4>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-2">
-                                    <a onclick="btnAccountsReceivablePastDues()">
-                                        <div style="cursor:pointer; color:red">
-                                            <h4 style="color:darkred" id="pastDueAR"> </h4>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-2">
-                                    <a onclick="btnStockLevelAlert()">
-                                        <div style="cursor:pointer; color:red">
-                                            <h4 style="color:darkred" id="stockLevelAlert"> </h4>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                }
+            <section class="container" style="padding-top: 20px">
                 <div class="panel panel-default">
                     <div class="panel-body">
+                        <div class="row title">⚙️ Setup</div>
                         <div class="row">
-                            <div class="col-md-3">
-                                <a href="/Software/Supplier">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/businessman.svg" class="svg-icon-style" />
-                                        <br />
+                            <div class="col-md-12">
+                                <a class="a-icon" href="/Software/Product">
+                                    <div class="icon-card-setup">
+                                        <div class="emoji">📦</div>
+                                        <h4>Product</h4>
+                                    </div>
+                                </a>
+                                <a class="a-icon" href="/Software/Customer">
+                                    <div class="icon-card-setup">
+                                        <div class="emoji">🙋</div>
+                                        <h4>Client</h4>
+                                    </div>
+                                </a>
+                                <a class="a-icon" href="/Software/Supplier">
+                                    <div class="icon-card-setup">
+                                        <div class="emoji">🧑‍💼</div>
                                         <h4>Supplier</h4>
                                     </div>
                                 </a>
-                                <a href="/Software/PurchaseOrder">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/inspection.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Purchase Order</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/ReceivingReceipt">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/in_transit.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Receiving Receipt</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/AccountsPayable">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/print.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Accounts Payable</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/Disbursement">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/money_transfer.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Disbursement</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/BankReconciliation">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/ok.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Bank Reconciliation</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/PurchaseRequest">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/survey.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Purchase Request</h4>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="/Software/Customer">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/conference_call.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Customer</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/Sales">
-                                    <div class="panel panel-theme-sales">
-                                        <img src="~/Images/svgIcons/approval.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Sales</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/AccountsReceivable">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/print.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Accounts Receivable</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/Collection">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/sales_performance.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Collection</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/JournalVoucher">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/news.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Journal Voucher</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/ItemPrice">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/price_tag_usd.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Item Price</h4>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="/Software/Item">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/paid.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Item</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/StockIn">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/internal.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Stock In</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/StockOut">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/external.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Stock Out</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/Inventory">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/print.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Inventory Report</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/StockTransfer">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/move_by_trolley.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Stock Transfer</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/StockCount">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/rules.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Stock Count</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/StockWithdrawal">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/up_right.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Stock Withdrawal</h4>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="/Software/Bank">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/library.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Bank</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/ChartOfAccounts">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/todo_list.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Chart of Accounts</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/Company">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/organization.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Company</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/FinancialStatements">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/print.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Financial Statements</h4>
-                                    </div>
-                                </a>
-                                <a href="/Software/Users">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/key.svg" class="svg-icon-style" />
-                                        <br />
+                                <a class="a-icon" href="/Software/User">
+                                    <div class="icon-card-setup">
+                                        <div class="emoji">🧑‍💻</div>
                                         <h4>User</h4>
                                     </div>
                                 </a>
-                                <a href="/Software/SystemTables">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/grid.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>System Tables</h4>
+                                <a class="a-icon" href="/Software/Bank">
+                                    <div class="icon-card-setup">
+                                        <div class="emoji">🏦</div>
+                                        <h4>Bank</h4>
                                     </div>
                                 </a>
-                                <a onclick="btnNavigateSettingsOnclick()">
-                                    <div class="panel panel-theme">
-                                        <img src="~/Images/svgIcons/settings.svg" class="svg-icon-style" />
-                                        <br />
-                                        <h4>Settings</h4>
+                                <a class="a-icon" href="/Software/Expense">
+                                    <div class="icon-card-setup">
+                                        <div class="emoji">💸</div>
+                                        <h4>Expense</h4>
+                                    </div>
+                                </a>
+                                <a class="a-icon" href="/Software/PayType">
+                                    <div class="icon-card-setup">
+                                        <div class="emoji">💳</div>
+                                        <h4>Pay Type</h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row title">📝 Activity</div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a class="a-icon" href="/Software/Sales">
+                                    <div class="icon-card-activity">
+                                        <div class="emoji">🧾</div>
+                                        <h4>Sales</h4>
+                                    </div>
+                                </a>
+                                <a class="a-icon" href="/Software/Collection">
+                                    <div class="icon-card-activity">
+                                        <div class="emoji">💰</div>
+                                        <h4>Collection</h4>
+                                    </div>
+                                </a>
+                                <a class="a-icon" href="/Software/Disbursement">
+                                    <div class="icon-card-activity">
+                                        <div class="emoji">📉</div>
+                                        <h4>Disbursement</h4>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row title">📑 Report</div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a class="a-icon" href="/Software/SalesReport">
+                                    <div class="icon-card-report">
+                                        <div class="emoji">🖨️</div>
+                                        <h4>Sales</h4>
+                                    </div>
+                                </a>
+                                <a class="a-icon" href="/Software/CollectionReport">
+                                    <div class="icon-card-report">
+                                        <div class="emoji">🖨️</div>
+                                        <h4>Collection</h4>
+                                    </div>
+                                </a>
+                                <a class="a-icon" href="/Software/DisbursementReport">
+                                    <div class="icon-card-report">
+                                        <div class="emoji">🖨️</div>
+                                        <h4>Disbursement</h4>
+                                    </div>
+                                </a>
+                                <a class="a-icon" href="/Software/CashFlowReport">
+                                    <div class="icon-card-report">
+                                        <div class="emoji">🖨️</div>
+                                        <h4>Cash Flow</h4>
                                     </div>
                                 </a>
                             </div>

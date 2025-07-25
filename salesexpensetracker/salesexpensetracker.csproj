@@ -728,6 +728,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\Segoe UI.ttf" />
     <Content Include="fonts\SegoeUI.woff" />
+    <Content Include="fonts\poppins.regular.ttf" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\carbonAd.js" />
     <Content Include="Scripts\classie.js" />

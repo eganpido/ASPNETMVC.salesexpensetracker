@@ -1,5 +1,5 @@
 ﻿* {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Poppins', 'Open Sans', sans-serif;
 }
 
 body {
@@ -40,61 +40,111 @@ textarea {
         font-size: 16px;
         font-weight: 400;
         color: #1c6c74;
+        font-family: 'Poppins', 'Open Sans', sans-serif;
     }
+
         .navbar-default .nav > li > a:hover {
             background-color: #1ddda8;
         }
-        .navbar-default .navbar-nav .open .dropdown-menu > li > a {
-            padding-top: 10px;
-            padding-bottom: 10px;
-            color: #1c6c74;
-            font-size: 16px;
-        }
+
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        color: #1c6c74;
+        font-size: 14px;
+    }
+
 .navbar-brand > img {
-     margin-top: 0px; 
+    margin-top: 0px;
     height: 40px;
 }
+
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:focus, .navbar-default .navbar-nav > .open > a:hover {
+    color: #1c6c74;
+    background-color: #1ddda8;
+}
+
+.dropdown-menu > li > a:focus, .dropdown-menu > li > a:hover {
+    color: #1c6c74;
+    text-decoration: none;
+    background-color: #1ddda8;
+}
+
 .btn-primary {
     background: #149c7c;
     border-color: #1d7e74;
 }
+
     .btn-primary:hover {
         color: #fff;
         background-color: #24e0ad;
         border-color: #24e0ad;
     }
-.panel {
+
+    .btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .open > .dropdown-toggle.btn-primary.focus, .open > .dropdown-toggle.btn-primary:focus, .open > .dropdown-toggle.btn-primary:hover {
+        color: #fff;
+        background-color: #24e0ad;
+        border-color: #24e0ad;
+    }
+
+.panel-login {
     background-color: whitesmoke;
-    border-radius:10px;
-    opacity:91%;
+    border-radius: 10px;
+    opacity: 91%;
 }
-.panel-default > .panel-heading {
+
+.panel-login-default > .panel-login-heading {
     background-color: #f5f5f5;
     border-color: whitesmoke;
 }
-.panel-heading {
+
+.panel-login-heading {
     padding: 10px 15px;
     border-bottom: 1px solid transparent;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
-.panel-footer {
+
+.panel-login-footer {
     padding: 10px 15px;
     background-color: whitesmoke;
     border-top: 1px solid whitesmoke;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
 }
+
 label {
     display: inline-block;
     max-width: 100%;
     margin-bottom: 5px;
     font-weight: 500;
 }
+
 body.account-body-custom {
     margin-top: 100px;
     margin-bottom: 100px;
     background: linear-gradient(#1c6c74, #3f9794);
 }
 
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    /*border: 1px solid #1d3149;*/
+    border-radius: 10px;
+    /*box-shadow: 0 0px 5px #1ddaa6;*/
+}
 
+.panel-default {
+    border-color: transparent;
+}
+
+.panel-theme {
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 14px;
+    transition: all 0.1s ease;
+    text-align: center;
+    padding: 15px;
+    border-radius: 4px !important;
+    font-family: 'Poppins', 'Open Sans', sans-serif;
+}

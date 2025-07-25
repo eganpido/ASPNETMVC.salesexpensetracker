@@ -1,18 +1,32 @@
-﻿<!-- header navbar menu -->
+﻿<style>
+    /* General Body Font (Keep your existing) */
+    body {
+        font-family: 'Poppins', 'Open Sans', sans-serif;
+    }
+    .navbar-default {
+        -webkit-transition: all .35s;
+        -moz-transition: all .35s;
+        transition: all .35s;
+        box-shadow: 0 0px 5px #3f9794;
+        border-bottom: none;
+        background-color: white;
+    }
+</style>
+<!-- header navbar menu -->
 <header>
     <nav id="mainNav" class="navbar navbar-default userAuthentication navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+                @*<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>*@
                 <a class="navbar-brand page-scroll" href="/Software">
-                    <img src="~/Images/logo/liteclerklogo.png" class="softwarelogo" />
+                    <img src="~/Images/logo/STREETSMART.png" class="softwarelogo" />
                 </a>
-                <button id="c-button--slide-left" class="btn-menu-link"><i class="fa fa-bars fa-2x" style="color: #0090B5"></i></button>
+                @*<button id="c-button--slide-left" class="btn-menu-link"><i class="fa fa-bars fa-2x" style="color: #0090B5"></i></button>*@
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
@@ -27,205 +41,205 @@
 </header>
 
 <!-- sidebar collapse menu -->
-<nav id="c-menu--slide-left" class="c-menu c-menu--slide-left">
-    <div class="panel-group panel-group-menu" id="accordion">
-        @{
-            var host = Request.Url.Host;
-        }
+@*<nav id="c-menu--slide-left" class="c-menu c-menu--slide-left">
+        <div class="panel-group panel-group-menu" id="accordion">
+            @{
+                var host = Request.Url.Host;
+            }
 
-        @if (host.Equals("localhost"))
-        {
+            @if (host.Equals("localhost"))
+            {
+                <div class="panel panel-default panel-side">
+                    <div class="panel-heading panel-heading-menu">
+                        <div class="image-custom">
+                            <img src="~/Images/customerLogos/greenware/greenware.png" height="35" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (host.Equals("www.easyfis.com"))
+            {
+                <div class="panel panel-default panel-side">
+                    <div class="panel-heading panel-heading-menu">
+                        <div class="image-custom">
+                            <img src="~/Images/logo/liteclerklogo.png" height="50" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (host.Equals("innosoft.easyfis.com"))
+            {
+                <div class="panel panel-default panel-side">
+                    <div class="panel-heading panel-heading-menu">
+                        <div class="image-custom">
+                            <img src="~/Images/customerLogos/innosoft/innosoft.png" height="50" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (host.Equals("abomar.easyfis.com"))
+            {
+                <div class="panel panel-default panel-side">
+                    <div class="panel-heading panel-heading-menu">
+                        <div class="image-custom">
+                            <img src="~/Images/customerLogos/abomar/abomar-logo.png" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (host.Equals("greenware.easyfis.com"))
+            {
+                <div class="panel panel-default panel-side">
+                    <div class="panel-heading panel-heading-menu">
+                        <div class="image-custom">
+                            <img src="~/Images/customerLogos/greenware/greenware.png" height="40" />
+                        </div>
+                    </div>
+                </div>
+            }
+
             <div class="panel panel-default panel-side">
                 <div class="panel-heading panel-heading-menu">
-                    <div class="image-custom">
-                        <img src="~/Images/customerLogos/greenware/greenware.png" height="35" />
+                    <a href="#index" class="panel-link-menu c-menu__close">
+                        <h4 class="panel-title">
+                            <i class="fa fa-arrow-left fa-fw"></i> &nbsp; Close Menu
+                        </h4>
+                    </a>
+                </div>
+            </div>
+            <div class="panel panel-default panel-side">
+                <div class="panel-heading panel-heading-menu">
+                    <a href="/Software" class="panel-link-menu">
+                        <h4 class="panel-title">
+                            <i class="fa fa-dashboard fa-fw"></i> &nbsp; Main Menu
+                        </h4>
+                    </a>
+                </div>
+            </div>
+            <div class="panel panel-default panel-side">
+                <div class="panel-heading panel-heading-menu">
+                    <a href="#" onclick="menuSystemItemQuery_OnClick()" class="panel-link-menu">
+                        <h4 class="panel-title">
+                            <i class="fa fa-database fa-fw"></i> &nbsp; Item Query
+                        </h4>
+                    </a>
+                </div>
+            </div>
+            <div class="panel panel-default panel-side">
+                <div class="panel-heading panel-heading-menu">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-link-menu">
+                        <h4 class="panel-title">
+                            <i class="fa fa-wrench fa-fw"></i> &nbsp; Setups <i class="fa fa-chevron-down pull-right"></i>
+                        </h4>
+                    </a>
+                </div>
+                <div id="collapse1" class="panel-collapse collapse panel-collapse-menu">
+                    <div class="panel-body panel-body-menu">
+                        <ul class="panel-list-menu">
+                            <li><a href="/Software/Supplier"><img src="~/Images/svgIcons/businessman.svg" class="svg-icon-style-side-menu" /> Supplier</a></li>
+                            <li><a href="/Software/Customer"><img src="~/Images/svgIcons/conference_call.svg" class="svg-icon-style-side-menu" /> Customer</a></li>
+                            <li><a href="/Software/Item"><img src="~/Images/svgIcons/paid.svg" class="svg-icon-style-side-menu" /> Item</a></li>
+                            <li><a href="/Software/Bank"><img src="~/Images/svgIcons/library.svg" class="svg-icon-style-side-menu" /> Bank</a></li>
+                            <li><a href="/Software/ChartOfAccounts"><img src="~/Images/svgIcons/todo_list.svg" class="svg-icon-style-side-menu" /> Chart of Accounts</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        }
-
-        @if (host.Equals("www.easyfis.com"))
-        {
             <div class="panel panel-default panel-side">
                 <div class="panel-heading panel-heading-menu">
-                    <div class="image-custom">
-                        <img src="~/Images/logo/liteclerklogo.png" height="50" />
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="panel-link-menu">
+                        <h4 class="panel-title">
+                            <i class="fa fa-line-chart fa-fw"></i> &nbsp; Activities <i class="fa fa-chevron-down pull-right"></i>
+                        </h4>
+                    </a>
+                </div>
+                <div id="collapse3" class="panel-collapse collapse panel-collapse-menu">
+                    <div class="panel-body">
+                        <ul>
+                            <li><a href="/Software/PurchaseRequest"><img src="~/Images/svgIcons/survey.svg" class="svg-icon-style-side-menu" /> Purchase Request</a></li>
+                            <li><a href="/Software/PurchaseOrder"><img src="~/Images/svgIcons/inspection.svg" class="svg-icon-style-side-menu" /> Purchase Order</a></li>
+                            <li><a href="/Software/ReceivingReceipt"><img src="~/Images/svgIcons/in_transit.svg" class="svg-icon-style-side-menu" /> Receiving Receipt</a></li>
+                            <li><a href="/Software/SalesOrder"><img src="~/Images/svgIcons/sell.svg" class="svg-icon-style-side-menu" /> Sales Order</a></li>
+                            <li><a href="/Software/Sales"><img src="~/Images/svgIcons/approval.svg" class="svg-icon-style-side-menu" /> Sales</a></li>
+                            <li><a href="/Software/Disbursement"><img src="~/Images/svgIcons/money_transfer.svg" class="svg-icon-style-side-menu" /> Disbursement</a></li>
+                            <li><a href="/Software/Collection"><img src="~/Images/svgIcons/sales_performance.svg" class="svg-icon-style-side-menu" /> Collection</a></li>
+                            <li><a href="/Software/JournalVoucher"><img src="~/Images/svgIcons/news.svg" class="svg-icon-style-side-menu" /> Journal Voucher</a></li>
+                            <li><a href="/Software/BankReconciliation"><img src="~/Images/svgIcons/ok.svg" class="svg-icon-style-side-menu" /> Bank Reconciliation</a></li>
+                            <li><a href="/Software/StockIn"><img src="~/Images/svgIcons/internal.svg" class="svg-icon-style-side-menu" /> Stock-In</a></li>
+                            <li><a href="/Software/StockOut"><img src="~/Images/svgIcons/external.svg" class="svg-icon-style-side-menu" /> Stock-Out</a></li>
+                            <li><a href="/Software/StockTransfer"><img src="~/Images/svgIcons/move_by_trolley.svg" class="svg-icon-style-side-menu" /> Stock Transfer</a></li>
+                            <li><a href="/Software/StockCount"><img src="~/Images/svgIcons/rules.svg" class="svg-icon-style-side-menu" /> Stock Count</a></li>
+                            <li><a href="/Software/StockWithdrawal"><img src="~/Images/svgIcons/up_right.svg" class="svg-icon-style-side-menu" /> Stock Withdrawal</a></li>
+                            <li><a href="/Software/ItemPrice"><img src="~/Images/svgIcons/price_tag_usd.svg" class="svg-icon-style-side-menu" /> Item Price</a></li>
+                            <li><a href="/Software/CounterReceipt"><img src="~/Images/svgIcons/cash_register.svg" class="svg-icon-style-side-menu" /> Counter Receipt</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        }
-
-        @if (host.Equals("innosoft.easyfis.com"))
-        {
             <div class="panel panel-default panel-side">
                 <div class="panel-heading panel-heading-menu">
-                    <div class="image-custom">
-                        <img src="~/Images/customerLogos/innosoft/innosoft.png" height="50" />
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-link-menu">
+                        <h4 class="panel-title">
+                            <i class="fa fa-desktop fa-fw"></i> &nbsp; Systems <i class="fa fa-chevron-down pull-right"></i>
+                        </h4>
+                    </a>
+                </div>
+                <div id="collapse2" class="panel-collapse collapse  panel-collapse-menu">
+                    <div class="panel-body">
+                        <ul>
+                            <li><a href="/Software/Company"><img src="~/Images/svgIcons/organization.svg" class="svg-icon-style-side-menu" /> Company</a></li>
+                            <li><a href="/Software/Users"><img src="~/Images/svgIcons/key.svg" class="svg-icon-style-side-menu" /> User</a></li>
+                            <li><a href="/Software/SystemTables"><img src="~/Images/svgIcons/grid.svg" class="svg-icon-style-side-menu" /> System Tables</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        }
-
-        @if (host.Equals("abomar.easyfis.com"))
-        {
             <div class="panel panel-default panel-side">
                 <div class="panel-heading panel-heading-menu">
-                    <div class="image-custom">
-                        <img src="~/Images/customerLogos/abomar/abomar-logo.png" />
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="panel-link-menu">
+                        <h4 class="panel-title">
+                            <i class="fa fa-print fa-fw"></i> &nbsp; Reports <i class="fa fa-chevron-down pull-right"></i>
+                        </h4>
+                    </a>
+                </div>
+                <div id="collapse4" class="panel-collapse collapse panel-collapse-menu">
+                    <div class="panel-body">
+                        <ul>
+                            <li><a href="/Software/AccountsPayable"><img src="~/Images/svgIcons/print.svg" class="svg-icon-style-side-menu" /> Accounts Payable</a></li>
+                            <li><a href="/Software/AccountsReceivable"><img src="~/Images/svgIcons/print.svg" class="svg-icon-style-side-menu" /> Accounts Receivable</a></li>
+                            <li><a href="/Software/Inventory"><img src="~/Images/svgIcons/print.svg" class="svg-icon-style-side-menu" /> Inventory Report</a></li>
+                            <li><a href="/Software/FinancialStatements"><img src="~/Images/svgIcons/print.svg" class="svg-icon-style-side-menu" /> Financial Statements</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        }
-
-        @if (host.Equals("greenware.easyfis.com"))
-        {
             <div class="panel panel-default panel-side">
                 <div class="panel-heading panel-heading-menu">
-                    <div class="image-custom">
-                        <img src="~/Images/customerLogos/greenware/greenware.png" height="40" />
-                    </div>
+                    <a href="/Software/BIRCASReports" class="panel-link-menu">
+                        <h4 class="panel-title">
+                            <img src="~/Images/sectionImages/BIR Logo.png" class="svg-icon-style-side-menu-BIR" /> &nbsp; BIR CAS
+                        </h4>
+                    </a>
                 </div>
             </div>
-        }
-
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a href="#index" class="panel-link-menu c-menu__close">
-                    <h4 class="panel-title">
-                        <i class="fa fa-arrow-left fa-fw"></i> &nbsp; Close Menu
-                    </h4>
-                </a>
-            </div>
-        </div>
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a href="/Software" class="panel-link-menu">
-                    <h4 class="panel-title">
-                        <i class="fa fa-dashboard fa-fw"></i> &nbsp; Main Menu
-                    </h4>
-                </a>
-            </div>
-        </div>
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a href="#" onclick="menuSystemItemQuery_OnClick()" class="panel-link-menu">
-                    <h4 class="panel-title">
-                        <i class="fa fa-database fa-fw"></i> &nbsp; Item Query
-                    </h4>
-                </a>
-            </div>
-        </div>
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="panel-link-menu">
-                    <h4 class="panel-title">
-                        <i class="fa fa-wrench fa-fw"></i> &nbsp; Setups <i class="fa fa-chevron-down pull-right"></i>
-                    </h4>
-                </a>
-            </div>
-            <div id="collapse1" class="panel-collapse collapse panel-collapse-menu">
-                <div class="panel-body panel-body-menu">
-                    <ul class="panel-list-menu">
-                        <li><a href="/Software/Supplier"><img src="~/Images/svgIcons/businessman.svg" class="svg-icon-style-side-menu" /> Supplier</a></li>
-                        <li><a href="/Software/Customer"><img src="~/Images/svgIcons/conference_call.svg" class="svg-icon-style-side-menu" /> Customer</a></li>
-                        <li><a href="/Software/Item"><img src="~/Images/svgIcons/paid.svg" class="svg-icon-style-side-menu" /> Item</a></li>
-                        <li><a href="/Software/Bank"><img src="~/Images/svgIcons/library.svg" class="svg-icon-style-side-menu" /> Bank</a></li>
-                        <li><a href="/Software/ChartOfAccounts"><img src="~/Images/svgIcons/todo_list.svg" class="svg-icon-style-side-menu" /> Chart of Accounts</a></li>
-                    </ul>
+            <div class="panel panel-default panel-side">
+                <div class="panel-heading panel-heading-menu">
+                    <a href="/Manage" class="panel-link-menu">
+                        <h4 class="panel-title">
+                            <i class="fa fa-gear fa-fw"></i> &nbsp; Settings
+                        </h4>
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="panel-link-menu">
-                    <h4 class="panel-title">
-                        <i class="fa fa-line-chart fa-fw"></i> &nbsp; Activities <i class="fa fa-chevron-down pull-right"></i>
-                    </h4>
-                </a>
-            </div>
-            <div id="collapse3" class="panel-collapse collapse panel-collapse-menu">
-                <div class="panel-body">
-                    <ul>
-                        <li><a href="/Software/PurchaseRequest"><img src="~/Images/svgIcons/survey.svg" class="svg-icon-style-side-menu" /> Purchase Request</a></li>
-                        <li><a href="/Software/PurchaseOrder"><img src="~/Images/svgIcons/inspection.svg" class="svg-icon-style-side-menu" /> Purchase Order</a></li>
-                        <li><a href="/Software/ReceivingReceipt"><img src="~/Images/svgIcons/in_transit.svg" class="svg-icon-style-side-menu" /> Receiving Receipt</a></li>
-                        <li><a href="/Software/SalesOrder"><img src="~/Images/svgIcons/sell.svg" class="svg-icon-style-side-menu" /> Sales Order</a></li>
-                        <li><a href="/Software/Sales"><img src="~/Images/svgIcons/approval.svg" class="svg-icon-style-side-menu" /> Sales</a></li>
-                        <li><a href="/Software/Disbursement"><img src="~/Images/svgIcons/money_transfer.svg" class="svg-icon-style-side-menu" /> Disbursement</a></li>
-                        <li><a href="/Software/Collection"><img src="~/Images/svgIcons/sales_performance.svg" class="svg-icon-style-side-menu" /> Collection</a></li>
-                        <li><a href="/Software/JournalVoucher"><img src="~/Images/svgIcons/news.svg" class="svg-icon-style-side-menu" /> Journal Voucher</a></li>
-                        <li><a href="/Software/BankReconciliation"><img src="~/Images/svgIcons/ok.svg" class="svg-icon-style-side-menu" /> Bank Reconciliation</a></li>
-                        <li><a href="/Software/StockIn"><img src="~/Images/svgIcons/internal.svg" class="svg-icon-style-side-menu" /> Stock-In</a></li>
-                        <li><a href="/Software/StockOut"><img src="~/Images/svgIcons/external.svg" class="svg-icon-style-side-menu" /> Stock-Out</a></li>
-                        <li><a href="/Software/StockTransfer"><img src="~/Images/svgIcons/move_by_trolley.svg" class="svg-icon-style-side-menu" /> Stock Transfer</a></li>
-                        <li><a href="/Software/StockCount"><img src="~/Images/svgIcons/rules.svg" class="svg-icon-style-side-menu" /> Stock Count</a></li>
-                        <li><a href="/Software/StockWithdrawal"><img src="~/Images/svgIcons/up_right.svg" class="svg-icon-style-side-menu" /> Stock Withdrawal</a></li>
-                        <li><a href="/Software/ItemPrice"><img src="~/Images/svgIcons/price_tag_usd.svg" class="svg-icon-style-side-menu" /> Item Price</a></li>
-                        <li><a href="/Software/CounterReceipt"><img src="~/Images/svgIcons/cash_register.svg" class="svg-icon-style-side-menu" /> Counter Receipt</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2" class="panel-link-menu">
-                    <h4 class="panel-title">
-                        <i class="fa fa-desktop fa-fw"></i> &nbsp; Systems <i class="fa fa-chevron-down pull-right"></i>
-                    </h4>
-                </a>
-            </div>
-            <div id="collapse2" class="panel-collapse collapse  panel-collapse-menu">
-                <div class="panel-body">
-                    <ul>
-                        <li><a href="/Software/Company"><img src="~/Images/svgIcons/organization.svg" class="svg-icon-style-side-menu" /> Company</a></li>
-                        <li><a href="/Software/Users"><img src="~/Images/svgIcons/key.svg" class="svg-icon-style-side-menu" /> User</a></li>
-                        <li><a href="/Software/SystemTables"><img src="~/Images/svgIcons/grid.svg" class="svg-icon-style-side-menu" /> System Tables</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="panel-link-menu">
-                    <h4 class="panel-title">
-                        <i class="fa fa-print fa-fw"></i> &nbsp; Reports <i class="fa fa-chevron-down pull-right"></i>
-                    </h4>
-                </a>
-            </div>
-            <div id="collapse4" class="panel-collapse collapse panel-collapse-menu">
-                <div class="panel-body">
-                    <ul>
-                        <li><a href="/Software/AccountsPayable"><img src="~/Images/svgIcons/print.svg" class="svg-icon-style-side-menu" /> Accounts Payable</a></li>
-                        <li><a href="/Software/AccountsReceivable"><img src="~/Images/svgIcons/print.svg" class="svg-icon-style-side-menu" /> Accounts Receivable</a></li>
-                        <li><a href="/Software/Inventory"><img src="~/Images/svgIcons/print.svg" class="svg-icon-style-side-menu" /> Inventory Report</a></li>
-                        <li><a href="/Software/FinancialStatements"><img src="~/Images/svgIcons/print.svg" class="svg-icon-style-side-menu" /> Financial Statements</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a href="/Software/BIRCASReports" class="panel-link-menu">
-                    <h4 class="panel-title">
-                        <img src="~/Images/sectionImages/BIR Logo.png" class="svg-icon-style-side-menu-BIR" /> &nbsp; BIR CAS
-                    </h4>
-                </a>
-            </div>
-        </div>
-        <div class="panel panel-default panel-side">
-            <div class="panel-heading panel-heading-menu">
-                <a href="/Manage" class="panel-link-menu">
-                    <h4 class="panel-title">
-                        <i class="fa fa-gear fa-fw"></i> &nbsp; Settings
-                    </h4>
-                </a>
-            </div>
-        </div>
-    </div>
-</nav>
+    </nav>*@
 
 <!-- modal logout confirmation -->
-<div class="modal fade" id="modalLogout" role="dialog">
+@*<div class="modal fade" id="modalLogout" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
@@ -269,152 +283,15 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="modal fade" id="systemItemQueryModal" role="dialog">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="systemItemQueryModalLabel">Item Query</h4>
-            </div>
-            <div class="modal-body">
-                <ul class="nav nav-tabs" role="tablist" id="systemItemQueryTab">
-                    <li role="presentation" class="active"><a data-toggle="tab" href="#systemItemInventory" id="systemItemInventoryId">Inventory Items</a></li>
-                    <li role="presentation"><a data-toggle="tab" href="#systemItemNonInventory" id="systemItemNonInventoryId">Non-Inventory Items</a></li>
-                    <li role="presentation"><a data-toggle="tab" href="#systemItemPackage" id="systemItemPackageId">Package Items</a></li>
-                </ul>
-                <br />
-                <div class="tab-content">
-                    <div id="systemItemInventory" class="tab-pane active">
-                        <center>
-                            <span id="loadingSystemItemInventory"></span>
-                        </center>
-                        <div id="systemItemInventoryGridDetail">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <div class="input-group  ">
-                                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                                        <input type="text" class="form-control " id="searchSystemItemInventory" placeholder="Search...">
-                                    </div>
-                                </div>
-                                <div class="panel-body">
-                                    <div id="systemItemInventoryFlexGrid"></div>
-                                </div>
-                                <div class="panel-footer">
-                                    <div class="row">
-                                        <div class="btn-group col-md-7" id="systemNaviagtionPageGridItemInventory">
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToFirstPageGridItemInventory">
-                                                <span class="glyphicon glyphicon-fast-backward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToPreviousPageGridItemInventory">
-                                                <span class="glyphicon glyphicon-step-backward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" disabled style="width: 100px" id="btnSystemCurrentPageGridItemInventory"></button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToNextPageGridItemInventory">
-                                                <span class="glyphicon glyphicon-step-forward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToLastPageGridItemInventory">
-                                                <span class="glyphicon glyphicon-fast-forward"></span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="systemItemNonInventory" class="tab-pane">
-                        <center>
-                            <span id="loadingSystemItemNonInventory"></span>
-                        </center>
-                        <div id="systemItemNonInventoryGridDetail">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <div class="input-group  ">
-                                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                                        <input type="text" class="form-control " id="searchSystemItemNonInventory" placeholder="Search...">
-                                    </div>
-                                </div>
-                                <div class="panel-body">
-                                    <div id="systemItemNonInventoryFlexGrid" class="grid"></div>
-                                </div>
-                                <div class="panel-footer">
-                                    <div class="row">
-                                        <div class="btn-group col-md-7" id="systemNaviagtionPageGridItemNonInventory">
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToFirstPageGridItemNonInventory">
-                                                <span class="glyphicon glyphicon-fast-backward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToPreviousPageGridItemNonInventory">
-                                                <span class="glyphicon glyphicon-step-backward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" disabled style="width: 100px" id="btnSystemCurrentPageGridItemNonInventory"></button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToNextPageGridItemNonInventory">
-                                                <span class="glyphicon glyphicon-step-forward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToLastPageGridItemNonInventory">
-                                                <span class="glyphicon glyphicon-fast-forward"></span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="systemItemPackage" class="tab-pane">
-                        <center>
-                            <span id="loadingSystemItemPackage"></span>
-                        </center>
-                        <div id="systemItemPackageGridDetail">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <div class="input-group  ">
-                                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                                        <input type="text" class="form-control " id="searchSystemItemPackage" placeholder="Search...">
-                                    </div>
-                                </div>
-                                <div class="panel-body">
-                                    <div id="systemItemPackageFlexGrid" class="grid" style="max-height: 250px;"></div>
-                                </div>
-                                <div class="panel-footer">
-                                    <div class="row">
-                                        <div class="btn-group col-md-7" id="systemNaviagtionPageGridItemPackage">
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToFirstPageGridItemPackage">
-                                                <span class="glyphicon glyphicon-fast-backward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToPreviousPageGridItemPackage">
-                                                <span class="glyphicon glyphicon-step-backward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" disabled style="width: 100px" id="btnSystemCurrentPageGridItemPackage"></button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToNextPageGridItemPackage">
-                                                <span class="glyphicon glyphicon-step-forward"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default border-custom" id="btnSystemMoveToLastPageGridItemPackage">
-                                                <span class="glyphicon glyphicon-fast-forward"></span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button id="" class="btn btn-danger " data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+</div>*@
 
 <script type="text/javascript" src="~/Scripts/jquery.min.js"></script>
 <script type="text/javascript" src="~/Scripts/wijmo.min.js"></script>
 <script type="text/javascript" src="~/Scripts/wijmo.grid.min.js"></script>
 <script type="text/javascript" src="~/Scripts/wijmo.input.min.js"></script>
 
-<script type="text/javascript">
-    var systemItemInventoryCollectionView;
+<!--<script type="text/javascript">-->
+    @*var systemItemInventoryCollectionView;
     var systemItemInventoryFlexGrid = new wijmo.grid.FlexGrid('#systemItemInventoryFlexGrid');
     var systemItemNonInventoryCollectionView;
     var systemItemNonInventoryFlexGrid = new wijmo.grid.FlexGrid('#systemItemNonInventoryFlexGrid');
@@ -952,5 +829,5 @@
         setTimeout(function () {
             createSystemItemPackageGrid();
         }, 500);
-    });
-</script>
+    });*@
+<!--</script>-->
