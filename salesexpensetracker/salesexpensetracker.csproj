@@ -873,6 +873,7 @@
     <Content Include="Scripts\jquery-3.7.1.min.map" />
     <Content Include="Views\Software\Index.cshtml" />
     <Content Include="Views\Software\ProductList.cshtml" />
+    <Content Include="Views\Software\ProductDetail.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

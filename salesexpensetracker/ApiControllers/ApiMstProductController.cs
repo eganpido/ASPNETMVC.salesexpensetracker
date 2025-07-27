@@ -67,25 +67,45 @@ namespace salesexpensetracker.ApiControllers
         [Authorize, HttpGet, Route("api/product/detail/{id}")]
         public Entities.MstProduct DetailProduct(String id)
         {
-            var product = from d in db.MstProducts
-                       where d.Id == Convert.ToInt32(id)
-                       select new Entities.MstProduct
-                       {
-                           Id = d.Id,
-                           ProductCode = d.ProductCode,
-                           ProductDescription = d.ProductDescription,
-                           Cost = d.Cost.ToString("#,##0.00"),
-                           Price = d.Price.ToString("#,##0.00"),
-                           IsLocked = d.IsLocked,
-                           CreatedById = d.CreatedById,
-                           CreatedBy = d.MstUser.FullName,
-                           CreatedDateTime = d.CreatedDateTime.ToShortDateString(),
-                           UpdatedById = d.UpdatedById,
-                           UpdatedBy = d.MstUser1.FullName,
-                           UpdatedDateTime = d.UpdatedDateTime.ToShortDateString()
-                       };
+            var product = (from d in db.MstProducts
+                           where d.Id == Convert.ToInt32(id)
+                           select new
+                           {
+                               d.Id,
+                               d.ProductCode,
+                               d.ProductDescription,
+                               d.Cost,
+                               d.Price,
+                               d.IsLocked,
+                               d.CreatedById,
+                               CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
+                               d.CreatedDateTime,
+                               d.UpdatedById,
+                               UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
+                               d.UpdatedDateTime
+                           }).FirstOrDefault();
 
-            return product.FirstOrDefault();
+            if (product != null)
+            {
+                return new Entities.MstProduct
+                {
+                    Id = product.Id,
+                    ProductCode = product.ProductCode,
+                    ProductDescription = product.ProductDescription,
+                    Cost = product.Cost.ToString("#,##0.00"),
+                    Price = product.Price.ToString("#,##0.00"),
+                    IsLocked = product.IsLocked,
+                    CreatedById = product.CreatedById,
+                    CreatedBy = product.CreatedBy,
+                    CreatedDateTime = product.CreatedDateTime.ToShortDateString(),
+                    UpdatedById = product.UpdatedById,
+                    UpdatedBy = product.UpdatedBy,
+                    UpdatedDateTime = product.UpdatedDateTime.ToShortDateString()
+                };
+            }
+
+            return null;
+
         }
 
         // Fill Leading Zeroes
@@ -157,7 +177,7 @@ namespace salesexpensetracker.ApiControllers
         }
 
         // Save Product
-        [Authorize, HttpPut, Route("api/item/save/{id}")]
+        [Authorize, HttpPut, Route("api/product/save/{id}")]
         public HttpResponseMessage SaveItem(Entities.MstProduct objProduct, String id)
         {
             try

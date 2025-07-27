@@ -13,22 +13,17 @@ namespace salesexpensetracker
                         "~/Content/bootstrap.min.css",
                         "~/Content/toastr.css",
                         "~/Content/font-awesome.min.css",
-                        "~/Content/wijmo.min.css",
                         "~/Content/nprogress.css",
                         "~/Content/home.css",
                         "~/Content/Site.css"));
 
             // Landing page | Home - js
             bundles.Add(new ScriptBundle("~/Scripts/Home-js").Include(
+                        "~/Scripts/jquery-3.7.1.min.js",
                         "~/Scripts/jquery-1.10.2.min.js",
                         "~/Scripts/bootstrap.min.js",
                         "~/Scripts/custom-tooltip.js",
                         "~/Scripts/toastr.js",
-                        "~/Scripts/wijmo.min.js",
-                        "~/Scripts/wijmo.input.min.js",
-                        "~/Scripts/wijmo.grid.min.js",
-                        "~/Scripts/wijmo.grid.filter.min.js",
-                        "~/Scripts/wijmo.chart.min.js",
                         "~/Scripts/menu.js",
                         "~/Scripts/nprogress.js"));
 
@@ -47,20 +42,15 @@ namespace salesexpensetracker
                       "~/Content/bootstrap.min.css",
                       "~/Content/toastr.css",
                       "~/Content/font-awesome.min.css",
-                      "~/Content/wijmo.min.css",
                       "~/Content/nprogress.css",
                       "~/Content/system.css"));
 
             // Software -js
             bundles.Add(new ScriptBundle("~/Scripts/Software-js").Include(
+                    "~/Scripts/jquery-3.7.1.min.js",
                     "~/Scripts/jquery-1.10.2.min.js",
                     "~/Scripts/bootstrap.min.js",
                     "~/Scripts/toastr.js",
-                    "~/Scripts/wijmo.min.js",
-                    "~/Scripts/wijmo.input.min.js",
-                    "~/Scripts/wijmo.grid.min.js",
-                    "~/Scripts/wijmo.grid.filter.min.js",
-                    "~/Scripts/wijmo.chart.min.js",
                     "~/Scripts/nprogress.js",
                     "~/Scripts/menu.js",
                     "~/Scripts/software.js",

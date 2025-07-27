@@ -166,7 +166,7 @@ namespace salesexpensetracker.Controllers
         public ActionResult PageNotFound() { return View(); }
         public ActionResult Forbidden() { return View(); }
         public ActionResult SubscriptionExpired() { return View(); }
-        public ActionResult Index() { return UserRights("Software"); }
+        public ActionResult Index() { return View(); }
 
         // ============
         // Master Files
@@ -176,7 +176,7 @@ namespace salesexpensetracker.Controllers
         public ActionResult Customer() { return UserRights("CustomerList"); }
         public ActionResult CustomerDetail() { return UserRights("CustomerDetail"); }
         public ActionResult ProductList() { return View(); }
-        public ActionResult ItemDetail() { return UserRights("ItemDetail"); }
+        public ActionResult ProductDetail() { return View(); }
         public ActionResult Bank() { return UserRights("BankList"); }
         public ActionResult ChartOfAccounts() { return UserRights("ChartOfAccounts"); }
 

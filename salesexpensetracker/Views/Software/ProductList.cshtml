@@ -16,11 +16,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="shortcut icon" href="~/Images/icon/liteclerkicon.ico">
-    <title>Item</title>
+    <title>Product List</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
     @Styles.Render("~/Content/Software-css")
+
+    <style>
+        table.table.dataTable > tbody > tr.selected > * {
+            --dt-row-selected: 76, 225, 185;
+            box-shadow: inset 0 0 0 9999px rgba(76, 225, 185, 0.95);
+            color: black;
+        }
+
+        .pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
+            z-index: 3;
+            color: #fff;
+            cursor: default;
+            background-color: #1EB38B;
+            border-color: #1EB38B;
+        }
+    </style>
 </head>
 <body>
     <div id="o-wrapper" class="o-wrapper">
@@ -44,19 +60,19 @@
                         <table style="width: 100%" border="0">
                             <tr>
                                 <td style="width: 59%">
-                                    <button class="btn btn-primary" id="btnItemAdd" onclick="btnProductAddOnclick()"><i class="fa fa-plus"></i> Add</button>
+                                    <button class="btn btn-primary" id="btnItemAdd" onclick="addProduct()">🞧 Add</button>
                                 </td>
                                 <td style="width: 1%"></td>
                                 <td style="width: 40%" align="right">
-                                    <button class="btn btn-danger" id="btnItemClose" onclick="btnProductCloseOnclick()"><i class=" fa fa-times"></i> Close</button>
+                                    <button class="btn btn-danger" id="btnItemClose" onclick="closeProduct()">🗙 Close</button>
                                 </td>
                             </tr>
                         </table>
                     </div>
 
-                    <table id="productList" class="table table-striped table-bordered">
+                    <table id="datagridList" class="table table-striped table-bordered">
                         <thead>
-                            <tr>
+                            <tr class="selected">
                                 <th></th>
                                 <th>Code</th>
                                 <th>Product</th>
@@ -78,23 +94,28 @@
     <div id="c-mask" class="c-mask"></div>
 
     @Scripts.Render("~/Scripts/Software-js")
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
     <script type="text/javascript">
 
+        // Edit Product
+        function editProduct(itemId) {
+            window.location = '/Software/ProductDetail?id=' + itemId;
+        }
+
         // Close Product
-        // ==========
-        function btnProductCloseOnclick() {
+        function closeProduct() {
             window.location = '/Software';
         }
 
-        // ============
         // On Load Page
-        // ============
         $(document).ready(function () {
-            $('#productList').DataTable({
+            $('#datagridList tbody').on('click', 'tr', function () {
+                $('#datagridList tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            $('#datagridList').DataTable({
                 ajax: {
                     url: '/api/product/list',
                     dataSrc: ''
@@ -104,7 +125,7 @@
                         data: null,
                         className: 'text-center',
                         render: function (data, type, row) {
-                            return '<button class="btn btn-primary btn-sm" onclick="editProduct(' + row.Id + ')">Edit</button>';
+                            return '<button class="btn btn-primary btn-sm" onclick="editProduct(' + row.Id + ')">📝 Edit</button>';
                         }
                     },
                     { data: 'ProductCode', className: 'text-left' },
@@ -128,7 +149,7 @@
                         data: null,
                         className: 'text-center',
                         render: function (data, type, row) {
-                            return '<button class="btn btn-danger btn-sm" onclick="deleteProduct(' + row.Id + ')">Delete</button>';
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteProduct(' + row.Id + ')">🗑 Delete</button>';
                         }
                     }
                 ],
@@ -136,6 +157,10 @@
                     {
                         targets: 1, // ProductCode column (now the second column)
                         className: 'text-left'
+                    },
+                    {
+                        targets: [0, 7], // Edit and Delete columns
+                        orderable: false // Disable sorting
                     }
                 ],
                 pageLength: 10,
