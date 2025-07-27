@@ -136,14 +136,14 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var defaultProductCode = "0000000001";
+                    var defaultProductCode = "001";
                     var lastProduct = from d in db.MstProducts.OrderByDescending(d => d.Id)
                                    select d;
 
                     if (lastProduct.Any())
                     {
-                        var productCode = Convert.ToInt32(lastProduct.FirstOrDefault().ProductCode) + 0000000001;
-                        defaultProductCode = FillLeadingZeroes(productCode, 10);
+                        var productCode = Convert.ToInt32(lastProduct.FirstOrDefault().ProductCode) + 001;
+                        defaultProductCode = FillLeadingZeroes(productCode, 3);
                     }
 
                     Data.MstProduct newProduct = new Data.MstProduct

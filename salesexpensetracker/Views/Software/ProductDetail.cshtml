@@ -43,7 +43,7 @@
                             <div class="col-md-10" align="right">
                                 <button class="btn btn-primary" id="btnProductDetailLock" onclick="lockProduct()">🔒 Lock</button>
                                 <button class="btn btn-primary" id="btnProductDetailUnlock" onclick="unlockProduct()">🔓 Unlock</button>
-                                <button class="btn btn-danger" id="btnProductDetailClose" onclick="closeProductDetail()">❌ Close</button>
+                                <button class="btn btn-danger" id="btnProductDetailClose" onclick="closeProductDetail()">🗙 Close</button>
                             </div>
                         </div>
                     </div>
@@ -56,33 +56,33 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-4">Code</label>
+                                        <label class="control-label col-sm-2">Code</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control requiredItem" id="inpProductDetailProductCode" placeholder="Code" />
+                                            <input type="text" class="form-control" id="inpProductDetailProductCode" placeholder="Code" />
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-4">Product</label>
+                                        <label class="control-label col-sm-2">Product</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control requiredItem" id="inpProductDetailProductDescription" placeholder="Product" />
+                                            <input type="text" class="form-control" id="inpProductDetailProductDescription" placeholder="Product" />
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-4">Price</label>
+                                        <label class="control-label col-sm-2">Price</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control numberField requiredItem" id="inpProductDetailPrice" placeholder="0.00" />
+                                            <input type="text" class="form-control numberField" id="inpProductDetailPrice" placeholder="0.00" />
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-4">Cost</label>
+                                        <label class="control-label col-sm-2">Cost</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control numberField requiredItem" id="inpProductDetailCost" placeholder="0.00" />
+                                            <input type="text" class="form-control numberField" id="inpProductDetailCost" placeholder="0.00" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row" style="margin-top:40px;">
-                                <div class="col-md-4">
+                                <div class="col-md-2">
                                     <p>Created by:</p>
                                     <div style="padding-left: 10px;">
                                         <i class="fa fa-key fa-fw"></i> <label id="createdBy">NA</label>
@@ -191,7 +191,7 @@
 
         // Save Product
         function saveProduct() {
-            document.getElementById('btnProductDetailSave').innerHTML = "<i class='fa fa-save'></i> Saving...";
+            document.getElementById('btnProductDetailSave').innerHTML = "💾 Saving...";
             $('#btnProductDetailSave').prop('disabled', true);
             $('#btnProductDetailLock').prop('disabled', true);
             $('#btnProductDetailUnlock').prop('disabled', true);
@@ -205,14 +205,14 @@
                 data: productDataObject(),
                 statusCode: {
                     200: function () {
-                        toastr.success("Save Successful");
+                        toastr.success("Save Successful", "", { positionClass: "toast-bottom-right" });
                         window.setTimeout(function () {
                             location.reload()
                         }, 1000);
                     },
                     404: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
-                        document.getElementById('btnProductDetailSave').innerHTML = "<i class='fa fa-save'></i> Save";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailSave').innerHTML = "💾 Save";
                         $("#btnProductDetailSave").prop("disabled", false);
 
                         if (isLocked) {
@@ -224,8 +224,8 @@
                         $("#btnProductDetailClose").prop("disabled", false);
                     },
                     400: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
-                        document.getElementById('btnProductDetailSave').innerHTML = "<i class='fa fa-save'></i> Save";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailSave').innerHTML = "💾 Save";
                         $("#btnProductDetailSave").prop("disabled", false);
 
                         if (isLocked) {
@@ -237,8 +237,8 @@
                         $("#btnProductDetailClose").prop("disabled", false);
                     },
                     500: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
-                        document.getElementById('btnProductDetailSave').innerHTML = "<i class='fa fa-save'></i> Save";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailSave').innerHTML = "💾 Save";
                         $("#btnProductDetailSave").prop("disabled", false);
 
                         if (isLocked) {
@@ -255,7 +255,7 @@
 
         // Lock Product
         function lockProduct() {
-            document.getElementById('btnProductDetailLock').innerHTML = "<i class='fa fa-lock'></i> Locking...";
+            document.getElementById('btnProductDetailLock').innerHTML = "🔒 Locking...";
             $('#btnProductDetailSave').prop('disabled', true);
             $('#btnProductDetailLock').prop('disabled', true);
             $('#btnProductDetailUnlock').prop('disabled', true);
@@ -269,28 +269,28 @@
                 data: productDataObject(),
                 statusCode: {
                     200: function () {
-                        toastr.success("Lock Successful");
+                        toastr.success("Lock Successful", "", { positionClass: "toast-bottom-right" });
                         window.setTimeout(function () {
                             location.reload()
                         }, 1000);
                     },
                     404: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
-                        document.getElementById('btnProductDetailLock').innerHTML = "<i class='fa fa-lock'></i> Lock";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailLock').innerHTML = "🔒 Lock";
                         $('#btnProductDetailSave').prop('disabled', false);
                         $('#btnProductDetailLock').prop('disabled', false);
                         $('#btnProductDetailClose').prop('disabled', false);
                     },
                     400: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
-                        document.getElementById('btnProductDetailLock').innerHTML = "<i class='fa fa-lock'></i> Lock";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailLock').innerHTML = "🔒 Lock";
                         $('#btnProductDetailSave').prop('disabled', false);
                         $('#btnProductDetailLock').prop('disabled', false);
                         $('#btnProductDetailClose').prop('disabled', false);
                     },
                     500: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
-                        document.getElementById('btnProductDetailLock').innerHTML = "<i class='fa fa-lock'></i> Lock";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailLock').innerHTML = "🔒 Lock";
                         $('#btnProductDetailSave').prop('disabled', false);
                         $('#btnProductDetailLock').prop('disabled', false);
                         $('#btnProductDetailClose').prop('disabled', false);
@@ -301,7 +301,7 @@
 
         // Unlock Product
         function unlockProduct() {
-            document.getElementById('btnProductDetailUnlock').innerHTML = "<i class='fa fa-unlock'></i> Unlocking...";
+            document.getElementById('btnProductDetailUnlock').innerHTML = "🔓 Unlocking...";
             $('#btnProductDetailSave').prop('disabled', true);
             $('#btnProductDetailLock').prop('disabled', true);
             $('#btnProductDetailUnlock').prop('disabled', true);
@@ -314,28 +314,28 @@
                 dataType: "json",
                 statusCode: {
                     200: function () {
-                        toastr.success("Unlock Successful");
+                        toastr.success("Unlock Successful", "", { positionClass: "toast-bottom-right" });
                         window.setTimeout(function () {
                             location.reload()
                         }, 1000);
                     },
                     404: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
-                        document.getElementById('btnProductDetailUnlock').innerHTML = "<i class='fa fa-unlock'></i> Unlock";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailUnlock').innerHTML = "🔓 Unlock";
                         $('#btnProductDetailSave').prop('disabled', false);
                         $('#btnProductDetailUnlock').prop('disabled', false);
                         $('#btnProductDetailClose').prop('disabled', false);
                     },
                     400: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
-                        document.getElementById('btnProductDetailUnlock').innerHTML = "<i class='fa fa-unlock'></i> Unlock";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailUnlock').innerHTML = "🔓 Unlock";
                         $('#btnProductDetailSave').prop('disabled', false);
                         $('#btnProductDetailUnlock').prop('disabled', false);
                         $('#btnProductDetailClose').prop('disabled', false);
                     },
                     500: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
-                        document.getElementById('btnProductDetailUnlock').innerHTML = "<i class='fa fa-unlock'></i> Unlock";
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnProductDetailUnlock').innerHTML = "🔓 Unlock";
                         $('#btnProductDetailSave').prop('disabled', false);
                         $('#btnProductDetailUnlock').prop('disabled', false);
                         $('#btnProductDetailClose').prop('disabled', false);

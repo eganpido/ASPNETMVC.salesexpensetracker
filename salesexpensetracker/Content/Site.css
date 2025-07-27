@@ -167,3 +167,16 @@ body.account-body-custom {
     text-align: center !important;
     border-color:black;
 }
+table.table.dataTable > tbody > tr.selected > * {
+    --dt-row-selected: 76, 225, 185;
+    box-shadow: inset 0 0 0 9999px rgba(76, 225, 185, 0.95);
+    color: black;
+}
+
+.pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
+    z-index: 3;
+    color: #fff;
+    cursor: default;
+    background-color: #1EB38B;
+    border-color: #1EB38B;
+}
