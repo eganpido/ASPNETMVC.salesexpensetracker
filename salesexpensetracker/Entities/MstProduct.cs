@@ -10,8 +10,8 @@ namespace salesexpensetracker.Entities
         public Int32 Id { get; set; }
         public String ProductCode { get; set; }
         public String ProductDescription { get; set; }
-        public Decimal Cost { get; set; }
-        public Decimal Price { get; set; }
+        public String Cost { get; set; }
+        public String Price { get; set; }
         public Boolean IsLocked { get; set; }
         public Int32 CreatedById { get; set; }
         public String CreatedBy { get; set; }

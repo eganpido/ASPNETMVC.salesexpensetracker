@@ -24,23 +24,43 @@ namespace salesexpensetracker.ApiControllers
         [Authorize, HttpGet, Route("api/product/list")]
         public List<Entities.MstProduct> ListProduct()
         {
-            var products = from d in db.MstProducts.OrderByDescending(d => d.ProductCode)
-                        select new Entities.MstProduct
-                        {
-                            Id = d.Id,
-                            ProductCode = d.ProductCode,
-                            ProductDescription = d.ProductDescription,
-                            Cost = d.Cost,
-                            Price = d.Price,
-                            IsLocked = d.IsLocked,
-                            CreatedById = d.CreatedById,
-                            CreatedBy = d.MstUser.FullName,
-                            CreatedDateTime = d.CreatedDateTime.ToShortDateString(),
-                            UpdatedById = d.UpdatedById,
-                            UpdatedBy = d.MstUser1.FullName,
-                            UpdatedDateTime = d.UpdatedDateTime.ToShortDateString(),
-                        };
-            return products.ToList();
+            var rawProducts = from d in db.MstProducts.OrderByDescending(d => d.ProductCode)
+                              select new
+                              {
+                                  Id = d.Id,
+                                  ProductCode = d.ProductCode,
+                                  ProductDescription = d.ProductDescription,
+                                  Cost = d.Cost, // Keep as decimal
+                                  Price = d.Price, // Keep as decimal
+                                  IsLocked = d.IsLocked,
+                                  CreatedById = d.CreatedById,
+                                  CreatedBy = d.MstUser.FullName,
+                                  CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
+                                  UpdatedById = d.UpdatedById,
+                                  UpdatedBy = d.MstUser1.FullName,
+                                  UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
+                              };
+
+            // Step 2: Materialize and format in memory
+            var products = rawProducts.ToList() // Execute query on database
+                                      .Select(d => new Entities.MstProduct
+                                      {
+                                          Id = d.Id,
+                                          ProductCode = d.ProductCode,
+                                          ProductDescription = d.ProductDescription,
+                                          Cost = d.Cost.ToString("#,##0.00"), // Format in memory
+                                          Price = d.Price.ToString("#,##0.00"), // Format in memory
+                                          IsLocked = d.IsLocked,
+                                          CreatedById = d.CreatedById,
+                                          CreatedBy = d.CreatedBy,
+                                          CreatedDateTime = d.CreatedDateTime.ToShortDateString(), // Format in memory
+                                          UpdatedById = d.UpdatedById,
+                                          UpdatedBy = d.UpdatedBy,
+                                          UpdatedDateTime = d.UpdatedDateTime.ToShortDateString(), // Format in memory
+                                      })
+                                      .ToList();
+
+            return products;
         }
 
         // Detail Product
@@ -54,8 +74,8 @@ namespace salesexpensetracker.ApiControllers
                            Id = d.Id,
                            ProductCode = d.ProductCode,
                            ProductDescription = d.ProductDescription,
-                           Cost = d.Cost,
-                           Price = d.Price,
+                           Cost = d.Cost.ToString("#,##0.00"),
+                           Price = d.Price.ToString("#,##0.00"),
                            IsLocked = d.IsLocked,
                            CreatedById = d.CreatedById,
                            CreatedBy = d.MstUser.FullName,
@@ -161,8 +181,8 @@ namespace salesexpensetracker.ApiControllers
                             var saveProduct = product.FirstOrDefault();
                             saveProduct.ProductCode = objProduct.ProductCode;
                             saveProduct.ProductDescription = objProduct.ProductDescription;
-                            saveProduct.Price = objProduct.Price;
-                            saveProduct.Cost = objProduct.Cost;
+                            saveProduct.Price = Convert.ToDecimal(objProduct.Price);
+                            saveProduct.Cost = Convert.ToDecimal(objProduct.Cost);
                             saveProduct.UpdatedById = currentUserId;
                             saveProduct.UpdatedDateTime = DateTime.Now;
                             db.SubmitChanges();
@@ -223,8 +243,8 @@ namespace salesexpensetracker.ApiControllers
                                 var lockProduct = product.FirstOrDefault();
                                 lockProduct.ProductCode = objProduct.ProductCode;
                                 lockProduct.ProductDescription = objProduct.ProductDescription;
-                                lockProduct.Cost = objProduct.Cost;
-                                lockProduct.Price = objProduct.Price;
+                                lockProduct.Cost = Convert.ToDecimal(objProduct.Cost);
+                                lockProduct.Price = Convert.ToDecimal(objProduct.Price);
                                 lockProduct.IsLocked = true;
                                 lockProduct.UpdatedById = currentUserId;
                                 lockProduct.UpdatedDateTime = DateTime.Now;

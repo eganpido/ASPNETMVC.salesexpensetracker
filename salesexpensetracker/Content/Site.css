@@ -148,3 +148,9 @@ body.account-body-custom {
     border-radius: 4px !important;
     font-family: 'Poppins', 'Open Sans', sans-serif;
 }
+.text-left {
+    text-align: left !important;
+}
+.dt-checkboxes {
+    text-align: center !important;
+}

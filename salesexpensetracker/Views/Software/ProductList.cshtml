@@ -18,6 +18,8 @@
     <link rel="shortcut icon" href="~/Images/icon/liteclerkicon.ico">
     <title>Item</title>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
     @Styles.Render("~/Content/Software-css")
 </head>
 <body>
@@ -42,93 +44,32 @@
                         <table style="width: 100%" border="0">
                             <tr>
                                 <td style="width: 59%">
-                                    <div class="input-group ">
-                                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                                        <input type="text" class="form-control" id="inpItemSearchFilter" placeholder="Search...">
-                                    </div>
+                                    <button class="btn btn-primary" id="btnItemAdd" onclick="btnProductAddOnclick()"><i class="fa fa-plus"></i> Add</button>
                                 </td>
                                 <td style="width: 1%"></td>
                                 <td style="width: 40%" align="right">
-                                    @*@{
-                                        if (canAdd)
-                                        {
-                                            <button class="btn btn-primary" id="btnItemAdd" onclick="btnItemAddOnclick()"><i class="fa fa-plus"></i> Add</button>
-                                        }
-                                    }*@
-                                    <button class="btn btn-primary" id="btnItemAdd" onclick="btnItemAddOnclick()"><i class="fa fa-plus"></i> Add</button>
-                                    <button class="btn btn-danger" id="btnItemClose" onclick="btnItemCloseOnclick()"><i class=" fa fa-times"></i> Close</button>
+                                    <button class="btn btn-danger" id="btnItemClose" onclick="btnProductCloseOnclick()"><i class=" fa fa-times"></i> Close</button>
                                 </td>
                             </tr>
                         </table>
                     </div>
 
-                    <!--
-                        =========
-                        Flex Grid
-                        =========
-                    -->
-                    @*<div class="panel-body">
-                        <div id="itemFlexGrid"></div>
-                    </div>*@
-
-                    <!--
-                        ==================
-                        Navigation Buttons
-                        ==================
-                    -->
-                    @*<div class="panel-footer">
-                        <div class="row">
-                            <div class="btn-group col-md-7" id="itemNavigationPageGrid">
-                                <button type="button" class="btn btn-default border-custom" id="btnItemMoveToFirstPageGrid">
-                                    <span class="glyphicon glyphicon-fast-backward"></span>
-                                </button>
-                                <button type="button" class="btn btn-default border-custom" id="btnItemMoveToPreviousPageGrid">
-                                    <span class="glyphicon glyphicon-step-backward"></span>
-                                </button>
-                                <button type="button" class="btn btn-default border-custom" disabled style="width: 100px" id="btnItemCurrentPageGrid"></button>
-                                <button type="button" class="btn btn-default border-custom" id="btnItemMoveToNextPageGrid">
-                                    <span class="glyphicon glyphicon-step-forward"></span>
-                                </button>
-                                <button type="button" class="btn btn-default border-custom" id="btnItemMoveToLastPageGrid">
-                                    <span class="glyphicon glyphicon-fast-forward"></span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>*@
+                    <table id="productList" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Code</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Create By</th>
+                                <th>Created Date</th>
+                                <th>Locked</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
-
-                <!--
-                    ==========
-                    User Stamp
-                    ==========
-                -->
-                @*<div class="panel panel-default">
-                    <div class="panel-heading">
-                        User stamp
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p>Created by:</p>
-                                <div style="padding-left: 10px;">
-                                    <i class="fa fa-key fa-fw"></i> <label id="createdBy">NA</label>
-                                    <br />
-                                    <small><i class="fa fa-calendar fa-fw"></i> &nbsp;<span id="createdDate">mm/dd/yyyy</span></small>
-                                </div>
-                                <br />
-                            </div>
-                            <div class="col-md-6">
-                                <p>Updated by:</p>
-                                <div style="padding-left: 10px;">
-                                    <i class="fa fa-key fa-fw"></i> <label id="updatedBy">NA</label>
-                                    <br />
-                                    <small><i class="fa fa-calendar fa-fw"></i> &nbsp;<span id="updatedDate">mm/dd/yyyy</span></small>
-                                </div>
-                                <br />
-                            </div>
-                        </div>
-                    </div>
-                </div>*@
             </section>
 
             @Html.Partial("_SoftwareFooter")
@@ -136,489 +77,16 @@
     </div>
     <div id="c-mask" class="c-mask"></div>
 
-    <!--
-        ===========================
-        Item Confirm Delete (Modal)
-        ===========================
-    -->
-    @*<div class="modal fade" id="deleteItemConfirm" role="dialog">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Delete</h4>
-                </div>
-                <div class="modal-body">
-                    Delete Item?
-                </div>
-                <div class="modal-footer">
-                    <button id="btnItemConfirmDelete" class="btn btn-danger" onclick="btnItemConfirmDeleteOnclick()"><i class="fa fa-trash"></i> Delete</button>
-                    <button id="btnItemCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-close"></i> Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>*@
-
     @Scripts.Render("~/Scripts/Software-js")
-<script type="text/javascript">
-        // ==================================
-        // Item Collection View and Flex Grid
-        // ==================================
-        //var itemCollectionView;
-        //var itemFlexGrid;
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
+    <script type="text/javascript">
 
-        // =======================
-        // Item Navigation Buttons
-        // =======================
-        //var btnItemMoveToFirstPageGrid = document.getElementById('btnItemMoveToFirstPageGrid');
-        //var btnItemMoveToPreviousPageGrid = document.getElementById('btnItemMoveToPreviousPageGrid');
-        //var btnItemMoveToNextPageGrid = document.getElementById('btnItemMoveToNextPageGrid');
-        //var btnItemMoveToLastPageGrid = document.getElementById('btnItemMoveToLastPageGrid');
-        //var btnItemCurrentPageGrid = document.getElementById('btnItemCurrentPageGrid');
-
-        // =============
-        // Get Item Data
-        // =============
-        function getItemData() {
-            //var itemsObservableArray = new wijmo.collections.ObservableArray;
-            //NProgress.start();
-            //$.ajax({
-            //    url: '/api/item/list',
-            //    cache: false,
-            //    type: 'GET',
-            //    contentType: 'application/json; charset=utf-8',
-            //    success: function (results) {
-            //        if (results.length > 0) {
-            //            for (i = 0; i < results.length; i++) {
-            //                itemsObservableArray.push({
-            //                    EditId: "<button class='btn btn-primary btn-xs btn-block' id='' onclick='btnItemEditOnclick()'><i class='fa fa-edit'></i> Edit</button>",
-            //                    DeleteId: "<button class='btn btn-danger btn-xs btn-block' onclick='btnItemDeleteOnclick()'><i class='fa fa-trash'></i> Delete</button>",
-            //                    Id: results[i]["Id"],
-            //                    ArticleCode: results[i]["ArticleCode"],
-            //                    ManualArticleCode: results[i]["ManualArticleCode"],
-            //                    Article: results[i]["Article"],
-            //                    Category: results[i]["Category"],
-            //                    SubCategory: results[i]["SubCategory"],
-            //                    Unit: results[i]["Unit"],
-            //                    Cost: results[i]["Cost"],
-            //                    CostDisplay: parseFloat(results[i]["Cost"]).toFixed(2).toLocaleString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-            //                    Price: results[i]["Price"],
-            //                    PriceDisplay: parseFloat(results[i]["Price"]).toFixed(2).toLocaleString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-            //                    IsInventory: results[i]["IsInventory"],
-            //                    ManualArticleOldCode: results[i]["ManualArticleOldCode"],
-            //                    IsLocked: results[i]["IsLocked"],
-            //                    CreatedById: results[i]["CreatedById"],
-            //                    CreatedBy: results[i]["CreatedBy"],
-            //                    CreatedDateTime: results[i]["CreatedDateTime"],
-            //                    UpdatedById: results[i]["UpdatedById"],
-            //                    UpdatedBy: results[i]["UpdatedBy"],
-            //                    UpdatedDateTime: results[i]["UpdatedDateTime"],
-            //                    PreviousCost: results[i]["PreviousCost"],
-            //                    PreviousCostDisplay: parseFloat(results[i]["PreviousCost"]).toFixed(2).toLocaleString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-            //                    CostUpdatedDateTime: results[i]["CostUpdatedDateTime"],
-            //                });
-            //            }
-            //        }
-
-            //        NProgress.done();
-            //    }
-            //});
-
-            //return itemsObservableArray;
-        }
-
-        // ====================
-        // Create Item FlexGrid
-        // ====================
-        function createItemFlexGrid() {
-            @*itemCollectionView = new wijmo.collections.CollectionView(getItemData());
-            itemCollectionView.canFilter = true;
-            itemCollectionView.pageSize = 15;
-
-            var filterText = '';
-            $('#inpItemSearchFilter').keyup(function () {
-                filterText = this.value.toLowerCase();
-                itemCollectionView.refresh();
-            });
-
-            itemCollectionView.filter = function (item) {
-                return !filterText || (item.Article.toLowerCase().indexOf(filterText) > -1)
-                                   || (item.ArticleCode.toLowerCase().indexOf(filterText) > -1)
-                                   || (item.ManualArticleCode.toLowerCase().indexOf(filterText) > -1)
-                                   || (item.Category.toLowerCase().indexOf(filterText) > -1)
-                                   || (item.Unit.toLowerCase().indexOf(filterText) > -1)
-                                   || (item.ManualArticleOldCode.toLowerCase().indexOf(filterText) > -1);
-            }
-
-            itemCollectionView.collectionChanged.addHandler(function (sender, args) {
-                updateItemNavigationButtons();
-            });
-
-            itemCollectionView.currentChanged.addHandler(function (sender, args) {
-                updateItemDetailsFlexGridSelection();
-            });
-
-            itemFlexGrid = new wijmo.grid.FlexGrid('#itemFlexGrid');
-            itemFlexGrid.initialize({
-                columns: [
-                             @{
-                                if (canEdit)
-                                {
-                                    <text>
-                                        {
-                                            "header": "Edit",
-                                            "binding": "EditId",
-                                            "width": 70,
-                                            "align": "center",
-                                            "allowResizing": false,
-                                            "allowSorting": false,
-                                            "isContentHtml": true
-                                        },
-                                    </text>
-                                }
-                                if (canDelete)
-                                {
-                                    <text>
-                                        {
-                                            "header": "Delete",
-                                            "binding": "DeleteId",
-                                            "width": 70,
-                                            "align": "center",
-                                            "allowResizing": false,
-                                            "allowSorting": false,
-                                            "isContentHtml": true
-                                        },
-                                    </text>
-                                }
-                            }
-                            {
-                                "header": "Code",
-                                "binding": "ArticleCode",
-                                "allowSorting": true,
-                                "width": 100
-                            },
-                            {
-                                "header": "Barcode",
-                                "binding": "ManualArticleCode",
-                                "allowSorting": true,
-                                "width": 120
-                            },
-                            @{
-                                if (Convert.ToBoolean(ViewData["ShowCostInItemList"]) == false)
-                                {
-                                    <text>
-                                        {
-                                            "header": "SKU Code",
-                                            "binding": "ManualArticleOldCode",
-                                            "allowSorting": true,
-                                            "width": 100
-                                        },
-                                    </text>
-                                }
-                            }
-                            {
-                                "header": "Item",
-                                "binding": "Article",
-                                "allowSorting": true,
-                                "width": "3*"
-                            },
-                            {
-                                "header": "Category",
-                                "binding": "Category",
-                                "allowSorting": true,
-                                "width": "2*"
-                            },
-                            @{
-                            if (Convert.ToBoolean(ViewData["ActivateChampion"]) == true)
-                            {
-                                <text>
-                                    {
-                                        "header": "Sub-Category",
-                                        "binding": "SubCategory",
-                                        "allowSorting": true,
-                                        "width": "2*"
-                                    },
-                                </text>
-                            }
-                            }
-                            {
-                                "header": "Unit",
-                                "binding": "Unit",
-                                "allowSorting": true,
-                                "width": "0.8*"
-                            },
-                            @{
-                                if (Convert.ToBoolean(ViewData["ShowCostInItemList"]) == true)
-                                {
-                                    <text>
-                                        {
-                                            "header": "Prev. Cost",
-                                            "binding": "PreviousCostDisplay",
-                                            "align": "right",
-                                            "allowSorting": true,
-                                            "width": "1.5*"
-                                        },
-                                        {
-                                            "header": "Cost As Of",
-                                            "binding": "CostUpdatedDateTime",
-                                            "allowSorting": true,
-                                            "width": "2*"
-                                        },
-                                        {
-                                            "header": "Cost",
-                                            "binding": "CostDisplay",
-                                            "align": "right",
-                                            "allowSorting": true,
-                                            "width": "1.5*"
-                                        },
-                                    </text>
-                                }
-                            }
-                            {
-                                "header": "Price",
-                                "binding": "PriceDisplay",
-                                "align": "right",
-                                "allowSorting": true,
-                                "width": "1.5*"
-                            },
-                            {
-                                "header": "I",
-                                "binding": "IsInventory",
-                                "allowSorting": true,
-                                "width": 50
-                            },
-                            {
-                                "header": "L",
-                                "binding": "IsLocked",
-                                "allowSorting": true,
-                                "width": 50
-                            }
-                ],
-                autoGenerateColumns: false,
-                itemsSource: itemCollectionView,
-                isReadOnly: true,
-                autoSizeMode: wijmo.grid.AutoSizeMode.Both,
-                allowDragging: wijmo.grid.AllowDragging.None,
-                selectionMode: wijmo.grid.SelectionMode.Row
-            });
-
-            itemFlexGrid.trackChanges = true;
-
-            updateItemNavigationButtons();
-
-            btnItemMoveToFirstPageGrid.addEventListener('click', function () {
-                itemCollectionView.moveToFirstPage();
-                updateItemNavigationButtons();
-            });
-
-            btnItemMoveToPreviousPageGrid.addEventListener('click', function () {
-                itemCollectionView.moveToPreviousPage();
-                updateItemNavigationButtons();
-            });
-
-            btnItemMoveToNextPageGrid.addEventListener('click', function () {
-                itemCollectionView.moveToNextPage();
-                updateItemNavigationButtons();
-            });
-
-            btnItemMoveToLastPageGrid.addEventListener('click', function () {
-                itemCollectionView.moveToLastPage();
-                updateItemNavigationButtons();
-            });*@
-        }
-
-        // =======================================
-        // Update Item Details Flex Grid Selection
-        // =======================================
-        function updateItemDetailsFlexGridSelection() {
-            //itemCollectionView.editItem(itemCollectionView.currentItem);
-            //var item = itemCollectionView.currentItem;
-            //document.getElementById('createdBy').innerHTML = item.CreatedBy;
-            //document.getElementById('createdDate').innerHTML = item.CreatedDateTime;
-            //document.getElementById('updatedBy').innerHTML = item.UpdatedBy;
-            //document.getElementById('updatedDate').innerHTML = item.UpdatedDateTime;
-        }
-
-        // ==============================
-        // Update Item Navigation Buttons
-        // ==============================
-        function updateItemNavigationButtons() {
-            //if (itemCollectionView.pageSize <= 0) {
-            //    document.getElementById('itemNavigationPageGrid').style.display = 'none';
-            //    return;
-            //}
-            //document.getElementById('itemNavigationPageGrid').style.display = 'block';
-            //if (itemCollectionView.pageIndex === 0) {
-            //    btnItemMoveToFirstPageGrid.setAttribute('disabled', 'disabled');
-            //    btnItemMoveToPreviousPageGrid.setAttribute('disabled', 'disabled');
-            //    btnItemMoveToNextPageGrid.removeAttribute('disabled');
-            //    btnItemMoveToLastPageGrid.removeAttribute('disabled');
-            //} else if (itemCollectionView.pageIndex === (itemCollectionView.pageCount - 1)) {
-            //    btnItemMoveToFirstPageGrid.removeAttribute('disabled');
-            //    btnItemMoveToPreviousPageGrid.removeAttribute('disabled');
-            //    btnItemMoveToLastPageGrid.setAttribute('disabled', 'disabled');
-            //    btnItemMoveToNextPageGrid.setAttribute('disabled', 'disabled');
-            //} else {
-            //    btnItemMoveToFirstPageGrid.removeAttribute('disabled');
-            //    btnItemMoveToPreviousPageGrid.removeAttribute('disabled');
-            //    btnItemMoveToNextPageGrid.removeAttribute('disabled');
-            //    btnItemMoveToLastPageGrid.removeAttribute('disabled');
-            //}
-            //btnItemCurrentPageGrid.innerHTML = (itemCollectionView.pageIndex + 1) + ' / ' + itemCollectionView.pageCount;
-        }
-
-        // =====================
-        // Refresh Item Flexgrid
-        // =====================
-        function refreshItemFlexgrid() {
-            //itemCollectionView = new wijmo.collections.CollectionView(getItemData());
-            //itemCollectionView.canFilter = true;
-            //itemCollectionView.pageSize = 15;
-
-            //var filterText = '';
-            //$('#inpItemSearchFilter').keyup(function () {
-            //    filterText = this.value.toLowerCase();
-            //    itemCollectionView.refresh();
-            //});
-
-            //itemCollectionView.filter = function (item) {
-            //    return !filterText || (item.Article.toLowerCase().indexOf(filterText) > -1)
-            //        || (item.ArticleCode.toLowerCase().indexOf(filterText) > -1)
-            //        || (item.ManualArticleCode.toLowerCase().indexOf(filterText) > -1)
-            //        || (item.Category.toLowerCase().indexOf(filterText) > -1)
-            //        || (item.Unit.toLowerCase().indexOf(filterText) > -1)
-            //        || (item.ManualArticleOldCode.toLowerCase().indexOf(filterText) > -1);
-            //}
-
-            //itemCollectionView.collectionChanged.addHandler(function (sender, args) {
-            //    updateItemNavigationButtons();
-            //});
-
-            //itemCollectionView.currentChanged.addHandler(function (sender, args) {
-            //    updateItemDetailsFlexGridSelection();
-            //});
-
-            //itemFlexGrid.itemsSource = itemCollectionView;
-            //itemFlexGrid.trackChanges = true;
-        }
-
-        // ========
-        // Add Item
-        // ========
-        function btnItemAddOnclick() {
-            //document.getElementById('btnItemAdd').innerHTML = "<i class='fa fa-plus'></i> Adding...";
-            //$('#btnItemAdd').prop('disabled', true);
-            //$('#btnItemClose').prop('disabled', true);
-
-            //$.ajax({
-            //    type: "POST",
-            //    url: '/api/item/add',
-            //    contentType: "application/json; charset=utf-8",
-            //    statusCode: {
-            //        200: function (id) {
-            //            window.location = '/Software/ItemDetail?id=' + id;
-            //        },
-            //        404: function (message) {
-            //            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
-            //            document.getElementById('btnItemAdd').innerHTML = "<i class='fa fa-plus'></i> Add";
-            //            $('#btnItemAdd').prop('disabled', false);
-            //            $('#btnItemClose').prop('disabled', false);
-            //        },
-            //        400: function (message) {
-            //            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
-            //            document.getElementById('btnItemAdd').innerHTML = "<i class='fa fa-plus'></i> Add";
-            //            $('#btnItemAdd').prop('disabled', false);
-            //            $('#btnItemClose').prop('disabled', false);
-            //        },
-            //        500: function (message) {
-            //            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
-            //            document.getElementById('btnItemAdd').innerHTML = "<i class='fa fa-plus'></i> Add";
-            //            $('#btnItemAdd').prop('disabled', false);
-            //            $('#btnItemClose').prop('disabled', false);
-            //        }
-            //    }
-            //});
-        }
-
-        // =========
-        // Edit Item
-        // =========
-        function btnItemEditOnclick() {
-            //itemCollectionView.editItem(itemCollectionView.currentItem);
-            //var item = itemCollectionView.currentEditItem;
-            //var itemId = item.Id;
-            //window.location = '/Software/ItemDetail?id=' + itemId;
-        }
-
-        // ===========
-        // Delete Item
-        // ===========
-        function btnItemDeleteOnclick() {
-            //itemCollectionView.editItem(itemCollectionView.currentItem);
-            //var item = itemCollectionView.currentEditItem;
-            //if (item.IsLocked) {
-            //    toastr.error("Delete is not allowed when the selected record is locked!");
-            //} else {
-            //    $('#deleteItemConfirm').modal({
-            //        show: true,
-            //        backdrop: 'static'
-            //    });
-
-            //    document.getElementById('btnItemConfirmDelete').innerHTML = "<i class='fa fa-trash'></i> Delete";
-            //    $('#btnItemConfirmDelete').prop('disabled', false);
-            //    $('#btnItemCloseConfirmDelete').prop('disabled', false);
-            //}
-        }
-
-        // ===================
-        // Confirm Delete Item
-        // ===================
-        function btnItemConfirmDeleteOnclick() {
-            //document.getElementById('btnItemConfirmDelete').innerHTML = "<i class='fa fa-trash'></i> Deleting...";
-            //$('#btnItemConfirmDelete').prop('disabled', true);
-            //$('#btnItemCloseConfirmDelete').prop('disabled', true);
-
-            //itemCollectionView.editItem(itemCollectionView.currentItem);
-            //var id = itemCollectionView.currentEditItem.Id;
-            //$.ajax({
-            //    url: '/api/item/delete/' + id,
-            //    type: "DELETE",
-            //    contentType: "application/json; charset=utf-8",
-            //    dataType: "json",
-            //    statusCode: {
-            //        200: function () {
-            //            toastr.success("Delete Successful");
-            //            $('#deleteItemConfirm').modal('hide');
-            //            refreshItemFlexgrid();
-            //        },
-            //        404: function (message) {
-            //            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
-            //            $('#deleteItemConfirm').modal('hide');
-            //            document.getElementById('btnItemConfirmDelete').innerHTML = "<i class='fa fa-trash'></i> Delete";
-            //            $('#btnItemConfirmDelete').prop('disabled', false);
-            //            $('#btnItemCloseConfirmDelete').prop('disabled', false);
-            //        },
-            //        400: function (message) {
-            //            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
-            //            $('#deleteItemConfirm').modal('hide');
-            //            document.getElementById('btnItemConfirmDelete').innerHTML = "<i class='fa fa-trash'></i> Delete";
-            //            $('#btnItemConfirmDelete').prop('disabled', false);
-            //            $('#btnItemCloseConfirmDelete').prop('disabled', false);
-            //        },
-            //        500: function (message) {
-            //            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
-            //            $('#deleteItemConfirm').modal('hide');
-            //            document.getElementById('btnItemConfirmDelete').innerHTML = "<i class='fa fa-trash'></i> Delete";
-            //            $('#btnItemConfirmDelete').prop('disabled', false);
-            //            $('#btnItemCloseConfirmDelete').prop('disabled', false);
-            //        }
-            //    }
-            //});
-        }
-
+        // Close Product
         // ==========
-        // Close Item
-        // ==========
-        function btnItemCloseOnclick() {
+        function btnProductCloseOnclick() {
             window.location = '/Software';
         }
 
@@ -626,8 +94,58 @@
         // On Load Page
         // ============
         $(document).ready(function () {
-            //createItemFlexGrid();
+            $('#productList').DataTable({
+                ajax: {
+                    url: '/api/product/list',
+                    dataSrc: ''
+                },
+                columns: [
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary btn-sm" onclick="editProduct(' + row.Id + ')">Edit</button>';
+                        }
+                    },
+                    { data: 'ProductCode', className: 'text-left' },
+                    { data: 'ProductDescription' },
+                    { data: 'Price' },
+                    { data: 'CreatedBy' },
+                    {
+                        data: 'CreatedDateTime',
+                        render: function (data) {
+                            return new Date(data).toLocaleDateString();
+                        }
+                    },
+                    {
+                        data: 'IsLocked',
+                        className: 'dt-checkboxes',
+                        render: function (data) {
+                            return '<input type="checkbox" ' + (data ? 'checked' : '') + ' disabled>';
+                        }
+                    },
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteProduct(' + row.Id + ')">Delete</button>';
+                        }
+                    }
+                ],
+                columnDefs: [
+                    {
+                        targets: 1, // ProductCode column (now the second column)
+                        className: 'text-left'
+                    }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "Filter records:",
+                    emptyTable: "No data available"
+                }
+            });
         });
-</script>
+    </script>
 </body>
 </html>
