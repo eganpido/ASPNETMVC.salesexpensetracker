@@ -16,7 +16,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
-    <title>Bank Detail</title>
+    <title>User Detail</title>
 
     @Styles.Render("~/Content/Software-css")
 </head>
@@ -26,7 +26,7 @@
             @Html.Partial("_SoftwareHeader")
             <div class="container">
                 <h3>
-                    🏦 Bank Detail
+                    🧑‍💻 User Detail
                 </h3>
             </div>
             <section class="container">
@@ -38,12 +38,12 @@
                     <div class="panel-heading">
                         <div class="row">
                             <div class="col-md-2">
-                                <button class="btn btn-primary" id="btnBankDetailSave" onclick="saveBank()">💾 Save</button>
+                                <button class="btn btn-primary" id="btnUserDetailSave" onclick="saveUser()">💾 Save</button>
                             </div>
                             <div class="col-md-10" align="right">
-                                <button class="btn btn-primary" id="btnBankDetailLock" onclick="lockBank()">🔒 Lock</button>
-                                <button class="btn btn-primary" id="btnBankDetailUnlock" onclick="unlockBank()">🔓 Unlock</button>
-                                <button class="btn btn-danger" id="btnBankDetailClose" onclick="closeBankDetail()">🗙 Close</button>
+                                <button class="btn btn-primary" id="btnUserDetailLock" onclick="lockUser()">🔒 Lock</button>
+                                <button class="btn btn-primary" id="btnUserDetailUnlock" onclick="unlockUser()">🔓 Unlock</button>
+                                <button class="btn btn-danger" id="btnUserDetailClose" onclick="closeUserDetail()">🗙 Close</button>
                             </div>
                         </div>
                     </div>
@@ -56,15 +56,15 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-2">Code</label>
+                                        <label class="control-label col-sm-2">Username</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="inpBankDetailBankCode" placeholder="Code" />
+                                            <input type="text" class="form-control" id="inpUserDetailUsername" placeholder="Username" disabled />
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-2">Bank</label>
+                                        <label class="control-label col-sm-2">Full Name</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="inpBankDetailBank" placeholder="Bank" />
+                                            <input type="text" class="form-control" id="inpUserDetailFullName" placeholder="Full Name" />
                                         </div>
                                     </div>
                                 </div>
@@ -120,71 +120,71 @@
             }
         }
 
-        // Get Bank Detail Data
-        function getBankDetailData() {
+        // Get User Detail Data
+        function getUserDetailData() {
             Loader.show();
 
             if (document.location.search.length > 0) {
                 $.ajax({
-                    url: '/api/bank/detail/' + getURLParameterValue("id"),
+                    url: '/api/user/detail/' + getURLParameterValue("id"),
                     cache: false,
                     type: 'GET',
                     contentType: 'application/json; charset=utf-8',
                     success: function (results) {
                         if (results != null) {
-                            document.getElementById('inpBankDetailBankCode').value = results.BankCode;
-                            document.getElementById('inpBankDetailBank').value = results.Bank;
+                            document.getElementById('inpUserDetailUsername').value = results.UserName;
+                            document.getElementById('inpUserDetailFullName').value = results.FullName;
                             document.getElementById('createdBy').innerHTML = results.CreatedBy;
                             document.getElementById('createdDate').innerHTML = results.CreatedDateTime;
                             document.getElementById('updatedBy').innerHTML = results.UpdatedBy;
                             document.getElementById('updatedDate').innerHTML = results.UpdatedDateTime;
 
                             if (results.IsLocked) {
-                                document.getElementById('inpBankDetailBankCode').disabled = true;
-                                document.getElementById('inpBankDetailBank').disabled = true;
+                                document.getElementById('inpUserDetailUsername').disabled = true;
+                                document.getElementById('inpUserDetailFullName').disabled = true;
 
-                                $('#btnBankDetailSave').prop('disabled', true);
-                                $('#btnBankDetailLock').prop('disabled', true);
+                                $('#btnUserDetailSave').prop('disabled', true);
+                                $('#btnUserDetailLock').prop('disabled', true);
 
                                 isLocked = true;
                             } else {
-                                $('#btnBankDetailUnlock').prop('disabled', true);
+                                $('#btnUserDetailUnlock').prop('disabled', true);
                             }
                         } else {
                             alert("No Data");
-                            window.location = "/Software/BankList";
+                            window.location = "/Software/UserList";
                         }
                     }
                 });
             } else {
                 alert("No Id Parameter Value");
-                window.location = "/Software/BankList";
+                window.location = "/Software/UserList";
             }
         }
 
-        // Bank Data Object
-        function bankDataObject() {
-            var bankObject = new Object();
-            bankObject.BankCode = document.getElementById('inpBankDetailBankCode').value;
-            bankObject.Bank = document.getElementById('inpBankDetailBank').value;
-            var data = JSON.stringify(bankObject);
+        // User Data Object
+        function userDataObject() {
+            var userObject = new Object();
+            userObject.UserName = document.getElementById('inpUserDetailUsername').value;
+            userObject.FullName = document.getElementById('inpUserDetailFullName').value;
+            var data = JSON.stringify(userObject);
             return data;
         }
 
-        // Save Bank
-        function saveBank() {
-            document.getElementById('btnBankDetailSave').innerHTML = "💾 Saving...";
-            $('#btnBankDetailSave').prop('disabled', true);
-            $('#btnBankDetailLock').prop('disabled', true);
-            $('#btnBankDetailUnlock').prop('disabled', true);
-            $('#btnBankDetailClose').prop('disabled', true);
+        // Save User
+        function saveUser() {
+            document.getElementById('btnUserDetailSave').innerHTML = "💾 Saving...";
+            $('#btnUserDetailSave').prop('disabled', true);
+            $('#btnUserDetailLock').prop('disabled', true);
+            $('#btnUserDetailUnlock').prop('disabled', true);
+            $('#btnUserDetailClose').prop('disabled', true);
 
             $.ajax({
                 type: "PUT",
-                url: '/api/bank/save/' + getURLParameterValue("id"),
+                url: '/api/user/save/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: bankDataObject(),
+                data: userDataObject(),
                 statusCode: {
                     200: function () {
                         toastr.success("Save Successful", "", { positionClass: "toast-bottom-right" });
@@ -194,61 +194,61 @@
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailSave').innerHTML = "💾 Save";
-                        $("#btnBankDetailSave").prop("disabled", false);
+                        document.getElementById('btnUserDetailSave').innerHTML = "💾 Save";
+                        $("#btnUserDetailSave").prop("disabled", false);
 
                         if (isLocked) {
-                            $("#btnBankDetailUnlock").prop("disabled", false);
+                            $("#btnUserDetailUnlock").prop("disabled", false);
                         } else {
-                            $("#btnBankDetailLock").prop("disabled", false);
+                            $("#btnUserDetailLock").prop("disabled", false);
                         }
 
-                        $("#btnBankDetailClose").prop("disabled", false);
+                        $("#btnUserDetailClose").prop("disabled", false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailSave').innerHTML = "💾 Save";
-                        $("#btnBankDetailSave").prop("disabled", false);
+                        document.getElementById('btnUserDetailSave').innerHTML = "💾 Save";
+                        $("#btnUserDetailSave").prop("disabled", false);
 
                         if (isLocked) {
-                            $("#btnBankDetailUnlock").prop("disabled", false);
+                            $("#btnUserDetailUnlock").prop("disabled", false);
                         } else {
-                            $("#btnBankDetailLock").prop("disabled", false);
+                            $("#btnUserDetailLock").prop("disabled", false);
                         }
 
-                        $("#btnBankDetailClose").prop("disabled", false);
+                        $("#btnUserDetailClose").prop("disabled", false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailSave').innerHTML = "💾 Save";
-                        $("#btnBankDetailSave").prop("disabled", false);
+                        document.getElementById('btnUserDetailSave').innerHTML = "💾 Save";
+                        $("#btnUserDetailSave").prop("disabled", false);
 
                         if (isLocked) {
-                            $("#btnBankDetailUnlock").prop("disabled", false);
+                            $("#btnUserDetailUnlock").prop("disabled", false);
                         } else {
-                            $("#btnBankDetailLock").prop("disabled", false);
+                            $("#btnUserDetailLock").prop("disabled", false);
                         }
 
-                        $("#btnBankDetailClose").prop("disabled", false);
+                        $("#btnUserDetailClose").prop("disabled", false);
                     }
                 },
             });
         }
 
-        // Lock Bank
-        function lockBank() {
-            document.getElementById('btnBankDetailLock').innerHTML = "🔒 Locking...";
-            $('#btnBankDetailSave').prop('disabled', true);
-            $('#btnBankDetailLock').prop('disabled', true);
-            $('#btnBankDetailUnlock').prop('disabled', true);
-            $('#btnBankDetailClose').prop('disabled', true);
+        // Lock User
+        function lockUser() {
+            document.getElementById('btnUserDetailLock').innerHTML = "🔒 Locking...";
+            $('#btnUserDetailSave').prop('disabled', true);
+            $('#btnUserDetailLock').prop('disabled', true);
+            $('#btnUserDetailUnlock').prop('disabled', true);
+            $('#btnUserDetailClose').prop('disabled', true);
 
             $.ajax({
                 type: "PUT",
-                url: '/api/bank/lock/' + getURLParameterValue("id"),
+                url: '/api/user/lock/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: bankDataObject(),
+                data: userDataObject(),
                 statusCode: {
                     200: function () {
                         toastr.success("Lock Successful", "", { positionClass: "toast-bottom-right" });
@@ -258,40 +258,40 @@
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailLock').innerHTML = "🔒 Lock";
-                        $('#btnBankDetailSave').prop('disabled', false);
-                        $('#btnBankDetailLock').prop('disabled', false);
-                        $('#btnBankDetailClose').prop('disabled', false);
+                        document.getElementById('btnUserDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnUserDetailSave').prop('disabled', false);
+                        $('#btnUserDetailLock').prop('disabled', false);
+                        $('#btnUserDetailClose').prop('disabled', false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailLock').innerHTML = "🔒 Lock";
-                        $('#btnBankDetailSave').prop('disabled', false);
-                        $('#btnBankDetailLock').prop('disabled', false);
-                        $('#btnBankDetailClose').prop('disabled', false);
+                        document.getElementById('btnUserDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnUserDetailSave').prop('disabled', false);
+                        $('#btnUserDetailLock').prop('disabled', false);
+                        $('#btnUserDetailClose').prop('disabled', false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailLock').innerHTML = "🔒 Lock";
-                        $('#btnBankDetailSave').prop('disabled', false);
-                        $('#btnBankDetailLock').prop('disabled', false);
-                        $('#btnBankDetailClose').prop('disabled', false);
+                        document.getElementById('btnUserDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnUserDetailSave').prop('disabled', false);
+                        $('#btnUserDetailLock').prop('disabled', false);
+                        $('#btnUserDetailClose').prop('disabled', false);
                     }
                 },
             });
         }
 
-        // Unlock Bank
-        function unlockBank() {
-            document.getElementById('btnBankDetailUnlock').innerHTML = "🔓 Unlocking...";
-            $('#btnBankDetailSave').prop('disabled', true);
-            $('#btnBankDetailLock').prop('disabled', true);
-            $('#btnBankDetailUnlock').prop('disabled', true);
-            $('#btnBankDetailClose').prop('disabled', true);
+        // Unlock User
+        function unlockUser() {
+            document.getElementById('btnUserDetailUnlock').innerHTML = "🔓 Unlocking...";
+            $('#btnUserDetailSave').prop('disabled', true);
+            $('#btnUserDetailLock').prop('disabled', true);
+            $('#btnUserDetailUnlock').prop('disabled', true);
+            $('#btnUserDetailClose').prop('disabled', true);
 
             $.ajax({
                 type: "PUT",
-                url: '/api/bank/unlock/' + getURLParameterValue("id"),
+                url: '/api/user/unlock/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 statusCode: {
@@ -303,39 +303,39 @@
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailUnlock').innerHTML = "🔓 Unlock";
-                        $('#btnBankDetailSave').prop('disabled', false);
-                        $('#btnBankDetailUnlock').prop('disabled', false);
-                        $('#btnBankDetailClose').prop('disabled', false);
+                        document.getElementById('btnUserDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnUserDetailSave').prop('disabled', false);
+                        $('#btnUserDetailUnlock').prop('disabled', false);
+                        $('#btnUserDetailClose').prop('disabled', false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailUnlock').innerHTML = "🔓 Unlock";
-                        $('#btnBankDetailSave').prop('disabled', false);
-                        $('#btnBankDetailUnlock').prop('disabled', false);
-                        $('#btnBankDetailClose').prop('disabled', false);
+                        document.getElementById('btnUserDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnUserDetailSave').prop('disabled', false);
+                        $('#btnUserDetailUnlock').prop('disabled', false);
+                        $('#btnUserDetailClose').prop('disabled', false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnBankDetailUnlock').innerHTML = "🔓 Unlock";
-                        $('#btnBankDetailSave').prop('disabled', false);
-                        $('#btnBankDetailUnlock').prop('disabled', false);
-                        $('#btnBankDetailClose').prop('disabled', false);
+                        document.getElementById('btnUserDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnUserDetailSave').prop('disabled', false);
+                        $('#btnUserDetailUnlock').prop('disabled', false);
+                        $('#btnUserDetailClose').prop('disabled', false);
                     }
                 }
             });
         }
 
-        // Close Bank
-        function closeBankDetail() {
-            window.location = '/Software/BankList';
+        // Close User
+        function closeUserDetail() {
+            window.location = '/Software/UserList';
         }
 
         // ============
         // On Load Page
         // ============
         $(document).ready(function () {
-            getBankDetailData();
+            getUserDetailData();
             setTimeout(() => {
                 Loader.hide();
             }, 1000);

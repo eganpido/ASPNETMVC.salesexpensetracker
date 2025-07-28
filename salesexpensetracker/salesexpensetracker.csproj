@@ -192,6 +192,7 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\home.css" />
+    <Content Include="Content\loader.css" />
     <Content Include="Content\nprogress.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\software.css" />
@@ -758,6 +759,7 @@
     <Content Include="Scripts\menu.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\npm.js" />
+    <Content Include="Scripts\loader.js" />
     <Content Include="Scripts\nprogress.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -817,6 +819,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiControllers\ApiMstUserController.cs" />
     <Compile Include="ApiControllers\ApiMstPayTypeController.cs" />
     <Compile Include="ApiControllers\ApiMstClientController.cs" />
     <Compile Include="ApiControllers\ApiMstBankController.cs" />
@@ -839,6 +842,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>setdb.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Entities\MstUser.cs" />
     <Compile Include="Entities\MstPayType.cs" />
     <Compile Include="Entities\MstClient.cs" />
     <Compile Include="Entities\MstBank.cs" />
@@ -894,6 +898,8 @@
     <Content Include="Views\Software\ExpenseList.cshtml" />
     <Content Include="Views\Software\PayTypeList.cshtml" />
     <Content Include="Views\Software\PayTypeDetail.cshtml" />
+    <Content Include="Views\Software\UserList.cshtml" />
+    <Content Include="Views\Software\UserDetail.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

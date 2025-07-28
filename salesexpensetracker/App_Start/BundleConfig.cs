@@ -15,7 +15,8 @@ namespace salesexpensetracker
                         "~/Content/font-awesome.min.css",
                         "~/Content/nprogress.css",
                         "~/Content/home.css",
-                        "~/Content/Site.css"));
+                        "~/Content/Site.css",
+                        "~/Scripts/loader.css"));
 
             // Landing page | Home - js
             bundles.Add(new ScriptBundle("~/Scripts/Home-js").Include(
@@ -25,7 +26,8 @@ namespace salesexpensetracker
                         "~/Scripts/custom-tooltip.js",
                         "~/Scripts/toastr.js",
                         "~/Scripts/menu.js",
-                        "~/Scripts/nprogress.js"));
+                        "~/Scripts/nprogress.js",
+                        "~/Scripts/loader.js"));
 
             // Software - css
             bundles.Add(new StyleBundle("~/Content/Software-css").Include(
@@ -34,6 +36,7 @@ namespace salesexpensetracker
                       "~/Content/font-awesome.min.css",
                       "~/Content/wijmo.min.css",
                       "~/Content/nprogress.css",
+                      "~/Content/loader.css",
                       "~/Content/software.css",
                       "~/Content/Site.css"));
 
@@ -43,6 +46,7 @@ namespace salesexpensetracker
                       "~/Content/toastr.css",
                       "~/Content/font-awesome.min.css",
                       "~/Content/nprogress.css",
+                      "~/Content/loader.css",
                       "~/Content/system.css"));
 
             // Software -js
@@ -52,6 +56,7 @@ namespace salesexpensetracker
                     "~/Scripts/bootstrap.min.js",
                     "~/Scripts/toastr.js",
                     "~/Scripts/nprogress.js",
+                    "~/Scripts/loader.js",
                     "~/Scripts/menu.js",
                     "~/Scripts/software.js",
                     "~/Scripts/jquery.slimscroll.min.js",

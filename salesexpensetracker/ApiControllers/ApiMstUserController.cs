@@ -13,39 +13,67 @@ using static iTextSharp.text.pdf.AcroFields;
 
 namespace salesexpensetracker.ApiControllers
 {
-    public class ApiMstBankController : ApiController
+    public class ApiMstUserController : ApiController
     {
         // ============
         // Data Context
         // ============
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
-        // List Banks
-        [Authorize, HttpGet, Route("api/bank/list")]
-        public List<Entities.MstBank> ListBank()
+        // List Users
+        [Authorize, HttpGet, Route("api/user/list")]
+        public List<Entities.MstUser> ListUser()
         {
-            var rawBanks = from d in db.MstBanks.OrderByDescending(d => d.Id)
+            var currentUser = from d in db.MstUsers
+                              where d.UserId == User.Identity.GetUserId()
+                              select d;
+
+            var rawUsers = from d in db.MstUsers.OrderByDescending(d => d.Id)
                            select new
                            {
                                Id = d.Id,
-                               BankCode = d.BankCode,
-                               Bank = d.Bank,
+                               UserId = d.UserId,
+                               UserName = d.UserName,
+                               Password = d.Password,
+                               FullName = d.FullName,
                                IsLocked = d.IsLocked,
                                CreatedById = d.CreatedById,
-                               CreatedBy = d.MstUser.FullName,
+                               CreatedBy = GetCreatedBy(d.CreatedById),
                                CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
                                UpdatedById = d.UpdatedById,
-                               UpdatedBy = d.MstUser1.FullName,
+                               UpdatedBy = GetUpdatedBy(d.UpdatedById),
                                UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
                            };
+            if (currentUser.FirstOrDefault().Id != 1)
+            {
+                rawUsers = from d in db.MstUsers.OrderByDescending(d => d.Id)
+                           where d.Id != 1
+                           select new
+                           {
+                               Id = d.Id,
+                               UserId = d.UserId,
+                               UserName = d.UserName,
+                               Password = d.Password,
+                               FullName = d.FullName,
+                               IsLocked = d.IsLocked,
+                               CreatedById = d.CreatedById,
+                               CreatedBy = GetCreatedBy(d.CreatedById),
+                               CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
+                               UpdatedById = d.UpdatedById,
+                               UpdatedBy = GetUpdatedBy(d.UpdatedById),
+                               UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
+                           };
+            }
 
-            // Step 2: Materialize and format in memory
-            var banks = rawBanks.ToList() // Execute query on database
-                                      .Select(d => new Entities.MstBank
+                // Step 2: Materialize and format in memory
+                var users = rawUsers.ToList() // Execute query on database
+                                      .Select(d => new Entities.MstUser
                                       {
                                           Id = d.Id,
-                                          BankCode = d.BankCode,
-                                          Bank = d.Bank,
+                                          UserId = d.UserId,
+                                          UserName = d.UserName,
+                                          Password = d.Password,
+                                          FullName = d.FullName,
                                           IsLocked = d.IsLocked,
                                           CreatedById = d.CreatedById,
                                           CreatedBy = d.CreatedBy,
@@ -56,95 +84,57 @@ namespace salesexpensetracker.ApiControllers
                                       })
                                       .ToList();
 
-            return banks;
+            return users;
         }
-
-        // Detail Bank
-        [Authorize, HttpGet, Route("api/bank/detail/{id}")]
-        public Entities.MstBank DetailBank(String id)
+        public String GetCreatedBy(int userId)
         {
-            var bank = (from d in db.MstBanks
-                        where d.Id == Convert.ToInt32(id)
-                        select new
-                        {
-                            d.Id,
-                            d.BankCode,
-                            d.Bank,
-                            d.IsLocked,
-                            d.CreatedById,
-                            CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
-                            d.CreatedDateTime,
-                            d.UpdatedById,
-                            UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
-                            d.UpdatedDateTime
-                        }).FirstOrDefault();
-
-            if (bank != null)
-            {
-                return new Entities.MstBank
-                {
-                    Id = bank.Id,
-                    BankCode = bank.BankCode,
-                    Bank = bank.Bank,
-                    IsLocked = bank.IsLocked,
-                    CreatedById = bank.CreatedById,
-                    CreatedBy = bank.CreatedBy,
-                    CreatedDateTime = bank.CreatedDateTime.ToShortDateString(),
-                    UpdatedById = bank.UpdatedById,
-                    UpdatedBy = bank.UpdatedBy,
-                    UpdatedDateTime = bank.UpdatedDateTime.ToShortDateString()
-                };
-            }
-
-            return null;
-
+            var user = from d in db.MstUsers
+                       where d.Id == userId
+                       select d;
+            return user.FirstOrDefault().FullName;
         }
-
-        // Add Bank
-        [Authorize, HttpPost, Route("api/bank/add")]
-        public HttpResponseMessage AddBank()
+        public String GetUpdatedBy(int userId)
         {
-            try
-            {
-                var currentUser = from d in db.MstUsers
-                                  where d.UserId == User.Identity.GetUserId()
-                                  select d;
-
-                if (currentUser.Any())
-                {
-                    var currentUserId = currentUser.FirstOrDefault().Id;
-
-                    Data.MstBank newBank = new Data.MstBank
-                    {
-                        BankCode = "NA",
-                        Bank = "NA",
-                        IsLocked = false,
-                        CreatedById = currentUserId,
-                        CreatedDateTime = DateTime.Now,
-                        UpdatedById = currentUserId,
-                        UpdatedDateTime = DateTime.Now,
-                    };
-
-                    db.MstBanks.InsertOnSubmit(newBank);
-                    db.SubmitChanges();
-
-                    return Request.CreateResponse(HttpStatusCode.OK, newBank.Id);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Theres no current user logged in.");
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
-            }
+            var user = from d in db.MstUsers
+                       where d.Id == userId
+                       select d;
+            return user.FirstOrDefault().FullName;
         }
 
-        // Save Bank
-        [Authorize, HttpPut, Route("api/bank/save/{id}")]
-        public HttpResponseMessage SaveBank(Entities.MstBank objBank, String id)
+        // Detail User
+        [Authorize, HttpGet, Route("api/user/detail/{id}")]
+        public Entities.MstUser DetailUser(String id)
+        {
+            int userId = Convert.ToInt32(id);
+
+            var dbUser = db.MstUsers.FirstOrDefault(d => d.Id == userId);
+
+            if (dbUser == null) return null;
+
+            var createdBy = GetCreatedBy(dbUser.CreatedById) ?? "";
+            var updatedBy = GetUpdatedBy(dbUser.UpdatedById) ?? "";
+
+            return new Entities.MstUser
+            {
+                Id = dbUser.Id,
+                UserId = dbUser.UserId,
+                UserName = dbUser.UserName,
+                Password = dbUser.Password,
+                FullName = dbUser.FullName,
+                IsLocked = dbUser.IsLocked,
+                CreatedById = dbUser.CreatedById,
+                CreatedBy = createdBy,
+                CreatedDateTime = dbUser.CreatedDateTime.ToShortDateString(),
+                UpdatedById = dbUser.UpdatedById,
+                UpdatedBy = updatedBy,
+                UpdatedDateTime = dbUser.UpdatedDateTime.ToShortDateString()
+            };
+
+        }
+
+        // Save User
+        [Authorize, HttpPut, Route("api/user/save/{id}")]
+        public HttpResponseMessage SaveUser(Entities.MstUser objUser, String id)
         {
             try
             {
@@ -156,19 +146,18 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var bank = from d in db.MstBanks
+                    var user = from d in db.MstUsers
                                where d.Id == Convert.ToInt32(id)
                                select d;
 
-                    if (bank.Any())
+                    if (user.Any())
                     {
-                        if (!bank.FirstOrDefault().IsLocked)
+                        if (!user.FirstOrDefault().IsLocked)
                         {
-                            var saveBank = bank.FirstOrDefault();
-                            saveBank.BankCode = objBank.BankCode;
-                            saveBank.Bank = objBank.Bank;
-                            saveBank.UpdatedById = currentUserId;
-                            saveBank.UpdatedDateTime = DateTime.Now;
+                            var saveUser = user.FirstOrDefault();
+                            saveUser.FullName = objUser.FullName;
+                            saveUser.UpdatedById = currentUserId;
+                            saveUser.UpdatedDateTime = DateTime.Now;
                             db.SubmitChanges();
 
                             return Request.CreateResponse(HttpStatusCode.OK);
@@ -195,9 +184,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Lock Bank
-        [Authorize, HttpPut, Route("api/bank/lock/{id}")]
-        public HttpResponseMessage LockBank(Entities.MstBank objBank, String id)
+        // Lock User
+        [Authorize, HttpPut, Route("api/user/lock/{id}")]
+        public HttpResponseMessage LockUser(Entities.MstUser objUser, String id)
         {
             try
             {
@@ -209,37 +198,24 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var bank = from d in db.MstBanks
+                    var user = from d in db.MstUsers
                                where d.Id == Convert.ToInt32(id)
                                select d;
 
-                    if (bank.Any())
+                    if (user.Any())
                     {
-                        if (!bank.FirstOrDefault().IsLocked)
+                        if (!user.FirstOrDefault().IsLocked)
                         {
-                            var bankByCode = from d in db.MstBanks
-                                             where d.BankCode.Equals(objBank.BankCode)
-                                             && d.IsLocked == true
-                                             select d;
+                            var lockUser = user.FirstOrDefault();
+                            lockUser.FullName = objUser.FullName;
+                            lockUser.IsLocked = true;
+                            lockUser.UpdatedById = currentUserId;
+                            lockUser.UpdatedDateTime = DateTime.Now;
 
-                            if (!bankByCode.Any())
-                            {
-                                var lockBank = bank.FirstOrDefault();
-                                lockBank.BankCode = objBank.BankCode;
-                                lockBank.Bank = objBank.Bank;
-                                lockBank.IsLocked = true;
-                                lockBank.UpdatedById = currentUserId;
-                                lockBank.UpdatedDateTime = DateTime.Now;
-
-                                db.SubmitChanges();
+                            db.SubmitChanges();
 
 
-                                return Request.CreateResponse(HttpStatusCode.OK);
-                            }
-                            else
-                            {
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Bank Code is already taken.");
-                            }
+                            return Request.CreateResponse(HttpStatusCode.OK);
                         }
                         else
                         {
@@ -263,9 +239,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Unlock Bank
-        [Authorize, HttpPut, Route("api/bank/unlock/{id}")]
-        public HttpResponseMessage UnlockBank(String id)
+        // Unlock User
+        [Authorize, HttpPut, Route("api/user/unlock/{id}")]
+        public HttpResponseMessage UnlockUser(String id)
         {
             try
             {
@@ -277,18 +253,18 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var bank = from d in db.MstBanks
+                    var user = from d in db.MstUsers
                                    where d.Id == Convert.ToInt32(id)
                                    select d;
 
-                    if (bank.Any())
+                    if (user.Any())
                     {
-                        if (bank.FirstOrDefault().IsLocked)
+                        if (user.FirstOrDefault().IsLocked)
                         {
-                            var unlockBank = bank.FirstOrDefault();
-                            unlockBank.IsLocked = false;
-                            unlockBank.UpdatedById = currentUserId;
-                            unlockBank.UpdatedDateTime = DateTime.Now;
+                            var unlockUser = user.FirstOrDefault();
+                            unlockUser.IsLocked = false;
+                            unlockUser.UpdatedById = currentUserId;
+                            unlockUser.UpdatedDateTime = DateTime.Now;
 
                             db.SubmitChanges();
 
@@ -316,8 +292,8 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Delete Bank
-        [Authorize, HttpDelete, Route("api/bank/delete/{id}")]
+        // Delete User
+        [Authorize, HttpDelete, Route("api/user/delete/{id}")]
         public HttpResponseMessage DeleteBank(String id)
         {
             try
@@ -330,13 +306,13 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var bank = from d in db.MstBanks
+                    var user = from d in db.MstUsers
                                    where d.Id == Convert.ToInt32(id)
                                    select d;
 
-                    if (bank.Any())
+                    if (user.Any())
                     {
-                        db.MstBanks.DeleteOnSubmit(bank.First());
+                        db.MstUsers.DeleteOnSubmit(user.First());
 
                         db.SubmitChanges();
 

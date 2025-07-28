@@ -96,7 +96,7 @@
     <script type="text/javascript">
         var Id = 0;
         function populateBank() {
-            NProgress.start();
+            Loader.show();
             // ✅ Destroy existing DataTable if already initialized
             if ($.fn.DataTable.isDataTable('#datagridList')) {
                 $('#datagridList').DataTable().clear().destroy();
@@ -278,8 +278,13 @@
         // On Load Page
         $(document).ready(function () {
             populateBank();
-            NProgress.done();
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
         });
     </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
 </body>
 </html>

@@ -190,3 +190,8 @@ div.dt-container div.dt-search input {
     display: inline-block;
     width: 350px;
 }
+h3 {
+    margin-top: 5rem;
+    margin-bottom: 2rem;
+}
+

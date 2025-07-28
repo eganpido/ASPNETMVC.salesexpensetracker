@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Title of the Page -->
-    <link rel="shortcut icon" href="~/Images/icon/liteclerkicon.ico">
-    <title>Liteclerk Register</title>
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Register</title>
 
     <!-- CSS StyleSheets-->
     @Styles.Render("~/Content/Home-css")
@@ -16,17 +16,11 @@
     <div id="o-wrapper" class="o-wrapper">
         <main class="o-content">
             @Html.Partial("_SoftwareHeader")
-            <section class="content-header">
-                <div class="container">
-                    <h3>
-                        Register User
-                    </h3>
-                    <p>
-                        <i class="fa fa-building-o fa-fw"></i> &nbsp; @ViewData["Company"] <br />
-                        <i class="fa fa-home fa-fw"></i> &nbsp; <a href="#" onclick="getUserBranches()" style="color: white;">@ViewData["Branch"]</a>
-                    </p>
-                </div>
-            </section>
+            <div class="container">
+                <h3>
+                    ✍️ Register User
+                </h3>
+            </div>
             <!-- Manage -->
             @Html.Partial("_AccountRegister")
             <!-- Footer -->
@@ -37,120 +31,6 @@
 
     @Scripts.Render("~/Scripts/Home-js")
     @Scripts.Render("~/bundles/jqueryval")
-    <script src='https://www.google.com/recaptcha/api.js'></script>
-    <script type="text/javascript">
-        // =================
-        // User Branch Combo
-        // =================
-        var cboUserBranches = new wijmo.input.ComboBox('#cboUserBranches');
-
-        // =========================
-        // Get Current User Branches
-        // =========================
-        function getUserBranches() {
-            $("#loadingUserBranches").show();
-            document.getElementById("loadingUserBranches").innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
-            $("#userBranchContent").hide();
-
-            $('#userBranchesModal').modal({ show: true, backdrop: 'static' });
-
-            document.getElementById('updateUserBranch').innerHTML = "<i class='fa fa-save fa-fw'></i> Update";
-            $("#updateUserBranch").prop("disabled", false);
-            $("#closeUserBranch").prop("disabled", false);
-
-            var userBranchesObservableArray = new wijmo.collections.ObservableArray();
-            $.ajax({
-                url: '/api/userBranch/list',
-                cache: false,
-                type: 'GET',
-                contentType: 'application/json; charset=utf-8',
-                success: function (userBranchesResults) {
-                    if (userBranchesResults.length > 0) {
-                        for (i = 0; i < userBranchesResults.length; i++) {
-                            userBranchesObservableArray.push({
-                                BranchId: userBranchesResults[i]["BranchId"],
-                                Branch: userBranchesResults[i]["Branch"]
-                            });
-                        }
-                    }
-
-                    var currentBranch = "@ViewData["BranchId"]";
-                    cboUserBranches.dispose();
-                    cboUserBranches = new wijmo.input.ComboBox('#cboUserBranches', {
-                        isEditable: false,
-                        placeholder: "Select Branches",
-                        itemsSource: userBranchesObservableArray,
-                        displayMemberPath: "Branch",
-                        selectedValuePath: "BranchId",
-                        selectedValue: currentBranch
-                    });
-
-                    setTimeout(function () {
-                        $("#loadingUserBranches").hide();
-                        $("#userBranchContent").show();
-                    }, 500)
-                }
-            });
-        }
-
-        // ==========================
-        // Update Current User Branch
-        // ==========================
-        function updateUserBranchOnclick() {
-            document.getElementById('updateUserBranch').innerHTML = "<i class='fa fa-spinner fa-spin'></i> Updating";
-            $("#updateUserBranch").prop("disabled", true);
-            $("#closeUserBranch").prop("disabled", true);
-
-            var userBranchObject = new Object();
-            userBranchObject.BranchId = cboUserBranches.selectedValue;
-            var userBranchData = JSON.stringify(userBranchObject);
-
-            $.ajax({
-                type: "PUT",
-                url: '/api/userBranch/update',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: userBranchData,
-                statusCode: {
-                    200: function () {
-                        toastr.success("Update Successful");
-                        window.setTimeout(function () {
-                            location.reload()
-                        }, 1000);
-                    },
-                    404: function () {
-                        toastr.error("Not Found");
-                        document.getElementById('updateUserBranch').innerHTML = "<i class='fa fa-save fa-fw'></i> Update";
-                        $("#updateUserBranch").prop("disabled", false);
-                        $("#closeUserBranch").prop("disabled", false);
-                    },
-                    500: function () {
-                        toastr.error("Bad Request");
-                        document.getElementById('updateUserBranch').innerHTML = "<i class='fa fa-save fa-fw'></i> Update";
-                        $("#updateUserBranch").prop("disabled", false);
-                        $("#closeUserBranch").prop("disabled", false);
-                    }
-                }
-            });
-        }
-    </script>
-    <script type="text/javascript">
-        // ======================
-        // Side Bar Menu Settings
-        // ======================
-        var slideLeft = new Menu({
-            wrapper: '#o-wrapper',
-            type: 'slide-left',
-            menuOpenerClass: '.c-button',
-            maskId: '#c-mask'
-        });
-
-        var slideLeftBtn = document.querySelector('#c-button--slide-left');
-
-        slideLeftBtn.addEventListener('click', function (e) {
-            e.preventDefault;
-            slideLeft.open();
-        });
-    </script>
+    @*<script src='https://www.google.com/recaptcha/api.js'></script>*@
 </body>
 </html>

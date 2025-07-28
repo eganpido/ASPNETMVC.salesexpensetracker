@@ -162,39 +162,6 @@
       <Association Name="MstUser_MstSupplier1" Member="MstUser1" ThisKey="UpdatedById" OtherKey="Id" Type="MstUser" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.MstUser" Member="MstUsers">
-    <Type Name="MstUser">
-      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="UserId" Type="System.String" DbType="NVarChar(128)" CanBeNull="true" />
-      <Column Name="UserName" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="Password" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
-      <Column Name="FullName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
-      <Column Name="IsLocked" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
-      <Column Name="CreatedById" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="CreatedDateTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
-      <Column Name="UpdatedById" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="UpdatedDateTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
-      <Association Name="MstUser_MstBank" Member="MstBanks" ThisKey="Id" OtherKey="CreatedById" Type="MstBank" />
-      <Association Name="MstUser_MstBank1" Member="MstBanks1" ThisKey="Id" OtherKey="UpdatedById" Type="MstBank" />
-      <Association Name="MstUser_MstClient" Member="MstClients" ThisKey="Id" OtherKey="CreatedById" Type="MstClient" />
-      <Association Name="MstUser_MstClient1" Member="MstClients1" ThisKey="Id" OtherKey="UpdatedById" Type="MstClient" />
-      <Association Name="MstUser_MstExpense" Member="MstExpenses" ThisKey="Id" OtherKey="CreatedById" Type="MstExpense" />
-      <Association Name="MstUser_MstExpense1" Member="MstExpenses1" ThisKey="Id" OtherKey="UpdatedById" Type="MstExpense" />
-      <Association Name="MstUser_MstPayType" Member="MstPayTypes" ThisKey="Id" OtherKey="CreatedById" Type="MstPayType" />
-      <Association Name="MstUser_MstPayType1" Member="MstPayTypes1" ThisKey="Id" OtherKey="UpdatedById" Type="MstPayType" />
-      <Association Name="MstUser_MstProduct" Member="MstProducts" ThisKey="Id" OtherKey="CreatedById" Type="MstProduct" />
-      <Association Name="MstUser_MstProduct1" Member="MstProducts1" ThisKey="Id" OtherKey="UpdatedById" Type="MstProduct" />
-      <Association Name="MstUser_MstSupplier" Member="MstSuppliers" ThisKey="Id" OtherKey="CreatedById" Type="MstSupplier" />
-      <Association Name="MstUser_MstSupplier1" Member="MstSuppliers1" ThisKey="Id" OtherKey="UpdatedById" Type="MstSupplier" />
-      <Association Name="MstUser_MstUserIPAddress" Member="MstUserIPAddresses" ThisKey="Id" OtherKey="UserId" Type="MstUserIPAddress" />
-      <Association Name="MstUser_TrnCollection" Member="TrnCollections" ThisKey="Id" OtherKey="CreatedById" Type="TrnCollection" />
-      <Association Name="MstUser_TrnCollection1" Member="TrnCollections1" ThisKey="Id" OtherKey="UpdatedById" Type="TrnCollection" />
-      <Association Name="MstUser_TrnDisbursement" Member="TrnDisbursements" ThisKey="Id" OtherKey="CreatedById" Type="TrnDisbursement" />
-      <Association Name="MstUser_TrnDisbursement1" Member="TrnDisbursements1" ThisKey="Id" OtherKey="UpdatedById" Type="TrnDisbursement" />
-      <Association Name="MstUser_TrnSalesInvoice" Member="TrnSalesInvoices" ThisKey="Id" OtherKey="CreatedById" Type="TrnSalesInvoice" />
-      <Association Name="MstUser_TrnSalesInvoice1" Member="TrnSalesInvoices1" ThisKey="Id" OtherKey="UpdatedById" Type="TrnSalesInvoice" />
-    </Type>
-  </Table>
   <Table Name="dbo.MstUserIPAddress" Member="MstUserIPAddresses">
     <Type Name="MstUserIPAddress">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -295,6 +262,39 @@
       <Association Name="MstClient_TrnSalesInvoice" Member="MstClient" ThisKey="ClientId" OtherKey="Id" Type="MstClient" IsForeignKey="true" />
       <Association Name="MstUser_TrnSalesInvoice" Member="MstUser" ThisKey="CreatedById" OtherKey="Id" Type="MstUser" IsForeignKey="true" />
       <Association Name="MstUser_TrnSalesInvoice1" Member="MstUser1" ThisKey="UpdatedById" OtherKey="Id" Type="MstUser" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MstUser" Member="MstUsers">
+    <Type Name="MstUser">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="UserId" Type="System.String" DbType="NVarChar(128)" CanBeNull="true" />
+      <Column Name="UserName" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Password" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="FullName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="IsLocked" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedById" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedDateTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="UpdatedById" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UpdatedDateTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="MstUser_MstBank" Member="MstBanks" ThisKey="Id" OtherKey="CreatedById" Type="MstBank" />
+      <Association Name="MstUser_MstBank1" Member="MstBanks1" ThisKey="Id" OtherKey="UpdatedById" Type="MstBank" />
+      <Association Name="MstUser_MstClient" Member="MstClients" ThisKey="Id" OtherKey="CreatedById" Type="MstClient" />
+      <Association Name="MstUser_MstClient1" Member="MstClients1" ThisKey="Id" OtherKey="UpdatedById" Type="MstClient" />
+      <Association Name="MstUser_MstExpense" Member="MstExpenses" ThisKey="Id" OtherKey="CreatedById" Type="MstExpense" />
+      <Association Name="MstUser_MstExpense1" Member="MstExpenses1" ThisKey="Id" OtherKey="UpdatedById" Type="MstExpense" />
+      <Association Name="MstUser_MstPayType" Member="MstPayTypes" ThisKey="Id" OtherKey="CreatedById" Type="MstPayType" />
+      <Association Name="MstUser_MstPayType1" Member="MstPayTypes1" ThisKey="Id" OtherKey="UpdatedById" Type="MstPayType" />
+      <Association Name="MstUser_MstProduct" Member="MstProducts" ThisKey="Id" OtherKey="CreatedById" Type="MstProduct" />
+      <Association Name="MstUser_MstProduct1" Member="MstProducts1" ThisKey="Id" OtherKey="UpdatedById" Type="MstProduct" />
+      <Association Name="MstUser_MstSupplier" Member="MstSuppliers" ThisKey="Id" OtherKey="CreatedById" Type="MstSupplier" />
+      <Association Name="MstUser_MstSupplier1" Member="MstSuppliers1" ThisKey="Id" OtherKey="UpdatedById" Type="MstSupplier" />
+      <Association Name="MstUser_MstUserIPAddress" Member="MstUserIPAddresses" ThisKey="Id" OtherKey="UserId" Type="MstUserIPAddress" />
+      <Association Name="MstUser_TrnCollection" Member="TrnCollections" ThisKey="Id" OtherKey="CreatedById" Type="TrnCollection" />
+      <Association Name="MstUser_TrnCollection1" Member="TrnCollections1" ThisKey="Id" OtherKey="UpdatedById" Type="TrnCollection" />
+      <Association Name="MstUser_TrnDisbursement" Member="TrnDisbursements" ThisKey="Id" OtherKey="CreatedById" Type="TrnDisbursement" />
+      <Association Name="MstUser_TrnDisbursement1" Member="TrnDisbursements1" ThisKey="Id" OtherKey="UpdatedById" Type="TrnDisbursement" />
+      <Association Name="MstUser_TrnSalesInvoice" Member="TrnSalesInvoices" ThisKey="Id" OtherKey="CreatedById" Type="TrnSalesInvoice" />
+      <Association Name="MstUser_TrnSalesInvoice1" Member="TrnSalesInvoices1" ThisKey="Id" OtherKey="UpdatedById" Type="TrnSalesInvoice" />
     </Type>
   </Table>
 </Database>

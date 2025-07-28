@@ -66,9 +66,6 @@ namespace salesexpensetracker.Data
     partial void InsertMstSupplier(MstSupplier instance);
     partial void UpdateMstSupplier(MstSupplier instance);
     partial void DeleteMstSupplier(MstSupplier instance);
-    partial void InsertMstUser(MstUser instance);
-    partial void UpdateMstUser(MstUser instance);
-    partial void DeleteMstUser(MstUser instance);
     partial void InsertMstUserIPAddress(MstUserIPAddress instance);
     partial void UpdateMstUserIPAddress(MstUserIPAddress instance);
     partial void DeleteMstUserIPAddress(MstUserIPAddress instance);
@@ -87,6 +84,9 @@ namespace salesexpensetracker.Data
     partial void InsertTrnSalesInvoice(TrnSalesInvoice instance);
     partial void UpdateTrnSalesInvoice(TrnSalesInvoice instance);
     partial void DeleteTrnSalesInvoice(TrnSalesInvoice instance);
+    partial void InsertMstUser(MstUser instance);
+    partial void UpdateMstUser(MstUser instance);
+    partial void DeleteMstUser(MstUser instance);
         #endregion
         public setdbDataContext() :
                 base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString, mappingSource)
@@ -213,14 +213,6 @@ namespace salesexpensetracker.Data
 			}
 		}
 		
-		public System.Data.Linq.Table<MstUser> MstUsers
-		{
-			get
-			{
-				return this.GetTable<MstUser>();
-			}
-		}
-		
 		public System.Data.Linq.Table<MstUserIPAddress> MstUserIPAddresses
 		{
 			get
@@ -266,6 +258,14 @@ namespace salesexpensetracker.Data
 			get
 			{
 				return this.GetTable<TrnSalesInvoice>();
+			}
+		}
+		
+		public System.Data.Linq.Table<MstUser> MstUsers
+		{
+			get
+			{
+				return this.GetTable<MstUser>();
 			}
 		}
 	}
@@ -3823,816 +3823,6 @@ namespace salesexpensetracker.Data
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.MstUser")]
-	public partial class MstUser : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _Id;
-		
-		private string _UserId;
-		
-		private string _UserName;
-		
-		private string _Password;
-		
-		private string _FullName;
-		
-		private bool _IsLocked;
-		
-		private int _CreatedById;
-		
-		private System.DateTime _CreatedDateTime;
-		
-		private int _UpdatedById;
-		
-		private System.DateTime _UpdatedDateTime;
-		
-		private EntitySet<MstBank> _MstBanks;
-		
-		private EntitySet<MstBank> _MstBanks1;
-		
-		private EntitySet<MstClient> _MstClients;
-		
-		private EntitySet<MstClient> _MstClients1;
-		
-		private EntitySet<MstExpense> _MstExpenses;
-		
-		private EntitySet<MstExpense> _MstExpenses1;
-		
-		private EntitySet<MstPayType> _MstPayTypes;
-		
-		private EntitySet<MstPayType> _MstPayTypes1;
-		
-		private EntitySet<MstProduct> _MstProducts;
-		
-		private EntitySet<MstProduct> _MstProducts1;
-		
-		private EntitySet<MstSupplier> _MstSuppliers;
-		
-		private EntitySet<MstSupplier> _MstSuppliers1;
-		
-		private EntitySet<MstUserIPAddress> _MstUserIPAddresses;
-		
-		private EntitySet<TrnCollection> _TrnCollections;
-		
-		private EntitySet<TrnCollection> _TrnCollections1;
-		
-		private EntitySet<TrnDisbursement> _TrnDisbursements;
-		
-		private EntitySet<TrnDisbursement> _TrnDisbursements1;
-		
-		private EntitySet<TrnSalesInvoice> _TrnSalesInvoices;
-		
-		private EntitySet<TrnSalesInvoice> _TrnSalesInvoices1;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIdChanging(int value);
-    partial void OnIdChanged();
-    partial void OnUserIdChanging(string value);
-    partial void OnUserIdChanged();
-    partial void OnUserNameChanging(string value);
-    partial void OnUserNameChanged();
-    partial void OnPasswordChanging(string value);
-    partial void OnPasswordChanged();
-    partial void OnFullNameChanging(string value);
-    partial void OnFullNameChanged();
-    partial void OnIsLockedChanging(bool value);
-    partial void OnIsLockedChanged();
-    partial void OnCreatedByIdChanging(int value);
-    partial void OnCreatedByIdChanged();
-    partial void OnCreatedDateTimeChanging(System.DateTime value);
-    partial void OnCreatedDateTimeChanged();
-    partial void OnUpdatedByIdChanging(int value);
-    partial void OnUpdatedByIdChanged();
-    partial void OnUpdatedDateTimeChanging(System.DateTime value);
-    partial void OnUpdatedDateTimeChanged();
-    #endregion
-		
-		public MstUser()
-		{
-			this._MstBanks = new EntitySet<MstBank>(new Action<MstBank>(this.attach_MstBanks), new Action<MstBank>(this.detach_MstBanks));
-			this._MstBanks1 = new EntitySet<MstBank>(new Action<MstBank>(this.attach_MstBanks1), new Action<MstBank>(this.detach_MstBanks1));
-			this._MstClients = new EntitySet<MstClient>(new Action<MstClient>(this.attach_MstClients), new Action<MstClient>(this.detach_MstClients));
-			this._MstClients1 = new EntitySet<MstClient>(new Action<MstClient>(this.attach_MstClients1), new Action<MstClient>(this.detach_MstClients1));
-			this._MstExpenses = new EntitySet<MstExpense>(new Action<MstExpense>(this.attach_MstExpenses), new Action<MstExpense>(this.detach_MstExpenses));
-			this._MstExpenses1 = new EntitySet<MstExpense>(new Action<MstExpense>(this.attach_MstExpenses1), new Action<MstExpense>(this.detach_MstExpenses1));
-			this._MstPayTypes = new EntitySet<MstPayType>(new Action<MstPayType>(this.attach_MstPayTypes), new Action<MstPayType>(this.detach_MstPayTypes));
-			this._MstPayTypes1 = new EntitySet<MstPayType>(new Action<MstPayType>(this.attach_MstPayTypes1), new Action<MstPayType>(this.detach_MstPayTypes1));
-			this._MstProducts = new EntitySet<MstProduct>(new Action<MstProduct>(this.attach_MstProducts), new Action<MstProduct>(this.detach_MstProducts));
-			this._MstProducts1 = new EntitySet<MstProduct>(new Action<MstProduct>(this.attach_MstProducts1), new Action<MstProduct>(this.detach_MstProducts1));
-			this._MstSuppliers = new EntitySet<MstSupplier>(new Action<MstSupplier>(this.attach_MstSuppliers), new Action<MstSupplier>(this.detach_MstSuppliers));
-			this._MstSuppliers1 = new EntitySet<MstSupplier>(new Action<MstSupplier>(this.attach_MstSuppliers1), new Action<MstSupplier>(this.detach_MstSuppliers1));
-			this._MstUserIPAddresses = new EntitySet<MstUserIPAddress>(new Action<MstUserIPAddress>(this.attach_MstUserIPAddresses), new Action<MstUserIPAddress>(this.detach_MstUserIPAddresses));
-			this._TrnCollections = new EntitySet<TrnCollection>(new Action<TrnCollection>(this.attach_TrnCollections), new Action<TrnCollection>(this.detach_TrnCollections));
-			this._TrnCollections1 = new EntitySet<TrnCollection>(new Action<TrnCollection>(this.attach_TrnCollections1), new Action<TrnCollection>(this.detach_TrnCollections1));
-			this._TrnDisbursements = new EntitySet<TrnDisbursement>(new Action<TrnDisbursement>(this.attach_TrnDisbursements), new Action<TrnDisbursement>(this.detach_TrnDisbursements));
-			this._TrnDisbursements1 = new EntitySet<TrnDisbursement>(new Action<TrnDisbursement>(this.attach_TrnDisbursements1), new Action<TrnDisbursement>(this.detach_TrnDisbursements1));
-			this._TrnSalesInvoices = new EntitySet<TrnSalesInvoice>(new Action<TrnSalesInvoice>(this.attach_TrnSalesInvoices), new Action<TrnSalesInvoice>(this.detach_TrnSalesInvoices));
-			this._TrnSalesInvoices1 = new EntitySet<TrnSalesInvoice>(new Action<TrnSalesInvoice>(this.attach_TrnSalesInvoices1), new Action<TrnSalesInvoice>(this.detach_TrnSalesInvoices1));
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int Id
-		{
-			get
-			{
-				return this._Id;
-			}
-			set
-			{
-				if ((this._Id != value))
-				{
-					this.OnIdChanging(value);
-					this.SendPropertyChanging();
-					this._Id = value;
-					this.SendPropertyChanged("Id");
-					this.OnIdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="NVarChar(128)")]
-		public string UserId
-		{
-			get
-			{
-				return this._UserId;
-			}
-			set
-			{
-				if ((this._UserId != value))
-				{
-					this.OnUserIdChanging(value);
-					this.SendPropertyChanging();
-					this._UserId = value;
-					this.SendPropertyChanged("UserId");
-					this.OnUserIdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserName", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string UserName
-		{
-			get
-			{
-				return this._UserName;
-			}
-			set
-			{
-				if ((this._UserName != value))
-				{
-					this.OnUserNameChanging(value);
-					this.SendPropertyChanging();
-					this._UserName = value;
-					this.SendPropertyChanged("UserName");
-					this.OnUserNameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Password", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
-		public string Password
-		{
-			get
-			{
-				return this._Password;
-			}
-			set
-			{
-				if ((this._Password != value))
-				{
-					this.OnPasswordChanging(value);
-					this.SendPropertyChanging();
-					this._Password = value;
-					this.SendPropertyChanged("Password");
-					this.OnPasswordChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FullName", DbType="NVarChar(100) NOT NULL", CanBeNull=false)]
-		public string FullName
-		{
-			get
-			{
-				return this._FullName;
-			}
-			set
-			{
-				if ((this._FullName != value))
-				{
-					this.OnFullNameChanging(value);
-					this.SendPropertyChanging();
-					this._FullName = value;
-					this.SendPropertyChanged("FullName");
-					this.OnFullNameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IsLocked", DbType="Bit NOT NULL")]
-		public bool IsLocked
-		{
-			get
-			{
-				return this._IsLocked;
-			}
-			set
-			{
-				if ((this._IsLocked != value))
-				{
-					this.OnIsLockedChanging(value);
-					this.SendPropertyChanging();
-					this._IsLocked = value;
-					this.SendPropertyChanged("IsLocked");
-					this.OnIsLockedChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CreatedById", DbType="Int NOT NULL")]
-		public int CreatedById
-		{
-			get
-			{
-				return this._CreatedById;
-			}
-			set
-			{
-				if ((this._CreatedById != value))
-				{
-					this.OnCreatedByIdChanging(value);
-					this.SendPropertyChanging();
-					this._CreatedById = value;
-					this.SendPropertyChanged("CreatedById");
-					this.OnCreatedByIdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CreatedDateTime", DbType="DateTime NOT NULL")]
-		public System.DateTime CreatedDateTime
-		{
-			get
-			{
-				return this._CreatedDateTime;
-			}
-			set
-			{
-				if ((this._CreatedDateTime != value))
-				{
-					this.OnCreatedDateTimeChanging(value);
-					this.SendPropertyChanging();
-					this._CreatedDateTime = value;
-					this.SendPropertyChanged("CreatedDateTime");
-					this.OnCreatedDateTimeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UpdatedById", DbType="Int NOT NULL")]
-		public int UpdatedById
-		{
-			get
-			{
-				return this._UpdatedById;
-			}
-			set
-			{
-				if ((this._UpdatedById != value))
-				{
-					this.OnUpdatedByIdChanging(value);
-					this.SendPropertyChanging();
-					this._UpdatedById = value;
-					this.SendPropertyChanged("UpdatedById");
-					this.OnUpdatedByIdChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UpdatedDateTime", DbType="DateTime NOT NULL")]
-		public System.DateTime UpdatedDateTime
-		{
-			get
-			{
-				return this._UpdatedDateTime;
-			}
-			set
-			{
-				if ((this._UpdatedDateTime != value))
-				{
-					this.OnUpdatedDateTimeChanging(value);
-					this.SendPropertyChanging();
-					this._UpdatedDateTime = value;
-					this.SendPropertyChanged("UpdatedDateTime");
-					this.OnUpdatedDateTimeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstBank", Storage="_MstBanks", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<MstBank> MstBanks
-		{
-			get
-			{
-				return this._MstBanks;
-			}
-			set
-			{
-				this._MstBanks.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstBank1", Storage="_MstBanks1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<MstBank> MstBanks1
-		{
-			get
-			{
-				return this._MstBanks1;
-			}
-			set
-			{
-				this._MstBanks1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstClient", Storage="_MstClients", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<MstClient> MstClients
-		{
-			get
-			{
-				return this._MstClients;
-			}
-			set
-			{
-				this._MstClients.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstClient1", Storage="_MstClients1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<MstClient> MstClients1
-		{
-			get
-			{
-				return this._MstClients1;
-			}
-			set
-			{
-				this._MstClients1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstExpense", Storage="_MstExpenses", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<MstExpense> MstExpenses
-		{
-			get
-			{
-				return this._MstExpenses;
-			}
-			set
-			{
-				this._MstExpenses.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstExpense1", Storage="_MstExpenses1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<MstExpense> MstExpenses1
-		{
-			get
-			{
-				return this._MstExpenses1;
-			}
-			set
-			{
-				this._MstExpenses1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstPayType", Storage="_MstPayTypes", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<MstPayType> MstPayTypes
-		{
-			get
-			{
-				return this._MstPayTypes;
-			}
-			set
-			{
-				this._MstPayTypes.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstPayType1", Storage="_MstPayTypes1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<MstPayType> MstPayTypes1
-		{
-			get
-			{
-				return this._MstPayTypes1;
-			}
-			set
-			{
-				this._MstPayTypes1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstProduct", Storage="_MstProducts", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<MstProduct> MstProducts
-		{
-			get
-			{
-				return this._MstProducts;
-			}
-			set
-			{
-				this._MstProducts.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstProduct1", Storage="_MstProducts1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<MstProduct> MstProducts1
-		{
-			get
-			{
-				return this._MstProducts1;
-			}
-			set
-			{
-				this._MstProducts1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstSupplier", Storage="_MstSuppliers", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<MstSupplier> MstSuppliers
-		{
-			get
-			{
-				return this._MstSuppliers;
-			}
-			set
-			{
-				this._MstSuppliers.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstSupplier1", Storage="_MstSuppliers1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<MstSupplier> MstSuppliers1
-		{
-			get
-			{
-				return this._MstSuppliers1;
-			}
-			set
-			{
-				this._MstSuppliers1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstUserIPAddress", Storage="_MstUserIPAddresses", ThisKey="Id", OtherKey="UserId")]
-		public EntitySet<MstUserIPAddress> MstUserIPAddresses
-		{
-			get
-			{
-				return this._MstUserIPAddresses;
-			}
-			set
-			{
-				this._MstUserIPAddresses.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnCollection", Storage="_TrnCollections", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<TrnCollection> TrnCollections
-		{
-			get
-			{
-				return this._TrnCollections;
-			}
-			set
-			{
-				this._TrnCollections.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnCollection1", Storage="_TrnCollections1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<TrnCollection> TrnCollections1
-		{
-			get
-			{
-				return this._TrnCollections1;
-			}
-			set
-			{
-				this._TrnCollections1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnDisbursement", Storage="_TrnDisbursements", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<TrnDisbursement> TrnDisbursements
-		{
-			get
-			{
-				return this._TrnDisbursements;
-			}
-			set
-			{
-				this._TrnDisbursements.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnDisbursement1", Storage="_TrnDisbursements1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<TrnDisbursement> TrnDisbursements1
-		{
-			get
-			{
-				return this._TrnDisbursements1;
-			}
-			set
-			{
-				this._TrnDisbursements1.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnSalesInvoice", Storage="_TrnSalesInvoices", ThisKey="Id", OtherKey="CreatedById")]
-		public EntitySet<TrnSalesInvoice> TrnSalesInvoices
-		{
-			get
-			{
-				return this._TrnSalesInvoices;
-			}
-			set
-			{
-				this._TrnSalesInvoices.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnSalesInvoice1", Storage="_TrnSalesInvoices1", ThisKey="Id", OtherKey="UpdatedById")]
-		public EntitySet<TrnSalesInvoice> TrnSalesInvoices1
-		{
-			get
-			{
-				return this._TrnSalesInvoices1;
-			}
-			set
-			{
-				this._TrnSalesInvoices1.Assign(value);
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_MstBanks(MstBank entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_MstBanks(MstBank entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_MstBanks1(MstBank entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_MstBanks1(MstBank entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-		
-		private void attach_MstClients(MstClient entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_MstClients(MstClient entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_MstClients1(MstClient entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_MstClients1(MstClient entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-		
-		private void attach_MstExpenses(MstExpense entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_MstExpenses(MstExpense entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_MstExpenses1(MstExpense entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_MstExpenses1(MstExpense entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-		
-		private void attach_MstPayTypes(MstPayType entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_MstPayTypes(MstPayType entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_MstPayTypes1(MstPayType entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_MstPayTypes1(MstPayType entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-		
-		private void attach_MstProducts(MstProduct entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_MstProducts(MstProduct entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_MstProducts1(MstProduct entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_MstProducts1(MstProduct entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-		
-		private void attach_MstSuppliers(MstSupplier entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_MstSuppliers(MstSupplier entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_MstSuppliers1(MstSupplier entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_MstSuppliers1(MstSupplier entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-		
-		private void attach_MstUserIPAddresses(MstUserIPAddress entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_MstUserIPAddresses(MstUserIPAddress entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_TrnCollections(TrnCollection entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_TrnCollections(TrnCollection entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_TrnCollections1(TrnCollection entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_TrnCollections1(TrnCollection entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-		
-		private void attach_TrnDisbursements(TrnDisbursement entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_TrnDisbursements(TrnDisbursement entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_TrnDisbursements1(TrnDisbursement entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_TrnDisbursements1(TrnDisbursement entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-		
-		private void attach_TrnSalesInvoices(TrnSalesInvoice entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = this;
-		}
-		
-		private void detach_TrnSalesInvoices(TrnSalesInvoice entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser = null;
-		}
-		
-		private void attach_TrnSalesInvoices1(TrnSalesInvoice entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = this;
-		}
-		
-		private void detach_TrnSalesInvoices1(TrnSalesInvoice entity)
-		{
-			this.SendPropertyChanging();
-			entity.MstUser1 = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.MstUserIPAddress")]
 	public partial class MstUserIPAddress : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -7052,6 +6242,816 @@ namespace salesexpensetracker.Data
 		{
 			this.SendPropertyChanging();
 			entity.TrnSalesInvoice = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.MstUser")]
+	public partial class MstUser : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _Id;
+		
+		private string _UserId;
+		
+		private string _UserName;
+		
+		private string _Password;
+		
+		private string _FullName;
+		
+		private bool _IsLocked;
+		
+		private int _CreatedById;
+		
+		private System.DateTime _CreatedDateTime;
+		
+		private int _UpdatedById;
+		
+		private System.DateTime _UpdatedDateTime;
+		
+		private EntitySet<MstBank> _MstBanks;
+		
+		private EntitySet<MstBank> _MstBanks1;
+		
+		private EntitySet<MstClient> _MstClients;
+		
+		private EntitySet<MstClient> _MstClients1;
+		
+		private EntitySet<MstExpense> _MstExpenses;
+		
+		private EntitySet<MstExpense> _MstExpenses1;
+		
+		private EntitySet<MstPayType> _MstPayTypes;
+		
+		private EntitySet<MstPayType> _MstPayTypes1;
+		
+		private EntitySet<MstProduct> _MstProducts;
+		
+		private EntitySet<MstProduct> _MstProducts1;
+		
+		private EntitySet<MstSupplier> _MstSuppliers;
+		
+		private EntitySet<MstSupplier> _MstSuppliers1;
+		
+		private EntitySet<MstUserIPAddress> _MstUserIPAddresses;
+		
+		private EntitySet<TrnCollection> _TrnCollections;
+		
+		private EntitySet<TrnCollection> _TrnCollections1;
+		
+		private EntitySet<TrnDisbursement> _TrnDisbursements;
+		
+		private EntitySet<TrnDisbursement> _TrnDisbursements1;
+		
+		private EntitySet<TrnSalesInvoice> _TrnSalesInvoices;
+		
+		private EntitySet<TrnSalesInvoice> _TrnSalesInvoices1;
+		
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdChanging(int value);
+    partial void OnIdChanged();
+    partial void OnUserIdChanging(string value);
+    partial void OnUserIdChanged();
+    partial void OnUserNameChanging(string value);
+    partial void OnUserNameChanged();
+    partial void OnPasswordChanging(string value);
+    partial void OnPasswordChanged();
+    partial void OnFullNameChanging(string value);
+    partial void OnFullNameChanged();
+    partial void OnIsLockedChanging(bool value);
+    partial void OnIsLockedChanged();
+    partial void OnCreatedByIdChanging(int value);
+    partial void OnCreatedByIdChanged();
+    partial void OnCreatedDateTimeChanging(System.DateTime value);
+    partial void OnCreatedDateTimeChanged();
+    partial void OnUpdatedByIdChanging(int value);
+    partial void OnUpdatedByIdChanged();
+    partial void OnUpdatedDateTimeChanging(System.DateTime value);
+    partial void OnUpdatedDateTimeChanged();
+    #endregion
+		
+		public MstUser()
+		{
+			this._MstBanks = new EntitySet<MstBank>(new Action<MstBank>(this.attach_MstBanks), new Action<MstBank>(this.detach_MstBanks));
+			this._MstBanks1 = new EntitySet<MstBank>(new Action<MstBank>(this.attach_MstBanks1), new Action<MstBank>(this.detach_MstBanks1));
+			this._MstClients = new EntitySet<MstClient>(new Action<MstClient>(this.attach_MstClients), new Action<MstClient>(this.detach_MstClients));
+			this._MstClients1 = new EntitySet<MstClient>(new Action<MstClient>(this.attach_MstClients1), new Action<MstClient>(this.detach_MstClients1));
+			this._MstExpenses = new EntitySet<MstExpense>(new Action<MstExpense>(this.attach_MstExpenses), new Action<MstExpense>(this.detach_MstExpenses));
+			this._MstExpenses1 = new EntitySet<MstExpense>(new Action<MstExpense>(this.attach_MstExpenses1), new Action<MstExpense>(this.detach_MstExpenses1));
+			this._MstPayTypes = new EntitySet<MstPayType>(new Action<MstPayType>(this.attach_MstPayTypes), new Action<MstPayType>(this.detach_MstPayTypes));
+			this._MstPayTypes1 = new EntitySet<MstPayType>(new Action<MstPayType>(this.attach_MstPayTypes1), new Action<MstPayType>(this.detach_MstPayTypes1));
+			this._MstProducts = new EntitySet<MstProduct>(new Action<MstProduct>(this.attach_MstProducts), new Action<MstProduct>(this.detach_MstProducts));
+			this._MstProducts1 = new EntitySet<MstProduct>(new Action<MstProduct>(this.attach_MstProducts1), new Action<MstProduct>(this.detach_MstProducts1));
+			this._MstSuppliers = new EntitySet<MstSupplier>(new Action<MstSupplier>(this.attach_MstSuppliers), new Action<MstSupplier>(this.detach_MstSuppliers));
+			this._MstSuppliers1 = new EntitySet<MstSupplier>(new Action<MstSupplier>(this.attach_MstSuppliers1), new Action<MstSupplier>(this.detach_MstSuppliers1));
+			this._MstUserIPAddresses = new EntitySet<MstUserIPAddress>(new Action<MstUserIPAddress>(this.attach_MstUserIPAddresses), new Action<MstUserIPAddress>(this.detach_MstUserIPAddresses));
+			this._TrnCollections = new EntitySet<TrnCollection>(new Action<TrnCollection>(this.attach_TrnCollections), new Action<TrnCollection>(this.detach_TrnCollections));
+			this._TrnCollections1 = new EntitySet<TrnCollection>(new Action<TrnCollection>(this.attach_TrnCollections1), new Action<TrnCollection>(this.detach_TrnCollections1));
+			this._TrnDisbursements = new EntitySet<TrnDisbursement>(new Action<TrnDisbursement>(this.attach_TrnDisbursements), new Action<TrnDisbursement>(this.detach_TrnDisbursements));
+			this._TrnDisbursements1 = new EntitySet<TrnDisbursement>(new Action<TrnDisbursement>(this.attach_TrnDisbursements1), new Action<TrnDisbursement>(this.detach_TrnDisbursements1));
+			this._TrnSalesInvoices = new EntitySet<TrnSalesInvoice>(new Action<TrnSalesInvoice>(this.attach_TrnSalesInvoices), new Action<TrnSalesInvoice>(this.detach_TrnSalesInvoices));
+			this._TrnSalesInvoices1 = new EntitySet<TrnSalesInvoice>(new Action<TrnSalesInvoice>(this.attach_TrnSalesInvoices1), new Action<TrnSalesInvoice>(this.detach_TrnSalesInvoices1));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this.OnIdChanging(value);
+					this.SendPropertyChanging();
+					this._Id = value;
+					this.SendPropertyChanged("Id");
+					this.OnIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="NVarChar(128)")]
+		public string UserId
+		{
+			get
+			{
+				return this._UserId;
+			}
+			set
+			{
+				if ((this._UserId != value))
+				{
+					this.OnUserIdChanging(value);
+					this.SendPropertyChanging();
+					this._UserId = value;
+					this.SendPropertyChanged("UserId");
+					this.OnUserIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserName", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string UserName
+		{
+			get
+			{
+				return this._UserName;
+			}
+			set
+			{
+				if ((this._UserName != value))
+				{
+					this.OnUserNameChanging(value);
+					this.SendPropertyChanging();
+					this._UserName = value;
+					this.SendPropertyChanged("UserName");
+					this.OnUserNameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Password", DbType="NVarChar(50) NOT NULL", CanBeNull=false)]
+		public string Password
+		{
+			get
+			{
+				return this._Password;
+			}
+			set
+			{
+				if ((this._Password != value))
+				{
+					this.OnPasswordChanging(value);
+					this.SendPropertyChanging();
+					this._Password = value;
+					this.SendPropertyChanged("Password");
+					this.OnPasswordChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FullName", DbType="NVarChar(100) NOT NULL", CanBeNull=false)]
+		public string FullName
+		{
+			get
+			{
+				return this._FullName;
+			}
+			set
+			{
+				if ((this._FullName != value))
+				{
+					this.OnFullNameChanging(value);
+					this.SendPropertyChanging();
+					this._FullName = value;
+					this.SendPropertyChanged("FullName");
+					this.OnFullNameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IsLocked", DbType="Bit NOT NULL")]
+		public bool IsLocked
+		{
+			get
+			{
+				return this._IsLocked;
+			}
+			set
+			{
+				if ((this._IsLocked != value))
+				{
+					this.OnIsLockedChanging(value);
+					this.SendPropertyChanging();
+					this._IsLocked = value;
+					this.SendPropertyChanged("IsLocked");
+					this.OnIsLockedChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CreatedById", DbType="Int NOT NULL")]
+		public int CreatedById
+		{
+			get
+			{
+				return this._CreatedById;
+			}
+			set
+			{
+				if ((this._CreatedById != value))
+				{
+					this.OnCreatedByIdChanging(value);
+					this.SendPropertyChanging();
+					this._CreatedById = value;
+					this.SendPropertyChanged("CreatedById");
+					this.OnCreatedByIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CreatedDateTime", DbType="DateTime NOT NULL")]
+		public System.DateTime CreatedDateTime
+		{
+			get
+			{
+				return this._CreatedDateTime;
+			}
+			set
+			{
+				if ((this._CreatedDateTime != value))
+				{
+					this.OnCreatedDateTimeChanging(value);
+					this.SendPropertyChanging();
+					this._CreatedDateTime = value;
+					this.SendPropertyChanged("CreatedDateTime");
+					this.OnCreatedDateTimeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UpdatedById", DbType="Int NOT NULL")]
+		public int UpdatedById
+		{
+			get
+			{
+				return this._UpdatedById;
+			}
+			set
+			{
+				if ((this._UpdatedById != value))
+				{
+					this.OnUpdatedByIdChanging(value);
+					this.SendPropertyChanging();
+					this._UpdatedById = value;
+					this.SendPropertyChanged("UpdatedById");
+					this.OnUpdatedByIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UpdatedDateTime", DbType="DateTime NOT NULL")]
+		public System.DateTime UpdatedDateTime
+		{
+			get
+			{
+				return this._UpdatedDateTime;
+			}
+			set
+			{
+				if ((this._UpdatedDateTime != value))
+				{
+					this.OnUpdatedDateTimeChanging(value);
+					this.SendPropertyChanging();
+					this._UpdatedDateTime = value;
+					this.SendPropertyChanged("UpdatedDateTime");
+					this.OnUpdatedDateTimeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstBank", Storage="_MstBanks", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<MstBank> MstBanks
+		{
+			get
+			{
+				return this._MstBanks;
+			}
+			set
+			{
+				this._MstBanks.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstBank1", Storage="_MstBanks1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<MstBank> MstBanks1
+		{
+			get
+			{
+				return this._MstBanks1;
+			}
+			set
+			{
+				this._MstBanks1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstClient", Storage="_MstClients", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<MstClient> MstClients
+		{
+			get
+			{
+				return this._MstClients;
+			}
+			set
+			{
+				this._MstClients.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstClient1", Storage="_MstClients1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<MstClient> MstClients1
+		{
+			get
+			{
+				return this._MstClients1;
+			}
+			set
+			{
+				this._MstClients1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstExpense", Storage="_MstExpenses", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<MstExpense> MstExpenses
+		{
+			get
+			{
+				return this._MstExpenses;
+			}
+			set
+			{
+				this._MstExpenses.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstExpense1", Storage="_MstExpenses1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<MstExpense> MstExpenses1
+		{
+			get
+			{
+				return this._MstExpenses1;
+			}
+			set
+			{
+				this._MstExpenses1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstPayType", Storage="_MstPayTypes", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<MstPayType> MstPayTypes
+		{
+			get
+			{
+				return this._MstPayTypes;
+			}
+			set
+			{
+				this._MstPayTypes.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstPayType1", Storage="_MstPayTypes1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<MstPayType> MstPayTypes1
+		{
+			get
+			{
+				return this._MstPayTypes1;
+			}
+			set
+			{
+				this._MstPayTypes1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstProduct", Storage="_MstProducts", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<MstProduct> MstProducts
+		{
+			get
+			{
+				return this._MstProducts;
+			}
+			set
+			{
+				this._MstProducts.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstProduct1", Storage="_MstProducts1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<MstProduct> MstProducts1
+		{
+			get
+			{
+				return this._MstProducts1;
+			}
+			set
+			{
+				this._MstProducts1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstSupplier", Storage="_MstSuppliers", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<MstSupplier> MstSuppliers
+		{
+			get
+			{
+				return this._MstSuppliers;
+			}
+			set
+			{
+				this._MstSuppliers.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstSupplier1", Storage="_MstSuppliers1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<MstSupplier> MstSuppliers1
+		{
+			get
+			{
+				return this._MstSuppliers1;
+			}
+			set
+			{
+				this._MstSuppliers1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_MstUserIPAddress", Storage="_MstUserIPAddresses", ThisKey="Id", OtherKey="UserId")]
+		public EntitySet<MstUserIPAddress> MstUserIPAddresses
+		{
+			get
+			{
+				return this._MstUserIPAddresses;
+			}
+			set
+			{
+				this._MstUserIPAddresses.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnCollection", Storage="_TrnCollections", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<TrnCollection> TrnCollections
+		{
+			get
+			{
+				return this._TrnCollections;
+			}
+			set
+			{
+				this._TrnCollections.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnCollection1", Storage="_TrnCollections1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<TrnCollection> TrnCollections1
+		{
+			get
+			{
+				return this._TrnCollections1;
+			}
+			set
+			{
+				this._TrnCollections1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnDisbursement", Storage="_TrnDisbursements", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<TrnDisbursement> TrnDisbursements
+		{
+			get
+			{
+				return this._TrnDisbursements;
+			}
+			set
+			{
+				this._TrnDisbursements.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnDisbursement1", Storage="_TrnDisbursements1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<TrnDisbursement> TrnDisbursements1
+		{
+			get
+			{
+				return this._TrnDisbursements1;
+			}
+			set
+			{
+				this._TrnDisbursements1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnSalesInvoice", Storage="_TrnSalesInvoices", ThisKey="Id", OtherKey="CreatedById")]
+		public EntitySet<TrnSalesInvoice> TrnSalesInvoices
+		{
+			get
+			{
+				return this._TrnSalesInvoices;
+			}
+			set
+			{
+				this._TrnSalesInvoices.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="MstUser_TrnSalesInvoice1", Storage="_TrnSalesInvoices1", ThisKey="Id", OtherKey="UpdatedById")]
+		public EntitySet<TrnSalesInvoice> TrnSalesInvoices1
+		{
+			get
+			{
+				return this._TrnSalesInvoices1;
+			}
+			set
+			{
+				this._TrnSalesInvoices1.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_MstBanks(MstBank entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_MstBanks(MstBank entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_MstBanks1(MstBank entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_MstBanks1(MstBank entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
+		}
+		
+		private void attach_MstClients(MstClient entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_MstClients(MstClient entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_MstClients1(MstClient entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_MstClients1(MstClient entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
+		}
+		
+		private void attach_MstExpenses(MstExpense entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_MstExpenses(MstExpense entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_MstExpenses1(MstExpense entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_MstExpenses1(MstExpense entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
+		}
+		
+		private void attach_MstPayTypes(MstPayType entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_MstPayTypes(MstPayType entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_MstPayTypes1(MstPayType entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_MstPayTypes1(MstPayType entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
+		}
+		
+		private void attach_MstProducts(MstProduct entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_MstProducts(MstProduct entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_MstProducts1(MstProduct entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_MstProducts1(MstProduct entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
+		}
+		
+		private void attach_MstSuppliers(MstSupplier entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_MstSuppliers(MstSupplier entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_MstSuppliers1(MstSupplier entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_MstSuppliers1(MstSupplier entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
+		}
+		
+		private void attach_MstUserIPAddresses(MstUserIPAddress entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_MstUserIPAddresses(MstUserIPAddress entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_TrnCollections(TrnCollection entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_TrnCollections(TrnCollection entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_TrnCollections1(TrnCollection entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_TrnCollections1(TrnCollection entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
+		}
+		
+		private void attach_TrnDisbursements(TrnDisbursement entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_TrnDisbursements(TrnDisbursement entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_TrnDisbursements1(TrnDisbursement entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_TrnDisbursements1(TrnDisbursement entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
+		}
+		
+		private void attach_TrnSalesInvoices(TrnSalesInvoice entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = this;
+		}
+		
+		private void detach_TrnSalesInvoices(TrnSalesInvoice entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser = null;
+		}
+		
+		private void attach_TrnSalesInvoices1(TrnSalesInvoice entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = this;
+		}
+		
+		private void detach_TrnSalesInvoices1(TrnSalesInvoice entity)
+		{
+			this.SendPropertyChanging();
+			entity.MstUser1 = null;
 		}
 	}
 }

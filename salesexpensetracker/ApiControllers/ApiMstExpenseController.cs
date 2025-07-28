@@ -258,7 +258,7 @@ namespace salesexpensetracker.ApiControllers
                             }
                             else
                             {
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Supplier Code is already taken.");
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Expense Code is already taken.");
                             }
                         }
                         else

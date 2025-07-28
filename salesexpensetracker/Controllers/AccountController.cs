@@ -262,68 +262,54 @@ namespace salesexpensetracker.Controllers
             var currentUser = from d in db.MstUsers where d.UserId == User.Identity.GetUserId() select d;
             if (currentUser.FirstOrDefault().UserName.Equals("admin"))
             {
-                var response = HttpContext.Request.Form["g-recaptcha-response"];
-                string secretKey = "6LfCXGcUAAAAAGG5ZPamj8Da5mqaoO0DIye1fUgv";
-
-                var client = new System.Net.WebClient();
-                var verificationResultJson = client.DownloadString(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secretKey, response));
-                var verificationResult = JsonConvert.DeserializeObject<CaptchaVerificationResult>(verificationResultJson);
-
-                if (!verificationResult.Success)
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError("CaptiaError", "Invalid recaptcha challenge.");
-                }
-                else
-                {
-                    if (ModelState.IsValid)
+                    var user = new ApplicationUser
                     {
-                        var user = new ApplicationUser
+                        UserName = model.UserName,
+                        FullName = model.FullName,
+                    };
+
+                    // var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                    var result = await UserManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                        int newUserId = 0;
+
+                        var adminUser = from d in db.MstUsers where d.UserName.Equals("admin") select d;
+                        if (adminUser.Any())
                         {
-                            UserName = model.UserName,
-                            FullName = model.FullName,
-                        };
-
-                        // var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                        var result = await UserManager.CreateAsync(user, model.Password);
-                        if (result.Succeeded)
-                        {
-                            //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                            // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                            // Send an email with this link
-                            // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                            // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                            // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                            int newUserId = 0;
-
-                            var adminUser = from d in db.MstUsers where d.UserName.Equals("admin") select d;
-                            if (adminUser.Any())
+                            Data.MstUser newUser = new Data.MstUser
                             {
-                                Data.MstUser newUser = new Data.MstUser
-                                {
-                                    UserId = user.Id,
-                                    UserName = model.UserName,
-                                    Password = model.Password,
-                                    FullName = model.FullName,
-                                    IsLocked = false,
-                                    CreatedById = adminUser.FirstOrDefault().Id,
-                                    CreatedDateTime = DateTime.Now,
-                                    UpdatedById = adminUser.FirstOrDefault().Id,
-                                    UpdatedDateTime = DateTime.Now
-                                };
+                                UserId = user.Id,
+                                UserName = model.UserName,
+                                Password = model.Password,
+                                FullName = model.FullName,
+                                IsLocked = false,
+                                CreatedById = adminUser.FirstOrDefault().Id,
+                                CreatedDateTime = DateTime.Now,
+                                UpdatedById = adminUser.FirstOrDefault().Id,
+                                UpdatedDateTime = DateTime.Now
+                            };
 
-                                db.MstUsers.InsertOnSubmit(newUser);
-                                db.SubmitChanges();
+                            db.MstUsers.InsertOnSubmit(newUser);
+                            db.SubmitChanges();
 
-                                newUserId = newUser.Id;
+                            newUserId = newUser.Id;
 
-                                return Redirect("/Software/UsersDetail?id=" + newUserId);
-                            }
+                            return Redirect("/Software/UserDetail?id=" + newUserId);
                         }
-
-                        AddErrors(result);
                     }
+
+                    AddErrors(result);
                 }
             }
             else

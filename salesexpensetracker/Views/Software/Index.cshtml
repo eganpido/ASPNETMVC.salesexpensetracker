@@ -237,9 +237,14 @@
         // On Load Page
         // ============
         $(document).ready(function () {
-            NProgress.start();
-            NProgress.done();
+            Loader.show();
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
         });
     </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
 </body>
 </html>
