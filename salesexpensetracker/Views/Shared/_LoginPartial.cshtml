@@ -21,14 +21,14 @@
                     }
                 }*@
             <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">@ViewData["FullName"] <i class="fa fa-caret-down"></i></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">🟢 @ViewData["FullName"] <i class="fa fa-caret-down"></i></a>
                 <ul class="dropdown-menu">
-            <li><a href="/Software"><i class="fa fa-dashboard fa-fw"></i> Main Menu</a></li>
+            <li><a href="/Software">📋 Menu</a></li>
                 @*<li class="divider"></li>
                 <li><a href="/Manage/ChangePassword"><i class="fa fa-pencil-square-o fa-fw"></i> Change Password</a></li>
                 <li><a href="/Account/Login"><i class="fa fa-gear fa-fw"></i> Settings</a></li>*@
                 <li class="divider"></li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()" data-toggle="modal"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()" data-toggle="modal">📴 Logout</a></li>
                 </ul>
             </li>
         </ul>
@@ -44,7 +44,7 @@ else
             @*<a class="page-scroll" href="/Home/Index#contact">Contact</a>*@
         </li>
         <li>
-            <a class="page-scroll" href="/Account/Login">Login</a>
+            <a class="page-scroll" href="/Account/Login">🔑 Login</a>
         </li>
     </ul>
 }
