@@ -16,7 +16,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
-    <title>Product Detail</title>
+    <title>Expense Detail</title>
 
     @Styles.Render("~/Content/Software-css")
 </head>
@@ -26,7 +26,7 @@
             @Html.Partial("_SoftwareHeader")
             <div class="container">
                 <h3>
-                    Product Detail
+                    Expense Detail
                 </h3>
             </div>
             <section class="container">
@@ -38,12 +38,12 @@
                     <div class="panel-heading">
                         <div class="row">
                             <div class="col-md-2">
-                                <button class="btn btn-primary" id="btnProductDetailSave" onclick="saveProduct()">💾 Save</button>
+                                <button class="btn btn-primary" id="btnExpenseDetailSave" onclick="saveExpense()">💾 Save</button>
                             </div>
                             <div class="col-md-10" align="right">
-                                <button class="btn btn-primary" id="btnProductDetailLock" onclick="lockProduct()">🔒 Lock</button>
-                                <button class="btn btn-primary" id="btnProductDetailUnlock" onclick="unlockProduct()">🔓 Unlock</button>
-                                <button class="btn btn-danger" id="btnProductDetailClose" onclick="closeProductDetail()">🗙 Close</button>
+                                <button class="btn btn-primary" id="btnExpenseDetailLock" onclick="lockExpense()">🔒 Lock</button>
+                                <button class="btn btn-primary" id="btnExpenseDetailUnlock" onclick="unlockExpense()">🔓 Unlock</button>
+                                <button class="btn btn-danger" id="btnExpenseDetailClose" onclick="closeExpenseDetail()">🗙 Close</button>
                             </div>
                         </div>
                     </div>
@@ -58,25 +58,13 @@
                                     <div class="form-group">
                                         <label class="control-label col-sm-2">Code</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="inpProductDetailProductCode" placeholder="Code" disabled/>
+                                            <input type="text" class="form-control" id="inpExpenseDetailExpenseCode" placeholder="Code" disabled/>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-2">Product</label>
+                                        <label class="control-label col-sm-2">Expense</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="inpProductDetailProductDescription" placeholder="Product" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-sm-2">Price</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control numberField" id="inpProductDetailPrice" placeholder="0.00" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-sm-2">Cost</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control numberField" id="inpProductDetailCost" placeholder="0.00" />
+                                            <input type="text" class="form-control" id="inpExpenseDetailExpenseName" placeholder="Expense" />
                                         </div>
                                     </div>
                                 </div>
@@ -132,77 +120,71 @@
             }
         }
 
-        // Get Product Detail Data
-        function getProductDetailData() {
+        // Get Expense Detail Data
+        function getExpenseDetailData() {
             NProgress.start();
 
             if (document.location.search.length > 0) {
                 $.ajax({
-                    url: '/api/product/detail/' + getURLParameterValue("id"),
+                    url: '/api/expense/detail/' + getURLParameterValue("id"),
                     cache: false,
                     type: 'GET',
                     contentType: 'application/json; charset=utf-8',
                     success: function (results) {
                         if (results != null) {
-                            document.getElementById('inpProductDetailProductCode').value = results.ProductCode;
-                            document.getElementById('inpProductDetailProductDescription').value = results.ProductDescription;
-                            document.getElementById('inpProductDetailPrice').value = results.Price;
-                            document.getElementById('inpProductDetailCost').value = results.Cost;
+                            document.getElementById('inpExpenseDetailExpenseCode').value = results.ExpenseCode;
+                            document.getElementById('inpExpenseDetailExpenseName').value = results.ExpenseName;
                             document.getElementById('createdBy').innerHTML = results.CreatedBy;
                             document.getElementById('createdDate').innerHTML = results.CreatedDateTime;
                             document.getElementById('updatedBy').innerHTML = results.UpdatedBy;
                             document.getElementById('updatedDate').innerHTML = results.UpdatedDateTime;
 
                             if (results.IsLocked) {
-                                document.getElementById('inpProductDetailProductCode').disabled = true;
-                                document.getElementById('inpProductDetailProductDescription').disabled = true;
-                                document.getElementById('inpProductDetailPrice').disabled = true;
-                                document.getElementById('inpProductDetailCost').disabled = true;
+                                document.getElementById('inpExpenseDetailExpenseCode').disabled = true;
+                                document.getElementById('inpExpenseDetailExpenseName').disabled = true;
 
-                                $('#btnProductDetailSave').prop('disabled', true);
-                                $('#btnProductDetailLock').prop('disabled', true);
+                                $('#btnExpenseDetailSave').prop('disabled', true);
+                                $('#btnExpenseDetailLock').prop('disabled', true);
 
                                 isLocked = true;
                             } else {
-                                $('#btnProductDetailUnlock').prop('disabled', true);
+                                $('#btnExpenseDetailUnlock').prop('disabled', true);
                             }
                         } else {
                             alert("No Data");
-                            window.location = "/Software/ProductList";
+                            window.location = "/Software/ExpenseList";
                         }
                     }
                 });
             } else {
                 alert("No Id Parameter Value");
-                window.location = "/Software/ProductList";
+                window.location = "/Software/ExpenseList";
             }
         }
 
-        // Product Data Object
-        function productDataObject() {
-            var productObject = new Object();
-            productObject.ProductCode = document.getElementById('inpProductDetailProductCode').value;
-            productObject.ProductDescription = document.getElementById('inpProductDetailProductDescription').value;
-            productObject.Price = document.getElementById('inpProductDetailPrice').value;
-            productObject.Cost = document.getElementById('inpProductDetailCost').value;
-            var data = JSON.stringify(productObject);
+        // Expense Data Object
+        function expenseDataObject() {
+            var expenseObject = new Object();
+            expenseObject.ExpenseCode = document.getElementById('inpExpenseDetailExpenseCode').value;
+            expenseObject.ExpenseName = document.getElementById('inpExpenseDetailExpenseName').value;
+            var data = JSON.stringify(expenseObject);
             return data;
         }
 
-        // Save Product
-        function saveProduct() {
-            document.getElementById('btnProductDetailSave').innerHTML = "💾 Saving...";
-            $('#btnProductDetailSave').prop('disabled', true);
-            $('#btnProductDetailLock').prop('disabled', true);
-            $('#btnProductDetailUnlock').prop('disabled', true);
-            $('#btnProductDetailClose').prop('disabled', true);
+        // Save Expense
+        function saveExpense() {
+            document.getElementById('btnExpenseDetailSave').innerHTML = "💾 Saving...";
+            $('#btnExpenseDetailSave').prop('disabled', true);
+            $('#btnExpenseDetailLock').prop('disabled', true);
+            $('#btnExpenseDetailUnlock').prop('disabled', true);
+            $('#btnExpenseDetailClose').prop('disabled', true);
 
             $.ajax({
                 type: "PUT",
-                url: '/api/product/save/' + getURLParameterValue("id"),
+                url: '/api/expense/save/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: productDataObject(),
+                data: expenseDataObject(),
                 statusCode: {
                     200: function () {
                         toastr.success("Save Successful", "", { positionClass: "toast-bottom-right" });
@@ -212,61 +194,61 @@
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailSave').innerHTML = "💾 Save";
-                        $("#btnProductDetailSave").prop("disabled", false);
+                        document.getElementById('btnExpenseDetailSave').innerHTML = "💾 Save";
+                        $("#btnExpenseDetailSave").prop("disabled", false);
 
                         if (isLocked) {
-                            $("#btnProductDetailUnlock").prop("disabled", false);
+                            $("#btnExpenseDetailUnlock").prop("disabled", false);
                         } else {
-                            $("#btnProductDetailLock").prop("disabled", false);
+                            $("#btnExpenseDetailLock").prop("disabled", false);
                         }
 
-                        $("#btnProductDetailClose").prop("disabled", false);
+                        $("#btnExpenseDetailClose").prop("disabled", false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailSave').innerHTML = "💾 Save";
-                        $("#btnProductDetailSave").prop("disabled", false);
+                        document.getElementById('btnExpenseDetailSave').innerHTML = "💾 Save";
+                        $("#btnExpenseDetailSave").prop("disabled", false);
 
                         if (isLocked) {
-                            $("#btnProductDetailUnlock").prop("disabled", false);
+                            $("#btnExpenseDetailUnlock").prop("disabled", false);
                         } else {
-                            $("#btnProductDetailLock").prop("disabled", false);
+                            $("#btnExpenseDetailLock").prop("disabled", false);
                         }
 
-                        $("#btnProductDetailClose").prop("disabled", false);
+                        $("#btnExpenseDetailClose").prop("disabled", false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailSave').innerHTML = "💾 Save";
-                        $("#btnProductDetailSave").prop("disabled", false);
+                        document.getElementById('btnExpenseDetailSave').innerHTML = "💾 Save";
+                        $("#btnExpenseDetailSave").prop("disabled", false);
 
                         if (isLocked) {
-                            $("#btnProductDetailUnlock").prop("disabled", false);
+                            $("#btnExpenseDetailUnlock").prop("disabled", false);
                         } else {
-                            $("#btnProductDetailLock").prop("disabled", false);
+                            $("#btnExpenseDetailLock").prop("disabled", false);
                         }
 
-                        $("#btnProductDetailClose").prop("disabled", false);
+                        $("#btnExpenseDetailClose").prop("disabled", false);
                     }
                 },
             });
         }
 
-        // Lock Product
-        function lockProduct() {
-            document.getElementById('btnProductDetailLock').innerHTML = "🔒 Locking...";
-            $('#btnProductDetailSave').prop('disabled', true);
-            $('#btnProductDetailLock').prop('disabled', true);
-            $('#btnProductDetailUnlock').prop('disabled', true);
-            $('#btnProductDetailClose').prop('disabled', true);
+        // Lock Expense
+        function lockExpense() {
+            document.getElementById('btnExpenseDetailLock').innerHTML = "🔒 Locking...";
+            $('#btnExpenseDetailSave').prop('disabled', true);
+            $('#btnExpenseDetailLock').prop('disabled', true);
+            $('#btnExpenseDetailUnlock').prop('disabled', true);
+            $('#btnExpenseDetailClose').prop('disabled', true);
 
             $.ajax({
                 type: "PUT",
-                url: '/api/product/lock/' + getURLParameterValue("id"),
+                url: '/api/expense/lock/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: productDataObject(),
+                data: expenseDataObject(),
                 statusCode: {
                     200: function () {
                         toastr.success("Lock Successful", "", { positionClass: "toast-bottom-right" });
@@ -276,40 +258,40 @@
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailLock').innerHTML = "🔒 Lock";
-                        $('#btnProductDetailSave').prop('disabled', false);
-                        $('#btnProductDetailLock').prop('disabled', false);
-                        $('#btnProductDetailClose').prop('disabled', false);
+                        document.getElementById('btnExpenseDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailLock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailLock').innerHTML = "🔒 Lock";
-                        $('#btnProductDetailSave').prop('disabled', false);
-                        $('#btnProductDetailLock').prop('disabled', false);
-                        $('#btnProductDetailClose').prop('disabled', false);
+                        document.getElementById('btnExpenseDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailLock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailLock').innerHTML = "🔒 Lock";
-                        $('#btnProductDetailSave').prop('disabled', false);
-                        $('#btnProductDetailLock').prop('disabled', false);
-                        $('#btnProductDetailClose').prop('disabled', false);
+                        document.getElementById('btnExpenseDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailLock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
                     }
                 },
             });
         }
 
-        // Unlock Product
-        function unlockProduct() {
-            document.getElementById('btnProductDetailUnlock').innerHTML = "🔓 Unlocking...";
-            $('#btnProductDetailSave').prop('disabled', true);
-            $('#btnProductDetailLock').prop('disabled', true);
-            $('#btnProductDetailUnlock').prop('disabled', true);
-            $('#btnProductDetailClose').prop('disabled', true);
+        // Unlock Expense
+        function unlockExpense() {
+            document.getElementById('btnExpenseDetailUnlock').innerHTML = "🔓 Unlocking...";
+            $('#btnExpenseDetailSave').prop('disabled', true);
+            $('#btnExpenseDetailLock').prop('disabled', true);
+            $('#btnExpenseDetailUnlock').prop('disabled', true);
+            $('#btnExpenseDetailClose').prop('disabled', true);
 
             $.ajax({
                 type: "PUT",
-                url: '/api/product/unlock/' + getURLParameterValue("id"),
+                url: '/api/expense/unlock/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 statusCode: {
@@ -321,39 +303,39 @@
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailUnlock').innerHTML = "🔓 Unlock";
-                        $('#btnProductDetailSave').prop('disabled', false);
-                        $('#btnProductDetailUnlock').prop('disabled', false);
-                        $('#btnProductDetailClose').prop('disabled', false);
+                        document.getElementById('btnExpenseDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailUnlock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailUnlock').innerHTML = "🔓 Unlock";
-                        $('#btnProductDetailSave').prop('disabled', false);
-                        $('#btnProductDetailUnlock').prop('disabled', false);
-                        $('#btnProductDetailClose').prop('disabled', false);
+                        document.getElementById('btnExpenseDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailUnlock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductDetailUnlock').innerHTML = "🔓 Unlock";
-                        $('#btnProductDetailSave').prop('disabled', false);
-                        $('#btnProductDetailUnlock').prop('disabled', false);
-                        $('#btnProductDetailClose').prop('disabled', false);
+                        document.getElementById('btnExpenseDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailUnlock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
                     }
                 }
             });
         }
 
-        // Close Product
-        function closeProductDetail() {
-            window.location = '/Software/ProductList';
+        // Close Expense
+        function closeExpenseDetail() {
+            window.location = '/Software/ExpenseList';
         }
 
         // ============
         // On Load Page
         // ============
         $(document).ready(function () {
-            getProductDetailData();
+            getExpenseDetailData();
             NProgress.done();
         });
     </script>

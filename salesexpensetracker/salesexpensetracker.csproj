@@ -817,6 +817,11 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiControllers\ApiMstPayTypeController.cs" />
+    <Compile Include="ApiControllers\ApiMstClientController.cs" />
+    <Compile Include="ApiControllers\ApiMstBankController.cs" />
+    <Compile Include="ApiControllers\ApiMstExpenseController.cs" />
+    <Compile Include="ApiControllers\ApiMstSupplierController.cs" />
     <Compile Include="ApiControllers\ApiMstProductController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -834,6 +839,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>setdb.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Entities\MstPayType.cs" />
+    <Compile Include="Entities\MstClient.cs" />
+    <Compile Include="Entities\MstBank.cs" />
+    <Compile Include="Entities\MstExpense.cs" />
+    <Compile Include="Entities\MstSupplier.cs" />
     <Compile Include="Entities\MstProduct.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -874,6 +884,16 @@
     <Content Include="Views\Software\Index.cshtml" />
     <Content Include="Views\Software\ProductList.cshtml" />
     <Content Include="Views\Software\ProductDetail.cshtml" />
+    <Content Include="Views\Software\ClientList.cshtml" />
+    <Content Include="Views\Software\ClientDetail.cshtml" />
+    <Content Include="Views\Software\SupplierList.cshtml" />
+    <Content Include="Views\Software\SupplierDetail.cshtml" />
+    <Content Include="Views\Software\BankList.cshtml" />
+    <Content Include="Views\Software\BankDetail.cshtml" />
+    <Content Include="Views\Software\ExpenseDetail.cshtml" />
+    <Content Include="Views\Software\ExpenseList.cshtml" />
+    <Content Include="Views\Software\PayTypeList.cshtml" />
+    <Content Include="Views\Software\PayTypeDetail.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

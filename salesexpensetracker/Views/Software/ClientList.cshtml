@@ -16,7 +16,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
-    <title>Product List</title>
+    <title>Client List</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
@@ -29,7 +29,7 @@
 
             <div class="container">
                 <h3>
-                    Product List
+                    Client List
                 </h3>
             </div>
             <section class="container">
@@ -38,11 +38,11 @@
                         <table style="width: 100%" border="0">
                             <tr>
                                 <td style="width: 59%">
-                                    <button class="btn btn-primary" id="btnProductAdd" onclick="addProduct()">🞧 Add</button>
+                                    <button class="btn btn-primary" id="btnClientAdd" onclick="addClient()">🞧 Add</button>
                                 </td>
                                 <td style="width: 1%"></td>
                                 <td style="width: 40%" align="right">
-                                    <button class="btn btn-danger" id="btnProductClose" onclick="closeProduct()">🗙 Close</button>
+                                    <button class="btn btn-danger" id="btnProductClose" onclick="closeClient()">🗙 Close</button>
                                 </td>
                             </tr>
                         </table>
@@ -53,8 +53,8 @@
                             <tr class="selected">
                                 <th></th>
                                 <th>Code</th>
-                                <th>Product</th>
-                                <th>Price</th>
+                                <th>Client</th>
+                                <th>Address</th>
                                 <th>Created By</th>
                                 <th>Created Date</th>
                                 <th>Locked</th>
@@ -67,20 +67,20 @@
             </section>
 
             <!--
-                Product Confirm Delete Modal
+                Client Confirm Delete Modal
             -->
-            <div class="modal fade" id="deleteProductConfirm" role="dialog">
+            <div class="modal fade" id="deleteClientConfirm" role="dialog">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Delete</h4>
                         </div>
                         <div class="modal-body">
-                            Delete Product?
+                            Delete Client?
                         </div>
                         <div class="modal-footer">
-                            <button id="btnProductConfirmDelete" class="btn btn-danger" onclick="confirmDeleteProduct()">🗑 Delete</button>
-                            <button id="btnProductCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
+                            <button id="btnClientConfirmDelete" class="btn btn-danger" onclick="confirmDeleteClient()">🗑 Delete</button>
+                            <button id="btnClientCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -95,8 +95,8 @@
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
     <script type="text/javascript">
-        var prodId = 0;
-        function populateProduct() {
+        var Id = 0;
+        function populateClient() {
             NProgress.start();
             // ✅ Destroy existing DataTable if already initialized
             if ($.fn.DataTable.isDataTable('#datagridList')) {
@@ -115,7 +115,7 @@
             // ✅ Initialize DataTable
             $('#datagridList').DataTable({
                 ajax: {
-                    url: '/api/product/list',
+                    url: '/api/client/list',
                     dataSrc: ''
                 },
                 columns: [
@@ -123,12 +123,12 @@
                         data: null,
                         className: 'text-center',
                         render: function (data, type, row) {
-                            return '<button class="btn btn-primary btn-sm" onclick="editProduct(' + row.Id + ')">📝 Edit</button>';
+                            return '<button class="btn btn-primary btn-sm" onclick="editClient(' + row.Id + ')">📝 Edit</button>';
                         }
                     },
-                    { data: 'ProductCode', className: 'text-left' },
-                    { data: 'ProductDescription' },
-                    { data: 'Price' },
+                    { data: 'ClientCode', className: 'text-left' },
+                    { data: 'ClientName' },
+                    { data: 'ClientAddress' },
                     { data: 'CreatedBy' },
                     {
                         data: 'CreatedDateTime',
@@ -147,17 +147,17 @@
                         data: null,
                         className: 'text-center',
                         render: function (data, type, row) {
-                            return '<button class="btn btn-danger btn-sm" onclick="deleteProduct(' + row.Id + ', ' + row.IsLocked + ')">🗑 Delete</button>';
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteClient(' + row.Id + ', ' + row.IsLocked + ')">🗑 Delete</button>';
                         }
                     }
                 ],
                 columnDefs: [
                     {
-                        targets: 1, // ProductCode column
+                        targets: 1,
                         className: 'text-left'
                     },
                     {
-                        targets: [0, 7], // Edit and Delete columns
+                        targets: [0, 7],
                         orderable: false
                     }
                 ],
@@ -172,113 +172,114 @@
             });
         }
 
-        // Add Product
-        function addProduct() {
-            document.getElementById('btnProductAdd').innerHTML = "🞧 Adding...";
-            $('#btnProductAdd').prop('disabled', true);
-            $('#btnProductClose').prop('disabled', true);
+        // Add Client
+        function addClient() {
+            document.getElementById('btnClientAdd').innerHTML = "🞧 Adding...";
+            $('#btnClientAdd').prop('disabled', true);
+            $('#btnClientClose').prop('disabled', true);
 
             $.ajax({
                 type: "POST",
-                url: '/api/product/add',
+                url: '/api/client/add',
                 contentType: "application/json; charset=utf-8",
                 statusCode: {
                     200: function (id) {
-                        window.location = '/Software/ProductDetail?id=' + id;
+                        window.location = '/Software/ClientDetail?id=' + id;
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductAdd').innerHTML = "🞧 Add";
-                        $('#btnProductAdd').prop('disabled', false);
-                        $('#btnProductClose').prop('disabled', false);
+                        document.getElementById('btnClientAdd').innerHTML = "🞧 Add";
+                        $('#btnClientAdd').prop('disabled', false);
+                        $('#btnClientClose').prop('disabled', false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductAdd').innerHTML = "🞧 Add";
-                        $('#btnProductAdd').prop('disabled', false);
-                        $('#btnProductClose').prop('disabled', false);
+                        document.getElementById('btnClientAdd').innerHTML = "🞧 Add";
+                        $('#btnClientAdd').prop('disabled', false);
+                        $('#btnClientClose').prop('disabled', false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductAdd').innerHTML = "🞧 Add";
-                        $('#btnProductAdd').prop('disabled', false);
-                        $('#btnProductClose').prop('disabled', false);
+                        document.getElementById('btnClientAdd').innerHTML = "🞧 Add";
+                        $('#btnClientAdd').prop('disabled', false);
+                        $('#btnClientClose').prop('disabled', false);
                     }
                 }
             });
         }
-        // Edit Product
-        function editProduct(productId) {
-            window.location = '/Software/ProductDetail?id=' + productId;
+        // Edit Client
+        function editClient(clientId) {
+            window.location = '/Software/ClientDetail?id=' + clientId;
         }
 
-        // Delete Product
-        function deleteProduct(productId, isLocked) {
-            prodId = productId;
+        // Delete Client
+        function deleteClient(clientId, isLocked) {
+            Id = clientId;
             if (isLocked) {
                 toastr.error("Please unlock the record first before deleting...", "", { positionClass: "toast-bottom-right" });
             } else {
-                $('#deleteProductConfirm').modal({
+                $('#deleteClientConfirm').modal({
                     show: true,
                     backdrop: 'static'
                 });
 
-                document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Delete";
-                $('#btnProductConfirmDelete').prop('disabled', false);
-                $('#btnProductCloseConfirmDelete').prop('disabled', false);
+                document.getElementById('btnClientConfirmDelete').innerHTML = "🗑 Delete";
+                $('#btnClientConfirmDelete').prop('disabled', false);
+                $('#btnClientCloseConfirmDelete').prop('disabled', false);
             }
         }
 
-        // Confirm Delete Product
-        function confirmDeleteProduct() {
-            document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Deleting...";
-            $('#btnProductConfirmDelete').prop('disabled', true);
-            $('#btnProductCloseConfirmDelete').prop('disabled', true);
+        // Confirm Delete Client
+        function confirmDeleteClient() {
+            document.getElementById('btnClientConfirmDelete').innerHTML = "🗑 Deleting...";
+            $('#btnClientConfirmDelete').prop('disabled', true);
+            $('#btnClientCloseConfirmDelete').prop('disabled', true);
 
             $.ajax({
-                url: '/api/product/delete/' + prodId,
+                url: '/api/client/delete/' + Id,
                 type: "DELETE",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 statusCode: {
                     200: function () {
                         toastr.success("Delete Successful", "", { positionClass: "toast-bottom-right" });
-                        $('#deleteProductConfirm').modal('hide');
-                        populateProduct();
+                        $('#deleteClientConfirm').modal('hide');
+                        populateClient();
+                        NProgress.done();
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        $('#deleteProductConfirm').modal('hide');
-                        document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Delete";
-                        $('#btnProductConfirmDelete').prop('disabled', false);
-                        $('#btnProductCloseConfirmDelete').prop('disabled', false);
+                        $('#deleteClientConfirm').modal('hide');
+                        document.getElementById('btnClientConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnClientConfirmDelete').prop('disabled', false);
+                        $('#btnClientCloseConfirmDelete').prop('disabled', false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        $('#deleteProductConfirm').modal('hide');
-                        document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Delete";
-                        $('#btnProductConfirmDelete').prop('disabled', false);
-                        $('#btnProductCloseConfirmDelete').prop('disabled', false);
+                        $('#deleteClientConfirm').modal('hide');
+                        document.getElementById('btnClientConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnClientConfirmDelete').prop('disabled', false);
+                        $('#btnClientCloseConfirmDelete').prop('disabled', false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        $('#deleteProductConfirm').modal('hide');
-                        document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Delete";
-                        $('#btnProductConfirmDelete').prop('disabled', false);
-                        $('#btnProductCloseConfirmDelete').prop('disabled', false);
+                        $('#deleteClientConfirm').modal('hide');
+                        document.getElementById('btnClientConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnClientConfirmDelete').prop('disabled', false);
+                        $('#btnClientCloseConfirmDelete').prop('disabled', false);
                     }
                 }
             });
         }
 
-        // Close Product
-        function closeProduct() {
+        // Close Client
+        function closeClient() {
             window.location = '/Software';
         }
 
         // On Load Page
         $(document).ready(function () {
-            populateProduct();
+            populateClient();
             NProgress.done();
         });
     </script>

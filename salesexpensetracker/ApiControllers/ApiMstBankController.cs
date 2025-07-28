@@ -13,43 +13,39 @@ using static iTextSharp.text.pdf.AcroFields;
 
 namespace salesexpensetracker.ApiControllers
 {
-    public class ApiMstProductController : ApiController
+    public class ApiMstBankController : ApiController
     {
         // ============
         // Data Context
         // ============
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
-        // List Products
-        [Authorize, HttpGet, Route("api/product/list")]
-        public List<Entities.MstProduct> ListProduct()
+        // List Banks
+        [Authorize, HttpGet, Route("api/bank/list")]
+        public List<Entities.MstBank> ListBank()
         {
-            var rawProducts = from d in db.MstProducts.OrderByDescending(d => d.ProductCode)
-                              select new
-                              {
-                                  Id = d.Id,
-                                  ProductCode = d.ProductCode,
-                                  ProductDescription = d.ProductDescription,
-                                  Cost = d.Cost, // Keep as decimal
-                                  Price = d.Price, // Keep as decimal
-                                  IsLocked = d.IsLocked,
-                                  CreatedById = d.CreatedById,
-                                  CreatedBy = d.MstUser.FullName,
-                                  CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
-                                  UpdatedById = d.UpdatedById,
-                                  UpdatedBy = d.MstUser1.FullName,
-                                  UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
-                              };
+            var rawBanks = from d in db.MstBanks.OrderByDescending(d => d.Id)
+                           select new
+                           {
+                               Id = d.Id,
+                               BankCode = d.BankCode,
+                               Bank = d.Bank,
+                               IsLocked = d.IsLocked,
+                               CreatedById = d.CreatedById,
+                               CreatedBy = d.MstUser.FullName,
+                               CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
+                               UpdatedById = d.UpdatedById,
+                               UpdatedBy = d.MstUser1.FullName,
+                               UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
+                           };
 
             // Step 2: Materialize and format in memory
-            var products = rawProducts.ToList() // Execute query on database
-                                      .Select(d => new Entities.MstProduct
+            var banks = rawBanks.ToList() // Execute query on database
+                                      .Select(d => new Entities.MstBank
                                       {
                                           Id = d.Id,
-                                          ProductCode = d.ProductCode,
-                                          ProductDescription = d.ProductDescription,
-                                          Cost = d.Cost.ToString("#,##0.00"), // Format in memory
-                                          Price = d.Price.ToString("#,##0.00"), // Format in memory
+                                          BankCode = d.BankCode,
+                                          Bank = d.Bank,
                                           IsLocked = d.IsLocked,
                                           CreatedById = d.CreatedById,
                                           CreatedBy = d.CreatedBy,
@@ -60,47 +56,43 @@ namespace salesexpensetracker.ApiControllers
                                       })
                                       .ToList();
 
-            return products;
+            return banks;
         }
 
-        // Detail Product
-        [Authorize, HttpGet, Route("api/product/detail/{id}")]
-        public Entities.MstProduct DetailProduct(String id)
+        // Detail Bank
+        [Authorize, HttpGet, Route("api/bank/detail/{id}")]
+        public Entities.MstBank DetailBank(String id)
         {
-            var product = (from d in db.MstProducts
-                           where d.Id == Convert.ToInt32(id)
-                           select new
-                           {
-                               d.Id,
-                               d.ProductCode,
-                               d.ProductDescription,
-                               d.Cost,
-                               d.Price,
-                               d.IsLocked,
-                               d.CreatedById,
-                               CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
-                               d.CreatedDateTime,
-                               d.UpdatedById,
-                               UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
-                               d.UpdatedDateTime
-                           }).FirstOrDefault();
+            var bank = (from d in db.MstBanks
+                        where d.Id == Convert.ToInt32(id)
+                        select new
+                        {
+                            d.Id,
+                            d.BankCode,
+                            d.Bank,
+                            d.IsLocked,
+                            d.CreatedById,
+                            CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
+                            d.CreatedDateTime,
+                            d.UpdatedById,
+                            UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
+                            d.UpdatedDateTime
+                        }).FirstOrDefault();
 
-            if (product != null)
+            if (bank != null)
             {
-                return new Entities.MstProduct
+                return new Entities.MstBank
                 {
-                    Id = product.Id,
-                    ProductCode = product.ProductCode,
-                    ProductDescription = product.ProductDescription,
-                    Cost = product.Cost.ToString("#,##0.00"),
-                    Price = product.Price.ToString("#,##0.00"),
-                    IsLocked = product.IsLocked,
-                    CreatedById = product.CreatedById,
-                    CreatedBy = product.CreatedBy,
-                    CreatedDateTime = product.CreatedDateTime.ToShortDateString(),
-                    UpdatedById = product.UpdatedById,
-                    UpdatedBy = product.UpdatedBy,
-                    UpdatedDateTime = product.UpdatedDateTime.ToShortDateString()
+                    Id = bank.Id,
+                    BankCode = bank.BankCode,
+                    Bank = bank.Bank,
+                    IsLocked = bank.IsLocked,
+                    CreatedById = bank.CreatedById,
+                    CreatedBy = bank.CreatedBy,
+                    CreatedDateTime = bank.CreatedDateTime.ToShortDateString(),
+                    UpdatedById = bank.UpdatedById,
+                    UpdatedBy = bank.UpdatedBy,
+                    UpdatedDateTime = bank.UpdatedDateTime.ToShortDateString()
                 };
             }
 
@@ -108,23 +100,9 @@ namespace salesexpensetracker.ApiControllers
 
         }
 
-        // Fill Leading Zeroes
-        public String FillLeadingZeroes(Int32 number, Int32 length)
-        {
-            var result = number.ToString();
-            var pad = length - result.Length;
-            while (pad > 0)
-            {
-                result = '0' + result;
-                pad--;
-            }
-
-            return result;
-        }
-
-        // Add Product
-        [Authorize, HttpPost, Route("api/product/add")]
-        public HttpResponseMessage AddProduct()
+        // Add Bank
+        [Authorize, HttpPost, Route("api/bank/add")]
+        public HttpResponseMessage AddBank()
         {
             try
             {
@@ -136,22 +114,10 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var defaultProductCode = "001";
-                    var lastProduct = from d in db.MstProducts.OrderByDescending(d => d.Id)
-                                   select d;
-
-                    if (lastProduct.Any())
+                    Data.MstBank newBank = new Data.MstBank
                     {
-                        var productCode = Convert.ToInt32(lastProduct.FirstOrDefault().ProductCode) + 001;
-                        defaultProductCode = FillLeadingZeroes(productCode, 3);
-                    }
-
-                    Data.MstProduct newProduct = new Data.MstProduct
-                    {
-                        ProductCode = defaultProductCode,
-                        ProductDescription = "NA",
-                        Cost = 0,
-                        Price = 0,
+                        BankCode = "NA",
+                        Bank = "NA",
                         IsLocked = false,
                         CreatedById = currentUserId,
                         CreatedDateTime = DateTime.Now,
@@ -159,10 +125,10 @@ namespace salesexpensetracker.ApiControllers
                         UpdatedDateTime = DateTime.Now,
                     };
 
-                    db.MstProducts.InsertOnSubmit(newProduct);
+                    db.MstBanks.InsertOnSubmit(newBank);
                     db.SubmitChanges();
 
-                    return Request.CreateResponse(HttpStatusCode.OK, newProduct.Id);
+                    return Request.CreateResponse(HttpStatusCode.OK, newBank.Id);
                 }
                 else
                 {
@@ -176,9 +142,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Save Product
-        [Authorize, HttpPut, Route("api/product/save/{id}")]
-        public HttpResponseMessage SaveProduct(Entities.MstProduct objProduct, String id)
+        // Save Bank
+        [Authorize, HttpPut, Route("api/bank/save/{id}")]
+        public HttpResponseMessage SaveBank(Entities.MstBank objBank, String id)
         {
             try
             {
@@ -190,21 +156,19 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
+                    var bank = from d in db.MstBanks
                                where d.Id == Convert.ToInt32(id)
                                select d;
 
-                    if (product.Any())
+                    if (bank.Any())
                     {
-                        if (!product.FirstOrDefault().IsLocked)
+                        if (!bank.FirstOrDefault().IsLocked)
                         {
-                            var saveProduct = product.FirstOrDefault();
-                            saveProduct.ProductCode = objProduct.ProductCode;
-                            saveProduct.ProductDescription = objProduct.ProductDescription;
-                            saveProduct.Price = Convert.ToDecimal(objProduct.Price);
-                            saveProduct.Cost = Convert.ToDecimal(objProduct.Cost);
-                            saveProduct.UpdatedById = currentUserId;
-                            saveProduct.UpdatedDateTime = DateTime.Now;
+                            var saveBank = bank.FirstOrDefault();
+                            saveBank.BankCode = objBank.BankCode;
+                            saveBank.Bank = objBank.Bank;
+                            saveBank.UpdatedById = currentUserId;
+                            saveBank.UpdatedDateTime = DateTime.Now;
                             db.SubmitChanges();
 
                             return Request.CreateResponse(HttpStatusCode.OK);
@@ -231,9 +195,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Lock Product
-        [Authorize, HttpPut, Route("api/product/lock/{id}")]
-        public HttpResponseMessage LockProduct(Entities.MstProduct objProduct, String id)
+        // Lock Bank
+        [Authorize, HttpPut, Route("api/bank/lock/{id}")]
+        public HttpResponseMessage LockBank(Entities.MstBank objBank, String id)
         {
             try
             {
@@ -245,29 +209,27 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
+                    var bank = from d in db.MstBanks
                                where d.Id == Convert.ToInt32(id)
                                select d;
 
-                    if (product.Any())
+                    if (bank.Any())
                     {
-                        if (!product.FirstOrDefault().IsLocked)
+                        if (!bank.FirstOrDefault().IsLocked)
                         {
-                            var productByCode = from d in db.MstProducts
-                                                   where d.ProductCode.Equals(objProduct.ProductCode)
-                                                   && d.IsLocked == true
-                                                   select d;
+                            var bankByCode = from d in db.MstBanks
+                                             where d.BankCode.Equals(objBank.BankCode)
+                                             && d.IsLocked == true
+                                             select d;
 
-                            if (!productByCode.Any())
+                            if (!bankByCode.Any())
                             {
-                                var lockProduct = product.FirstOrDefault();
-                                lockProduct.ProductCode = objProduct.ProductCode;
-                                lockProduct.ProductDescription = objProduct.ProductDescription;
-                                lockProduct.Cost = Convert.ToDecimal(objProduct.Cost);
-                                lockProduct.Price = Convert.ToDecimal(objProduct.Price);
-                                lockProduct.IsLocked = true;
-                                lockProduct.UpdatedById = currentUserId;
-                                lockProduct.UpdatedDateTime = DateTime.Now;
+                                var lockBank = bank.FirstOrDefault();
+                                lockBank.BankCode = objBank.BankCode;
+                                lockBank.Bank = objBank.Bank;
+                                lockBank.IsLocked = true;
+                                lockBank.UpdatedById = currentUserId;
+                                lockBank.UpdatedDateTime = DateTime.Now;
 
                                 db.SubmitChanges();
 
@@ -276,7 +238,7 @@ namespace salesexpensetracker.ApiControllers
                             }
                             else
                             {
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Product Code is already taken.");
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Supplier Code is already taken.");
                             }
                         }
                         else
@@ -301,9 +263,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Unlock Product
-        [Authorize, HttpPut, Route("api/product/unlock/{id}")]
-        public HttpResponseMessage UnlockProduct(String id)
+        // Unlock Bank
+        [Authorize, HttpPut, Route("api/bank/unlock/{id}")]
+        public HttpResponseMessage UnlockBank(String id)
         {
             try
             {
@@ -315,18 +277,18 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var bank = from d in db.MstBanks
+                                   where d.Id == Convert.ToInt32(id)
+                                   select d;
 
-                    if (product.Any())
+                    if (bank.Any())
                     {
-                        if (product.FirstOrDefault().IsLocked)
+                        if (bank.FirstOrDefault().IsLocked)
                         {
-                            var unlockProduct = product.FirstOrDefault();
-                            unlockProduct.IsLocked = false;
-                            unlockProduct.UpdatedById = currentUserId;
-                            unlockProduct.UpdatedDateTime = DateTime.Now;
+                            var unlockBank = bank.FirstOrDefault();
+                            unlockBank.IsLocked = false;
+                            unlockBank.UpdatedById = currentUserId;
+                            unlockBank.UpdatedDateTime = DateTime.Now;
 
                             db.SubmitChanges();
 
@@ -354,9 +316,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Delete Product
-        [Authorize, HttpDelete, Route("api/product/delete/{id}")]
-        public HttpResponseMessage DeleteProduct(String id)
+        // Delete Bank
+        [Authorize, HttpDelete, Route("api/bank/delete/{id}")]
+        public HttpResponseMessage DeleteBank(String id)
         {
             try
             {
@@ -368,13 +330,13 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var bank = from d in db.MstBanks
+                                   where d.Id == Convert.ToInt32(id)
+                                   select d;
 
-                    if (product.Any())
+                    if (bank.Any())
                     {
-                        db.MstProducts.DeleteOnSubmit(product.First());
+                        db.MstBanks.DeleteOnSubmit(bank.First());
 
                         db.SubmitChanges();
 

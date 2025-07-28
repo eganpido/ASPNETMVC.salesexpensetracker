@@ -12,6 +12,9 @@
 
     <!-- CSS StyleSheets-->
     @Styles.Render("~/Content/Home-css")
+    <style>
+        @Html.Raw(@"@media (min-width: 1200px) { .container { width: 1170px; } }")
+    </style>
 </head>
 <body data-spy="scroll" data-offset="100" id="home" class="account-body-custom">
     <!-- Header -->

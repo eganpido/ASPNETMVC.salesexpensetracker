@@ -5,51 +5,43 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Web.Http;
-using System.Web.UI;
-using System.Web.Util;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace salesexpensetracker.ApiControllers
 {
-    public class ApiMstProductController : ApiController
+    public class ApiMstExpenseController : ApiController
     {
         // ============
         // Data Context
         // ============
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
-        // List Products
-        [Authorize, HttpGet, Route("api/product/list")]
-        public List<Entities.MstProduct> ListProduct()
+        // List Expenses
+        [Authorize, HttpGet, Route("api/expense/list")]
+        public List<Entities.MstExpense> ListExpense()
         {
-            var rawProducts = from d in db.MstProducts.OrderByDescending(d => d.ProductCode)
-                              select new
-                              {
-                                  Id = d.Id,
-                                  ProductCode = d.ProductCode,
-                                  ProductDescription = d.ProductDescription,
-                                  Cost = d.Cost, // Keep as decimal
-                                  Price = d.Price, // Keep as decimal
-                                  IsLocked = d.IsLocked,
-                                  CreatedById = d.CreatedById,
-                                  CreatedBy = d.MstUser.FullName,
-                                  CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
-                                  UpdatedById = d.UpdatedById,
-                                  UpdatedBy = d.MstUser1.FullName,
-                                  UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
-                              };
+            var rawExpenses = from d in db.MstExpenses.OrderByDescending(d => d.ExpenseCode)
+                               select new
+                               {
+                                   Id = d.Id,
+                                   ExpenseCode = d.ExpenseCode,
+                                   ExpenseName = d.ExpenseName,
+                                   IsLocked = d.IsLocked,
+                                   CreatedById = d.CreatedById,
+                                   CreatedBy = d.MstUser.FullName,
+                                   CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
+                                   UpdatedById = d.UpdatedById,
+                                   UpdatedBy = d.MstUser1.FullName,
+                                   UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
+                               };
 
             // Step 2: Materialize and format in memory
-            var products = rawProducts.ToList() // Execute query on database
-                                      .Select(d => new Entities.MstProduct
+            var expenses = rawExpenses.ToList() // Execute query on database
+                                      .Select(d => new Entities.MstExpense
                                       {
                                           Id = d.Id,
-                                          ProductCode = d.ProductCode,
-                                          ProductDescription = d.ProductDescription,
-                                          Cost = d.Cost.ToString("#,##0.00"), // Format in memory
-                                          Price = d.Price.ToString("#,##0.00"), // Format in memory
+                                          ExpenseCode = d.ExpenseCode,
+                                          ExpenseName = d.ExpenseName,
                                           IsLocked = d.IsLocked,
                                           CreatedById = d.CreatedById,
                                           CreatedBy = d.CreatedBy,
@@ -60,47 +52,43 @@ namespace salesexpensetracker.ApiControllers
                                       })
                                       .ToList();
 
-            return products;
+            return expenses;
         }
 
-        // Detail Product
-        [Authorize, HttpGet, Route("api/product/detail/{id}")]
-        public Entities.MstProduct DetailProduct(String id)
+        // Detail Expense
+        [Authorize, HttpGet, Route("api/expense/detail/{id}")]
+        public Entities.MstExpense DetailExpense(String id)
         {
-            var product = (from d in db.MstProducts
+            var expense = (from d in db.MstExpenses
                            where d.Id == Convert.ToInt32(id)
-                           select new
-                           {
-                               d.Id,
-                               d.ProductCode,
-                               d.ProductDescription,
-                               d.Cost,
-                               d.Price,
-                               d.IsLocked,
-                               d.CreatedById,
-                               CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
-                               d.CreatedDateTime,
-                               d.UpdatedById,
-                               UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
-                               d.UpdatedDateTime
-                           }).FirstOrDefault();
+                            select new
+                            {
+                                d.Id,
+                                d.ExpenseCode,
+                                d.ExpenseName,
+                                d.IsLocked,
+                                d.CreatedById,
+                                CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
+                                d.CreatedDateTime,
+                                d.UpdatedById,
+                                UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
+                                d.UpdatedDateTime
+                            }).FirstOrDefault();
 
-            if (product != null)
+            if (expense != null)
             {
-                return new Entities.MstProduct
+                return new Entities.MstExpense
                 {
-                    Id = product.Id,
-                    ProductCode = product.ProductCode,
-                    ProductDescription = product.ProductDescription,
-                    Cost = product.Cost.ToString("#,##0.00"),
-                    Price = product.Price.ToString("#,##0.00"),
-                    IsLocked = product.IsLocked,
-                    CreatedById = product.CreatedById,
-                    CreatedBy = product.CreatedBy,
-                    CreatedDateTime = product.CreatedDateTime.ToShortDateString(),
-                    UpdatedById = product.UpdatedById,
-                    UpdatedBy = product.UpdatedBy,
-                    UpdatedDateTime = product.UpdatedDateTime.ToShortDateString()
+                    Id = expense.Id,
+                    ExpenseCode = expense.ExpenseCode,
+                    ExpenseName = expense.ExpenseName,
+                    IsLocked = expense.IsLocked,
+                    CreatedById = expense.CreatedById,
+                    CreatedBy = expense.CreatedBy,
+                    CreatedDateTime = expense.CreatedDateTime.ToShortDateString(),
+                    UpdatedById = expense.UpdatedById,
+                    UpdatedBy = expense.UpdatedBy,
+                    UpdatedDateTime = expense.UpdatedDateTime.ToShortDateString()
                 };
             }
 
@@ -122,9 +110,9 @@ namespace salesexpensetracker.ApiControllers
             return result;
         }
 
-        // Add Product
-        [Authorize, HttpPost, Route("api/product/add")]
-        public HttpResponseMessage AddProduct()
+        // Add Expense
+        [Authorize, HttpPost, Route("api/expense/add")]
+        public HttpResponseMessage AddExpense()
         {
             try
             {
@@ -136,22 +124,20 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var defaultProductCode = "001";
-                    var lastProduct = from d in db.MstProducts.OrderByDescending(d => d.Id)
-                                   select d;
+                    var defaultExpenseCode = "001";
+                    var lastExpense = from d in db.MstExpenses.OrderByDescending(d => d.Id)
+                                       select d;
 
-                    if (lastProduct.Any())
+                    if (lastExpense.Any())
                     {
-                        var productCode = Convert.ToInt32(lastProduct.FirstOrDefault().ProductCode) + 001;
-                        defaultProductCode = FillLeadingZeroes(productCode, 3);
+                        var expenseCode = Convert.ToInt32(lastExpense.FirstOrDefault().ExpenseCode) + 001;
+                        defaultExpenseCode = FillLeadingZeroes(expenseCode, 3);
                     }
 
-                    Data.MstProduct newProduct = new Data.MstProduct
+                    Data.MstExpense newExpense = new Data.MstExpense
                     {
-                        ProductCode = defaultProductCode,
-                        ProductDescription = "NA",
-                        Cost = 0,
-                        Price = 0,
+                        ExpenseCode = defaultExpenseCode,
+                        ExpenseName = "NA",
                         IsLocked = false,
                         CreatedById = currentUserId,
                         CreatedDateTime = DateTime.Now,
@@ -159,10 +145,10 @@ namespace salesexpensetracker.ApiControllers
                         UpdatedDateTime = DateTime.Now,
                     };
 
-                    db.MstProducts.InsertOnSubmit(newProduct);
+                    db.MstExpenses.InsertOnSubmit(newExpense);
                     db.SubmitChanges();
 
-                    return Request.CreateResponse(HttpStatusCode.OK, newProduct.Id);
+                    return Request.CreateResponse(HttpStatusCode.OK, newExpense.Id);
                 }
                 else
                 {
@@ -176,9 +162,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Save Product
-        [Authorize, HttpPut, Route("api/product/save/{id}")]
-        public HttpResponseMessage SaveProduct(Entities.MstProduct objProduct, String id)
+        // Save Expense
+        [Authorize, HttpPut, Route("api/expense/save/{id}")]
+        public HttpResponseMessage SaveExpense(Entities.MstExpense objExpense, String id)
         {
             try
             {
@@ -190,21 +176,19 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var expense = from d in db.MstExpenses
+                                  where d.Id == Convert.ToInt32(id)
+                                   select d;
 
-                    if (product.Any())
+                    if (expense.Any())
                     {
-                        if (!product.FirstOrDefault().IsLocked)
+                        if (!expense.FirstOrDefault().IsLocked)
                         {
-                            var saveProduct = product.FirstOrDefault();
-                            saveProduct.ProductCode = objProduct.ProductCode;
-                            saveProduct.ProductDescription = objProduct.ProductDescription;
-                            saveProduct.Price = Convert.ToDecimal(objProduct.Price);
-                            saveProduct.Cost = Convert.ToDecimal(objProduct.Cost);
-                            saveProduct.UpdatedById = currentUserId;
-                            saveProduct.UpdatedDateTime = DateTime.Now;
+                            var saveExpense = expense.FirstOrDefault();
+                            saveExpense.ExpenseCode = objExpense.ExpenseCode;
+                            saveExpense.ExpenseName = objExpense.ExpenseName;
+                            saveExpense.UpdatedById = currentUserId;
+                            saveExpense.UpdatedDateTime = DateTime.Now;
                             db.SubmitChanges();
 
                             return Request.CreateResponse(HttpStatusCode.OK);
@@ -231,9 +215,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Lock Product
-        [Authorize, HttpPut, Route("api/product/lock/{id}")]
-        public HttpResponseMessage LockProduct(Entities.MstProduct objProduct, String id)
+        // Lock Expense
+        [Authorize, HttpPut, Route("api/expense/lock/{id}")]
+        public HttpResponseMessage LockExpense(Entities.MstExpense objExpense, String id)
         {
             try
             {
@@ -245,29 +229,27 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var expense = from d in db.MstExpenses
+                                  where d.Id == Convert.ToInt32(id)
+                                   select d;
 
-                    if (product.Any())
+                    if (expense.Any())
                     {
-                        if (!product.FirstOrDefault().IsLocked)
+                        if (!expense.FirstOrDefault().IsLocked)
                         {
-                            var productByCode = from d in db.MstProducts
-                                                   where d.ProductCode.Equals(objProduct.ProductCode)
-                                                   && d.IsLocked == true
-                                                   select d;
+                            var expenseByCode = from d in db.MstExpenses
+                                                where d.ExpenseCode.Equals(objExpense.ExpenseCode)
+                                                 && d.IsLocked == true
+                                                 select d;
 
-                            if (!productByCode.Any())
+                            if (!expenseByCode.Any())
                             {
-                                var lockProduct = product.FirstOrDefault();
-                                lockProduct.ProductCode = objProduct.ProductCode;
-                                lockProduct.ProductDescription = objProduct.ProductDescription;
-                                lockProduct.Cost = Convert.ToDecimal(objProduct.Cost);
-                                lockProduct.Price = Convert.ToDecimal(objProduct.Price);
-                                lockProduct.IsLocked = true;
-                                lockProduct.UpdatedById = currentUserId;
-                                lockProduct.UpdatedDateTime = DateTime.Now;
+                                var lockExpense = expense.FirstOrDefault();
+                                lockExpense.ExpenseCode = objExpense.ExpenseCode;
+                                lockExpense.ExpenseName = objExpense.ExpenseName;
+                                lockExpense.IsLocked = true;
+                                lockExpense.UpdatedById = currentUserId;
+                                lockExpense.UpdatedDateTime = DateTime.Now;
 
                                 db.SubmitChanges();
 
@@ -276,7 +258,7 @@ namespace salesexpensetracker.ApiControllers
                             }
                             else
                             {
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Product Code is already taken.");
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Supplier Code is already taken.");
                             }
                         }
                         else
@@ -301,9 +283,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Unlock Product
-        [Authorize, HttpPut, Route("api/product/unlock/{id}")]
-        public HttpResponseMessage UnlockProduct(String id)
+        // Unlock Expense
+        [Authorize, HttpPut, Route("api/expense/unlock/{id}")]
+        public HttpResponseMessage UnlockExpense(String id)
         {
             try
             {
@@ -315,18 +297,18 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var expense = from d in db.MstExpenses
+                                  where d.Id == Convert.ToInt32(id)
+                                   select d;
 
-                    if (product.Any())
+                    if (expense.Any())
                     {
-                        if (product.FirstOrDefault().IsLocked)
+                        if (expense.FirstOrDefault().IsLocked)
                         {
-                            var unlockProduct = product.FirstOrDefault();
-                            unlockProduct.IsLocked = false;
-                            unlockProduct.UpdatedById = currentUserId;
-                            unlockProduct.UpdatedDateTime = DateTime.Now;
+                            var unlockExpense = expense.FirstOrDefault();
+                            unlockExpense.IsLocked = false;
+                            unlockExpense.UpdatedById = currentUserId;
+                            unlockExpense.UpdatedDateTime = DateTime.Now;
 
                             db.SubmitChanges();
 
@@ -354,9 +336,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Delete Product
-        [Authorize, HttpDelete, Route("api/product/delete/{id}")]
-        public HttpResponseMessage DeleteProduct(String id)
+        // Delete Expense
+        [Authorize, HttpDelete, Route("api/expense/delete/{id}")]
+        public HttpResponseMessage DeleteExpense(String id)
         {
             try
             {
@@ -368,13 +350,13 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var expense = from d in db.MstExpenses
+                                  where d.Id == Convert.ToInt32(id)
+                                  select d;
 
-                    if (product.Any())
+                    if (expense.Any())
                     {
-                        db.MstProducts.DeleteOnSubmit(product.First());
+                        db.MstExpenses.DeleteOnSubmit(expense.First());
 
                         db.SubmitChanges();
 

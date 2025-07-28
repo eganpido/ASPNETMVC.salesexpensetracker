@@ -16,7 +16,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
-    <title>Product List</title>
+    <title>Bank List</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
@@ -29,7 +29,7 @@
 
             <div class="container">
                 <h3>
-                    Product List
+                    Bank List
                 </h3>
             </div>
             <section class="container">
@@ -38,11 +38,11 @@
                         <table style="width: 100%" border="0">
                             <tr>
                                 <td style="width: 59%">
-                                    <button class="btn btn-primary" id="btnProductAdd" onclick="addProduct()">🞧 Add</button>
+                                    <button class="btn btn-primary" id="btnBankAdd" onclick="addBank()">🞧 Add</button>
                                 </td>
                                 <td style="width: 1%"></td>
                                 <td style="width: 40%" align="right">
-                                    <button class="btn btn-danger" id="btnProductClose" onclick="closeProduct()">🗙 Close</button>
+                                    <button class="btn btn-danger" id="btnBankClose" onclick="closeBank()">🗙 Close</button>
                                 </td>
                             </tr>
                         </table>
@@ -53,8 +53,7 @@
                             <tr class="selected">
                                 <th></th>
                                 <th>Code</th>
-                                <th>Product</th>
-                                <th>Price</th>
+                                <th>Bank</th>
                                 <th>Created By</th>
                                 <th>Created Date</th>
                                 <th>Locked</th>
@@ -67,20 +66,20 @@
             </section>
 
             <!--
-                Product Confirm Delete Modal
+                Bank Confirm Delete Modal
             -->
-            <div class="modal fade" id="deleteProductConfirm" role="dialog">
+            <div class="modal fade" id="deleteBankConfirm" role="dialog">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Delete</h4>
                         </div>
                         <div class="modal-body">
-                            Delete Product?
+                            Delete Bank?
                         </div>
                         <div class="modal-footer">
-                            <button id="btnProductConfirmDelete" class="btn btn-danger" onclick="confirmDeleteProduct()">🗑 Delete</button>
-                            <button id="btnProductCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
+                            <button id="btnBankConfirmDelete" class="btn btn-danger" onclick="confirmDeleteBank()">🗑 Delete</button>
+                            <button id="btnBankCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -95,8 +94,8 @@
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
     <script type="text/javascript">
-        var prodId = 0;
-        function populateProduct() {
+        var Id = 0;
+        function populateBank() {
             NProgress.start();
             // ✅ Destroy existing DataTable if already initialized
             if ($.fn.DataTable.isDataTable('#datagridList')) {
@@ -115,7 +114,7 @@
             // ✅ Initialize DataTable
             $('#datagridList').DataTable({
                 ajax: {
-                    url: '/api/product/list',
+                    url: '/api/bank/list',
                     dataSrc: ''
                 },
                 columns: [
@@ -123,12 +122,11 @@
                         data: null,
                         className: 'text-center',
                         render: function (data, type, row) {
-                            return '<button class="btn btn-primary btn-sm" onclick="editProduct(' + row.Id + ')">📝 Edit</button>';
+                            return '<button class="btn btn-primary btn-sm" onclick="editBank(' + row.Id + ')">📝 Edit</button>';
                         }
                     },
-                    { data: 'ProductCode', className: 'text-left' },
-                    { data: 'ProductDescription' },
-                    { data: 'Price' },
+                    { data: 'BankCode', className: 'text-left' },
+                    { data: 'Bank' },
                     { data: 'CreatedBy' },
                     {
                         data: 'CreatedDateTime',
@@ -147,17 +145,17 @@
                         data: null,
                         className: 'text-center',
                         render: function (data, type, row) {
-                            return '<button class="btn btn-danger btn-sm" onclick="deleteProduct(' + row.Id + ', ' + row.IsLocked + ')">🗑 Delete</button>';
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteBank(' + row.Id + ', ' + row.IsLocked + ')">🗑 Delete</button>';
                         }
                     }
                 ],
                 columnDefs: [
                     {
-                        targets: 1, // ProductCode column
+                        targets: 1,
                         className: 'text-left'
                     },
                     {
-                        targets: [0, 7], // Edit and Delete columns
+                        targets: [0, 6],
                         orderable: false
                     }
                 ],
@@ -172,113 +170,114 @@
             });
         }
 
-        // Add Product
-        function addProduct() {
-            document.getElementById('btnProductAdd').innerHTML = "🞧 Adding...";
-            $('#btnProductAdd').prop('disabled', true);
-            $('#btnProductClose').prop('disabled', true);
+        // Add Bank
+        function addBank() {
+            document.getElementById('btnBankAdd').innerHTML = "🞧 Adding...";
+            $('#btnBankAdd').prop('disabled', true);
+            $('#btnBankClose').prop('disabled', true);
 
             $.ajax({
                 type: "POST",
-                url: '/api/product/add',
+                url: '/api/bank/add',
                 contentType: "application/json; charset=utf-8",
                 statusCode: {
                     200: function (id) {
-                        window.location = '/Software/ProductDetail?id=' + id;
+                        window.location = '/Software/BankDetail?id=' + id;
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductAdd').innerHTML = "🞧 Add";
-                        $('#btnProductAdd').prop('disabled', false);
-                        $('#btnProductClose').prop('disabled', false);
+                        document.getElementById('btnBankAdd').innerHTML = "🞧 Add";
+                        $('#btnBankAdd').prop('disabled', false);
+                        $('#btnBankClose').prop('disabled', false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductAdd').innerHTML = "🞧 Add";
-                        $('#btnProductAdd').prop('disabled', false);
-                        $('#btnProductClose').prop('disabled', false);
+                        document.getElementById('btnBankAdd').innerHTML = "🞧 Add";
+                        $('#btnBankAdd').prop('disabled', false);
+                        $('#btnBankClose').prop('disabled', false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        document.getElementById('btnProductAdd').innerHTML = "🞧 Add";
-                        $('#btnProductAdd').prop('disabled', false);
-                        $('#btnProductClose').prop('disabled', false);
+                        document.getElementById('btnBankAdd').innerHTML = "🞧 Add";
+                        $('#btnBankAdd').prop('disabled', false);
+                        $('#btnBankClose').prop('disabled', false);
                     }
                 }
             });
         }
-        // Edit Product
-        function editProduct(productId) {
-            window.location = '/Software/ProductDetail?id=' + productId;
+        // Edit Bank
+        function editBank(bankId) {
+            window.location = '/Software/BankDetail?id=' + bankId;
         }
 
-        // Delete Product
-        function deleteProduct(productId, isLocked) {
-            prodId = productId;
+        // Delete Bank
+        function deleteBank(bankId, isLocked) {
+            Id = bankId;
             if (isLocked) {
                 toastr.error("Please unlock the record first before deleting...", "", { positionClass: "toast-bottom-right" });
             } else {
-                $('#deleteProductConfirm').modal({
+                $('#deleteBankConfirm').modal({
                     show: true,
                     backdrop: 'static'
                 });
 
-                document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Delete";
-                $('#btnProductConfirmDelete').prop('disabled', false);
-                $('#btnProductCloseConfirmDelete').prop('disabled', false);
+                document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Delete";
+                $('#btnBankConfirmDelete').prop('disabled', false);
+                $('#btnBankCloseConfirmDelete').prop('disabled', false);
             }
         }
 
-        // Confirm Delete Product
-        function confirmDeleteProduct() {
-            document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Deleting...";
-            $('#btnProductConfirmDelete').prop('disabled', true);
-            $('#btnProductCloseConfirmDelete').prop('disabled', true);
+        // Confirm Delete Bank
+        function confirmDeleteBank() {
+            document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Deleting...";
+            $('#btnBankConfirmDelete').prop('disabled', true);
+            $('#btnBankCloseConfirmDelete').prop('disabled', true);
 
             $.ajax({
-                url: '/api/product/delete/' + prodId,
+                url: '/api/bank/delete/' + Id,
                 type: "DELETE",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 statusCode: {
                     200: function () {
                         toastr.success("Delete Successful", "", { positionClass: "toast-bottom-right" });
-                        $('#deleteProductConfirm').modal('hide');
-                        populateProduct();
+                        $('#deleteBankConfirm').modal('hide');
+                        populateBank();
+                        NProgress.done();
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
-                        $('#deleteProductConfirm').modal('hide');
-                        document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Delete";
-                        $('#btnProductConfirmDelete').prop('disabled', false);
-                        $('#btnProductCloseConfirmDelete').prop('disabled', false);
+                        $('#deleteBankConfirm').modal('hide');
+                        document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnBankConfirmDelete').prop('disabled', false);
+                        $('#btnBankCloseConfirmDelete').prop('disabled', false);
                     },
                     400: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
-                        $('#deleteProductConfirm').modal('hide');
-                        document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Delete";
-                        $('#btnProductConfirmDelete').prop('disabled', false);
-                        $('#btnProductCloseConfirmDelete').prop('disabled', false);
+                        $('#deleteBankConfirm').modal('hide');
+                        document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnBankConfirmDelete').prop('disabled', false);
+                        $('#btnBankCloseConfirmDelete').prop('disabled', false);
                     },
                     500: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
-                        $('#deleteProductConfirm').modal('hide');
-                        document.getElementById('btnProductConfirmDelete').innerHTML = "🗑 Delete";
-                        $('#btnProductConfirmDelete').prop('disabled', false);
-                        $('#btnProductCloseConfirmDelete').prop('disabled', false);
+                        $('#deleteBankConfirm').modal('hide');
+                        document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnBankConfirmDelete').prop('disabled', false);
+                        $('#btnBankCloseConfirmDelete').prop('disabled', false);
                     }
                 }
             });
         }
 
-        // Close Product
-        function closeProduct() {
+        // Close Bank
+        function closeBank() {
             window.location = '/Software';
         }
 
         // On Load Page
         $(document).ready(function () {
-            populateProduct();
+            populateBank();
             NProgress.done();
         });
     </script>

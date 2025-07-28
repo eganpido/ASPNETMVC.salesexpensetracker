@@ -180,9 +180,13 @@ table.table.dataTable > tbody > tr.selected > * {
     background-color: #1EB38B;
     border-color: #1EB38B;
 }
-
 @media (min-width: 1200px) {
     .container {
         width: 1500px;
     }
+}
+div.dt-container div.dt-search input {
+    margin-left: 0.5em;
+    display: inline-block;
+    width: 350px;
 }

@@ -13,43 +13,39 @@ using static iTextSharp.text.pdf.AcroFields;
 
 namespace salesexpensetracker.ApiControllers
 {
-    public class ApiMstProductController : ApiController
+    public class ApiMstSupplierController : ApiController
     {
         // ============
         // Data Context
         // ============
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
-        // List Products
-        [Authorize, HttpGet, Route("api/product/list")]
-        public List<Entities.MstProduct> ListProduct()
+        // List Suppliers
+        [Authorize, HttpGet, Route("api/supplier/list")]
+        public List<Entities.MstSupplier> ListSupplier()
         {
-            var rawProducts = from d in db.MstProducts.OrderByDescending(d => d.ProductCode)
-                              select new
-                              {
-                                  Id = d.Id,
-                                  ProductCode = d.ProductCode,
-                                  ProductDescription = d.ProductDescription,
-                                  Cost = d.Cost, // Keep as decimal
-                                  Price = d.Price, // Keep as decimal
-                                  IsLocked = d.IsLocked,
-                                  CreatedById = d.CreatedById,
-                                  CreatedBy = d.MstUser.FullName,
-                                  CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
-                                  UpdatedById = d.UpdatedById,
-                                  UpdatedBy = d.MstUser1.FullName,
-                                  UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
-                              };
+            var rawSuppliers = from d in db.MstSuppliers.OrderByDescending(d => d.SupplierCode)
+                               select new
+                               {
+                                   Id = d.Id,
+                                   SupplierCode = d.SupplierCode,
+                                   SupplierName = d.SupplierName,
+                                   IsLocked = d.IsLocked,
+                                   CreatedById = d.CreatedById,
+                                   CreatedBy = d.MstUser.FullName,
+                                   CreatedDateTime = d.CreatedDateTime, // Keep as DateTime
+                                   UpdatedById = d.UpdatedById,
+                                   UpdatedBy = d.MstUser1.FullName,
+                                   UpdatedDateTime = d.UpdatedDateTime, // Keep as DateTime
+                               };
 
             // Step 2: Materialize and format in memory
-            var products = rawProducts.ToList() // Execute query on database
-                                      .Select(d => new Entities.MstProduct
+            var suppliers = rawSuppliers.ToList() // Execute query on database
+                                      .Select(d => new Entities.MstSupplier
                                       {
                                           Id = d.Id,
-                                          ProductCode = d.ProductCode,
-                                          ProductDescription = d.ProductDescription,
-                                          Cost = d.Cost.ToString("#,##0.00"), // Format in memory
-                                          Price = d.Price.ToString("#,##0.00"), // Format in memory
+                                          SupplierCode = d.SupplierCode,
+                                          SupplierName = d.SupplierName,
                                           IsLocked = d.IsLocked,
                                           CreatedById = d.CreatedById,
                                           CreatedBy = d.CreatedBy,
@@ -60,47 +56,43 @@ namespace salesexpensetracker.ApiControllers
                                       })
                                       .ToList();
 
-            return products;
+            return suppliers;
         }
 
-        // Detail Product
-        [Authorize, HttpGet, Route("api/product/detail/{id}")]
-        public Entities.MstProduct DetailProduct(String id)
+        // Detail Supplier
+        [Authorize, HttpGet, Route("api/supplier/detail/{id}")]
+        public Entities.MstSupplier DetailSupplier(String id)
         {
-            var product = (from d in db.MstProducts
-                           where d.Id == Convert.ToInt32(id)
-                           select new
-                           {
-                               d.Id,
-                               d.ProductCode,
-                               d.ProductDescription,
-                               d.Cost,
-                               d.Price,
-                               d.IsLocked,
-                               d.CreatedById,
-                               CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
-                               d.CreatedDateTime,
-                               d.UpdatedById,
-                               UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
-                               d.UpdatedDateTime
-                           }).FirstOrDefault();
+            var supplier = (from d in db.MstSuppliers
+                            where d.Id == Convert.ToInt32(id)
+                            select new
+                            {
+                                d.Id,
+                                d.SupplierCode,
+                                d.SupplierName,
+                                d.IsLocked,
+                                d.CreatedById,
+                                CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
+                                d.CreatedDateTime,
+                                d.UpdatedById,
+                                UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
+                                d.UpdatedDateTime
+                            }).FirstOrDefault();
 
-            if (product != null)
+            if (supplier != null)
             {
-                return new Entities.MstProduct
+                return new Entities.MstSupplier
                 {
-                    Id = product.Id,
-                    ProductCode = product.ProductCode,
-                    ProductDescription = product.ProductDescription,
-                    Cost = product.Cost.ToString("#,##0.00"),
-                    Price = product.Price.ToString("#,##0.00"),
-                    IsLocked = product.IsLocked,
-                    CreatedById = product.CreatedById,
-                    CreatedBy = product.CreatedBy,
-                    CreatedDateTime = product.CreatedDateTime.ToShortDateString(),
-                    UpdatedById = product.UpdatedById,
-                    UpdatedBy = product.UpdatedBy,
-                    UpdatedDateTime = product.UpdatedDateTime.ToShortDateString()
+                    Id = supplier.Id,
+                    SupplierCode = supplier.SupplierCode,
+                    SupplierName = supplier.SupplierName,
+                    IsLocked = supplier.IsLocked,
+                    CreatedById = supplier.CreatedById,
+                    CreatedBy = supplier.CreatedBy,
+                    CreatedDateTime = supplier.CreatedDateTime.ToShortDateString(),
+                    UpdatedById = supplier.UpdatedById,
+                    UpdatedBy = supplier.UpdatedBy,
+                    UpdatedDateTime = supplier.UpdatedDateTime.ToShortDateString()
                 };
             }
 
@@ -122,9 +114,9 @@ namespace salesexpensetracker.ApiControllers
             return result;
         }
 
-        // Add Product
-        [Authorize, HttpPost, Route("api/product/add")]
-        public HttpResponseMessage AddProduct()
+        // Add Supplier
+        [Authorize, HttpPost, Route("api/supplier/add")]
+        public HttpResponseMessage AddSupplier()
         {
             try
             {
@@ -136,22 +128,20 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var defaultProductCode = "001";
-                    var lastProduct = from d in db.MstProducts.OrderByDescending(d => d.Id)
-                                   select d;
+                    var defaultSupplierCode = "001";
+                    var lastSupplier = from d in db.MstSuppliers.OrderByDescending(d => d.Id)
+                                       select d;
 
-                    if (lastProduct.Any())
+                    if (lastSupplier.Any())
                     {
-                        var productCode = Convert.ToInt32(lastProduct.FirstOrDefault().ProductCode) + 001;
-                        defaultProductCode = FillLeadingZeroes(productCode, 3);
+                        var supplierCode = Convert.ToInt32(lastSupplier.FirstOrDefault().SupplierCode) + 001;
+                        defaultSupplierCode = FillLeadingZeroes(supplierCode, 3);
                     }
 
-                    Data.MstProduct newProduct = new Data.MstProduct
+                    Data.MstSupplier newSupplier = new Data.MstSupplier
                     {
-                        ProductCode = defaultProductCode,
-                        ProductDescription = "NA",
-                        Cost = 0,
-                        Price = 0,
+                        SupplierCode = defaultSupplierCode,
+                        SupplierName = "NA",
                         IsLocked = false,
                         CreatedById = currentUserId,
                         CreatedDateTime = DateTime.Now,
@@ -159,10 +149,10 @@ namespace salesexpensetracker.ApiControllers
                         UpdatedDateTime = DateTime.Now,
                     };
 
-                    db.MstProducts.InsertOnSubmit(newProduct);
+                    db.MstSuppliers.InsertOnSubmit(newSupplier);
                     db.SubmitChanges();
 
-                    return Request.CreateResponse(HttpStatusCode.OK, newProduct.Id);
+                    return Request.CreateResponse(HttpStatusCode.OK, newSupplier.Id);
                 }
                 else
                 {
@@ -176,9 +166,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Save Product
-        [Authorize, HttpPut, Route("api/product/save/{id}")]
-        public HttpResponseMessage SaveProduct(Entities.MstProduct objProduct, String id)
+        // Save Supplier
+        [Authorize, HttpPut, Route("api/supplier/save/{id}")]
+        public HttpResponseMessage SaveSupplier(Entities.MstSupplier objSupplier, String id)
         {
             try
             {
@@ -190,21 +180,19 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var supplier = from d in db.MstSuppliers
+                                   where d.Id == Convert.ToInt32(id)
+                                   select d;
 
-                    if (product.Any())
+                    if (supplier.Any())
                     {
-                        if (!product.FirstOrDefault().IsLocked)
+                        if (!supplier.FirstOrDefault().IsLocked)
                         {
-                            var saveProduct = product.FirstOrDefault();
-                            saveProduct.ProductCode = objProduct.ProductCode;
-                            saveProduct.ProductDescription = objProduct.ProductDescription;
-                            saveProduct.Price = Convert.ToDecimal(objProduct.Price);
-                            saveProduct.Cost = Convert.ToDecimal(objProduct.Cost);
-                            saveProduct.UpdatedById = currentUserId;
-                            saveProduct.UpdatedDateTime = DateTime.Now;
+                            var saveSupplier = supplier.FirstOrDefault();
+                            saveSupplier.SupplierCode = objSupplier.SupplierCode;
+                            saveSupplier.SupplierName = objSupplier.SupplierName;
+                            saveSupplier.UpdatedById = currentUserId;
+                            saveSupplier.UpdatedDateTime = DateTime.Now;
                             db.SubmitChanges();
 
                             return Request.CreateResponse(HttpStatusCode.OK);
@@ -231,9 +219,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Lock Product
-        [Authorize, HttpPut, Route("api/product/lock/{id}")]
-        public HttpResponseMessage LockProduct(Entities.MstProduct objProduct, String id)
+        // Lock Supplier
+        [Authorize, HttpPut, Route("api/supplier/lock/{id}")]
+        public HttpResponseMessage LockSupplier(Entities.MstSupplier objSupplier, String id)
         {
             try
             {
@@ -245,29 +233,27 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var supplier = from d in db.MstSuppliers
+                                   where d.Id == Convert.ToInt32(id)
+                                   select d;
 
-                    if (product.Any())
+                    if (supplier.Any())
                     {
-                        if (!product.FirstOrDefault().IsLocked)
+                        if (!supplier.FirstOrDefault().IsLocked)
                         {
-                            var productByCode = from d in db.MstProducts
-                                                   where d.ProductCode.Equals(objProduct.ProductCode)
-                                                   && d.IsLocked == true
-                                                   select d;
+                            var supplierByCode = from d in db.MstSuppliers
+                                                 where d.SupplierCode.Equals(objSupplier.SupplierCode)
+                                                 && d.IsLocked == true
+                                                 select d;
 
-                            if (!productByCode.Any())
+                            if (!supplierByCode.Any())
                             {
-                                var lockProduct = product.FirstOrDefault();
-                                lockProduct.ProductCode = objProduct.ProductCode;
-                                lockProduct.ProductDescription = objProduct.ProductDescription;
-                                lockProduct.Cost = Convert.ToDecimal(objProduct.Cost);
-                                lockProduct.Price = Convert.ToDecimal(objProduct.Price);
-                                lockProduct.IsLocked = true;
-                                lockProduct.UpdatedById = currentUserId;
-                                lockProduct.UpdatedDateTime = DateTime.Now;
+                                var lockSupplier = supplier.FirstOrDefault();
+                                lockSupplier.SupplierCode = objSupplier.SupplierCode;
+                                lockSupplier.SupplierName = objSupplier.SupplierName;
+                                lockSupplier.IsLocked = true;
+                                lockSupplier.UpdatedById = currentUserId;
+                                lockSupplier.UpdatedDateTime = DateTime.Now;
 
                                 db.SubmitChanges();
 
@@ -276,7 +262,7 @@ namespace salesexpensetracker.ApiControllers
                             }
                             else
                             {
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Product Code is already taken.");
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Supplier Code is already taken.");
                             }
                         }
                         else
@@ -301,9 +287,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Unlock Product
-        [Authorize, HttpPut, Route("api/product/unlock/{id}")]
-        public HttpResponseMessage UnlockProduct(String id)
+        // Unlock Supplier
+        [Authorize, HttpPut, Route("api/supplier/unlock/{id}")]
+        public HttpResponseMessage UnlockSupplier(String id)
         {
             try
             {
@@ -315,18 +301,18 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var supplier = from d in db.MstSuppliers
+                                   where d.Id == Convert.ToInt32(id)
+                                   select d;
 
-                    if (product.Any())
+                    if (supplier.Any())
                     {
-                        if (product.FirstOrDefault().IsLocked)
+                        if (supplier.FirstOrDefault().IsLocked)
                         {
-                            var unlockProduct = product.FirstOrDefault();
-                            unlockProduct.IsLocked = false;
-                            unlockProduct.UpdatedById = currentUserId;
-                            unlockProduct.UpdatedDateTime = DateTime.Now;
+                            var unlockSupplier = supplier.FirstOrDefault();
+                            unlockSupplier.IsLocked = false;
+                            unlockSupplier.UpdatedById = currentUserId;
+                            unlockSupplier.UpdatedDateTime = DateTime.Now;
 
                             db.SubmitChanges();
 
@@ -354,9 +340,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Delete Product
-        [Authorize, HttpDelete, Route("api/product/delete/{id}")]
-        public HttpResponseMessage DeleteProduct(String id)
+        // Delete Supplier
+        [Authorize, HttpDelete, Route("api/supplier/delete/{id}")]
+        public HttpResponseMessage DeleteSupplier(String id)
         {
             try
             {
@@ -368,13 +354,13 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var supplier = from d in db.MstSuppliers
+                                  where d.Id == Convert.ToInt32(id)
+                                  select d;
 
-                    if (product.Any())
+                    if (supplier.Any())
                     {
-                        db.MstProducts.DeleteOnSubmit(product.First());
+                        db.MstSuppliers.DeleteOnSubmit(supplier.First());
 
                         db.SubmitChanges();
 

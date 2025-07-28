@@ -13,25 +13,23 @@ using static iTextSharp.text.pdf.AcroFields;
 
 namespace salesexpensetracker.ApiControllers
 {
-    public class ApiMstProductController : ApiController
+    public class ApiMstPayTypeController : ApiController
     {
         // ============
         // Data Context
         // ============
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
-        // List Products
-        [Authorize, HttpGet, Route("api/product/list")]
-        public List<Entities.MstProduct> ListProduct()
+        // List PayTypes
+        [Authorize, HttpGet, Route("api/paytype/list")]
+        public List<Entities.MstPayType> ListPayType()
         {
-            var rawProducts = from d in db.MstProducts.OrderByDescending(d => d.ProductCode)
+            var rawPayTypes = from d in db.MstPayTypes.OrderByDescending(d => d.Id)
                               select new
                               {
                                   Id = d.Id,
-                                  ProductCode = d.ProductCode,
-                                  ProductDescription = d.ProductDescription,
-                                  Cost = d.Cost, // Keep as decimal
-                                  Price = d.Price, // Keep as decimal
+                                  PayTypeCode = d.PayTypeCode,
+                                  PayType = d.PayType,
                                   IsLocked = d.IsLocked,
                                   CreatedById = d.CreatedById,
                                   CreatedBy = d.MstUser.FullName,
@@ -42,14 +40,12 @@ namespace salesexpensetracker.ApiControllers
                               };
 
             // Step 2: Materialize and format in memory
-            var products = rawProducts.ToList() // Execute query on database
-                                      .Select(d => new Entities.MstProduct
+            var payTypes = rawPayTypes.ToList() // Execute query on database
+                                      .Select(d => new Entities.MstPayType
                                       {
                                           Id = d.Id,
-                                          ProductCode = d.ProductCode,
-                                          ProductDescription = d.ProductDescription,
-                                          Cost = d.Cost.ToString("#,##0.00"), // Format in memory
-                                          Price = d.Price.ToString("#,##0.00"), // Format in memory
+                                          PayTypeCode = d.PayTypeCode,
+                                          PayType = d.PayType,
                                           IsLocked = d.IsLocked,
                                           CreatedById = d.CreatedById,
                                           CreatedBy = d.CreatedBy,
@@ -60,22 +56,20 @@ namespace salesexpensetracker.ApiControllers
                                       })
                                       .ToList();
 
-            return products;
+            return payTypes;
         }
 
-        // Detail Product
-        [Authorize, HttpGet, Route("api/product/detail/{id}")]
-        public Entities.MstProduct DetailProduct(String id)
+        // Detail PayType
+        [Authorize, HttpGet, Route("api/paytype/detail/{id}")]
+        public Entities.MstPayType DetailPayType(String id)
         {
-            var product = (from d in db.MstProducts
+            var payType = (from d in db.MstPayTypes
                            where d.Id == Convert.ToInt32(id)
                            select new
                            {
                                d.Id,
-                               d.ProductCode,
-                               d.ProductDescription,
-                               d.Cost,
-                               d.Price,
+                               d.PayTypeCode,
+                               d.PayType,
                                d.IsLocked,
                                d.CreatedById,
                                CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
@@ -85,22 +79,20 @@ namespace salesexpensetracker.ApiControllers
                                d.UpdatedDateTime
                            }).FirstOrDefault();
 
-            if (product != null)
+            if (payType != null)
             {
-                return new Entities.MstProduct
+                return new Entities.MstPayType
                 {
-                    Id = product.Id,
-                    ProductCode = product.ProductCode,
-                    ProductDescription = product.ProductDescription,
-                    Cost = product.Cost.ToString("#,##0.00"),
-                    Price = product.Price.ToString("#,##0.00"),
-                    IsLocked = product.IsLocked,
-                    CreatedById = product.CreatedById,
-                    CreatedBy = product.CreatedBy,
-                    CreatedDateTime = product.CreatedDateTime.ToShortDateString(),
-                    UpdatedById = product.UpdatedById,
-                    UpdatedBy = product.UpdatedBy,
-                    UpdatedDateTime = product.UpdatedDateTime.ToShortDateString()
+                    Id = payType.Id,
+                    PayTypeCode = payType.PayTypeCode,
+                    PayType = payType.PayType,
+                    IsLocked = payType.IsLocked,
+                    CreatedById = payType.CreatedById,
+                    CreatedBy = payType.CreatedBy,
+                    CreatedDateTime = payType.CreatedDateTime.ToShortDateString(),
+                    UpdatedById = payType.UpdatedById,
+                    UpdatedBy = payType.UpdatedBy,
+                    UpdatedDateTime = payType.UpdatedDateTime.ToShortDateString()
                 };
             }
 
@@ -108,23 +100,9 @@ namespace salesexpensetracker.ApiControllers
 
         }
 
-        // Fill Leading Zeroes
-        public String FillLeadingZeroes(Int32 number, Int32 length)
-        {
-            var result = number.ToString();
-            var pad = length - result.Length;
-            while (pad > 0)
-            {
-                result = '0' + result;
-                pad--;
-            }
-
-            return result;
-        }
-
-        // Add Product
-        [Authorize, HttpPost, Route("api/product/add")]
-        public HttpResponseMessage AddProduct()
+        // Add PayType
+        [Authorize, HttpPost, Route("api/paytype/add")]
+        public HttpResponseMessage AddPayType()
         {
             try
             {
@@ -136,22 +114,10 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var defaultProductCode = "001";
-                    var lastProduct = from d in db.MstProducts.OrderByDescending(d => d.Id)
-                                   select d;
-
-                    if (lastProduct.Any())
+                    Data.MstPayType newPayType = new Data.MstPayType
                     {
-                        var productCode = Convert.ToInt32(lastProduct.FirstOrDefault().ProductCode) + 001;
-                        defaultProductCode = FillLeadingZeroes(productCode, 3);
-                    }
-
-                    Data.MstProduct newProduct = new Data.MstProduct
-                    {
-                        ProductCode = defaultProductCode,
-                        ProductDescription = "NA",
-                        Cost = 0,
-                        Price = 0,
+                        PayTypeCode = "NA",
+                        PayType = "NA",
                         IsLocked = false,
                         CreatedById = currentUserId,
                         CreatedDateTime = DateTime.Now,
@@ -159,10 +125,10 @@ namespace salesexpensetracker.ApiControllers
                         UpdatedDateTime = DateTime.Now,
                     };
 
-                    db.MstProducts.InsertOnSubmit(newProduct);
+                    db.MstPayTypes.InsertOnSubmit(newPayType);
                     db.SubmitChanges();
 
-                    return Request.CreateResponse(HttpStatusCode.OK, newProduct.Id);
+                    return Request.CreateResponse(HttpStatusCode.OK, newPayType.Id);
                 }
                 else
                 {
@@ -176,9 +142,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Save Product
-        [Authorize, HttpPut, Route("api/product/save/{id}")]
-        public HttpResponseMessage SaveProduct(Entities.MstProduct objProduct, String id)
+        // Save PayType
+        [Authorize, HttpPut, Route("api/paytype/save/{id}")]
+        public HttpResponseMessage SavePayType(Entities.MstPayType objPayType, String id)
         {
             try
             {
@@ -190,21 +156,19 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var payType = from d in db.MstPayTypes
+                                  where d.Id == Convert.ToInt32(id)
+                                  select d;
 
-                    if (product.Any())
+                    if (payType.Any())
                     {
-                        if (!product.FirstOrDefault().IsLocked)
+                        if (!payType.FirstOrDefault().IsLocked)
                         {
-                            var saveProduct = product.FirstOrDefault();
-                            saveProduct.ProductCode = objProduct.ProductCode;
-                            saveProduct.ProductDescription = objProduct.ProductDescription;
-                            saveProduct.Price = Convert.ToDecimal(objProduct.Price);
-                            saveProduct.Cost = Convert.ToDecimal(objProduct.Cost);
-                            saveProduct.UpdatedById = currentUserId;
-                            saveProduct.UpdatedDateTime = DateTime.Now;
+                            var savePayType = payType.FirstOrDefault();
+                            savePayType.PayTypeCode = objPayType.PayTypeCode;
+                            savePayType.PayType = objPayType.PayType;
+                            savePayType.UpdatedById = currentUserId;
+                            savePayType.UpdatedDateTime = DateTime.Now;
                             db.SubmitChanges();
 
                             return Request.CreateResponse(HttpStatusCode.OK);
@@ -231,9 +195,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Lock Product
-        [Authorize, HttpPut, Route("api/product/lock/{id}")]
-        public HttpResponseMessage LockProduct(Entities.MstProduct objProduct, String id)
+        // Lock PayType
+        [Authorize, HttpPut, Route("api/paytype/lock/{id}")]
+        public HttpResponseMessage LockPayType(Entities.MstPayType objPayType, String id)
         {
             try
             {
@@ -245,29 +209,27 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var payType = from d in db.MstPayTypes
+                                  where d.Id == Convert.ToInt32(id)
+                                  select d;
 
-                    if (product.Any())
+                    if (payType.Any())
                     {
-                        if (!product.FirstOrDefault().IsLocked)
+                        if (!payType.FirstOrDefault().IsLocked)
                         {
-                            var productByCode = from d in db.MstProducts
-                                                   where d.ProductCode.Equals(objProduct.ProductCode)
-                                                   && d.IsLocked == true
-                                                   select d;
+                            var payTypeByCode = from d in db.MstPayTypes
+                                                where d.PayTypeCode.Equals(objPayType.PayTypeCode)
+                                             && d.IsLocked == true
+                                                select d;
 
-                            if (!productByCode.Any())
+                            if (!payTypeByCode.Any())
                             {
-                                var lockProduct = product.FirstOrDefault();
-                                lockProduct.ProductCode = objProduct.ProductCode;
-                                lockProduct.ProductDescription = objProduct.ProductDescription;
-                                lockProduct.Cost = Convert.ToDecimal(objProduct.Cost);
-                                lockProduct.Price = Convert.ToDecimal(objProduct.Price);
-                                lockProduct.IsLocked = true;
-                                lockProduct.UpdatedById = currentUserId;
-                                lockProduct.UpdatedDateTime = DateTime.Now;
+                                var lockPayType = payType.FirstOrDefault();
+                                lockPayType.PayTypeCode = objPayType.PayTypeCode;
+                                lockPayType.PayType = objPayType.PayType;
+                                lockPayType.IsLocked = true;
+                                lockPayType.UpdatedById = currentUserId;
+                                lockPayType.UpdatedDateTime = DateTime.Now;
 
                                 db.SubmitChanges();
 
@@ -276,7 +238,7 @@ namespace salesexpensetracker.ApiControllers
                             }
                             else
                             {
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Product Code is already taken.");
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Supplier Code is already taken.");
                             }
                         }
                         else
@@ -301,9 +263,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Unlock Product
-        [Authorize, HttpPut, Route("api/product/unlock/{id}")]
-        public HttpResponseMessage UnlockProduct(String id)
+        // Unlock PayType
+        [Authorize, HttpPut, Route("api/paytype/unlock/{id}")]
+        public HttpResponseMessage UnlockPayType(String id)
         {
             try
             {
@@ -315,18 +277,18 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var payType = from d in db.MstPayTypes
+                                  where d.Id == Convert.ToInt32(id)
+                                  select d;
 
-                    if (product.Any())
+                    if (payType.Any())
                     {
-                        if (product.FirstOrDefault().IsLocked)
+                        if (payType.FirstOrDefault().IsLocked)
                         {
-                            var unlockProduct = product.FirstOrDefault();
-                            unlockProduct.IsLocked = false;
-                            unlockProduct.UpdatedById = currentUserId;
-                            unlockProduct.UpdatedDateTime = DateTime.Now;
+                            var unlockPayType = payType.FirstOrDefault();
+                            unlockPayType.IsLocked = false;
+                            unlockPayType.UpdatedById = currentUserId;
+                            unlockPayType.UpdatedDateTime = DateTime.Now;
 
                             db.SubmitChanges();
 
@@ -354,9 +316,9 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Delete Product
-        [Authorize, HttpDelete, Route("api/product/delete/{id}")]
-        public HttpResponseMessage DeleteProduct(String id)
+        // Delete PayType
+        [Authorize, HttpDelete, Route("api/paytype/delete/{id}")]
+        public HttpResponseMessage DeletePayType(String id)
         {
             try
             {
@@ -368,13 +330,13 @@ namespace salesexpensetracker.ApiControllers
                 {
                     var currentUserId = currentUser.FirstOrDefault().Id;
 
-                    var product = from d in db.MstProducts
-                               where d.Id == Convert.ToInt32(id)
-                               select d;
+                    var payType = from d in db.MstPayTypes
+                                  where d.Id == Convert.ToInt32(id)
+                                  select d;
 
-                    if (product.Any())
+                    if (payType.Any())
                     {
-                        db.MstProducts.DeleteOnSubmit(product.First());
+                        db.MstPayTypes.DeleteOnSubmit(payType.First());
 
                         db.SubmitChanges();
 
