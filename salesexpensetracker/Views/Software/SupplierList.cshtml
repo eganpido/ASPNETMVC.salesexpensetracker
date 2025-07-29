@@ -243,7 +243,9 @@
                         toastr.success("Delete Successful", "", { positionClass: "toast-bottom-right" });
                         $('#deleteSupplierConfirm').modal('hide');
                         populateSupplier();
-                        NProgress.done();
+                        setTimeout(() => {
+                            Loader.hide();
+                        }, 1000);
                     },
                     404: function (message) {
                         toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
