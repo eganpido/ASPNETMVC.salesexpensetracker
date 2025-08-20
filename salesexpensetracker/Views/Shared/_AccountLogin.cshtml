@@ -18,31 +18,25 @@ else
                     {
                         <div class="panel-login panel-login-default">
                             <div class="panel-login-heading" style="text-align: center; padding: 20px 0;">
-                                <span style="font-size:21px;">🎉 Welcome Back! 🎉</span>
+                                <span style="font-size:21px;">Welcome Back!</span>
                             </div>
                             <br/>
                             <div class="panel-body">
                                 @Html.AntiForgeryToken()
                                 <div class="form-group" style="margin-bottom: 25px !important;">
-                                    <label>🆔 Username</label>
+                                    <label>Username</label>
                                     <div>
                                         @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "Username" })
                                         @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 25px !important;">
-                                    <label>✴️ Password</label>
+                                    <label>Password</label>
                                     <div>
                                         @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
                                         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
-                                @*<div class="form-group">
-                                    <div>
-                                        @Html.CheckBoxFor(m => m.RememberMe)
-                                        @Html.LabelFor(m => m.RememberMe)
-                                    </div>
-                                </div>*@
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary btn-block btn-lg">🔑 Login</button>
                                 </div>

@@ -819,6 +819,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiControllers\ApiTrnSalesInvoiceController.cs" />
     <Compile Include="ApiControllers\ApiMstUserController.cs" />
     <Compile Include="ApiControllers\ApiMstPayTypeController.cs" />
     <Compile Include="ApiControllers\ApiMstClientController.cs" />
@@ -842,6 +843,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>setdb.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Entities\TrnSalesInvoiceLine.cs" />
+    <Compile Include="Entities\TrnSalesInvoice.cs" />
     <Compile Include="Entities\MstUser.cs" />
     <Compile Include="Entities\MstPayType.cs" />
     <Compile Include="Entities\MstClient.cs" />
