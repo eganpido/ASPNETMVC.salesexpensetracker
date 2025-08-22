@@ -86,7 +86,6 @@ namespace salesexpensetracker.ApiControllers
                         {
                             Id = d.Id,
                             SalesNumber = d.SalesNumber,
-                            // Better to keep as DateTime, format in UI
                             SalesDate = d.SalesDate.ToShortDateString(),
                             ClientId = d.ClientId,
                             Client = d.MstClient.ClientName,

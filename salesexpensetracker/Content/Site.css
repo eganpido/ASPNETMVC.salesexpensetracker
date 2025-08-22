@@ -297,20 +297,26 @@ h3 {
                 background-color: #f0f0f0;
             }
 
-        .combo-container .dropdown-menu.combo-suggestions .item-desc {
-            flex: 1; /* description grows */
-            margin-right: 15px; /* space before price */
-        }
-
-        .combo-container .dropdown-menu.combo-suggestions .item-price {
-            text-align: right;
-            min-width: 70px; /* consistent price width */
-        }
-
 #datagridList thead th {
     text-align: center;
     vertical-align: middle; /* optional */
 }
+
+.btn-info {
+    background-color: #389938;
+    border-color: #389938;
+}
+
+    .btn-info:hover {
+        background-color: #88D388;
+        border-color: #88D388;
+    }
+
+    .btn-info.active.focus, .btn-info.active:focus, .btn-info.active:hover, .btn-info:active.focus, .btn-info:active:focus, .btn-info:active:hover, .open > .dropdown-toggle.btn-info.focus, .open > .dropdown-toggle.btn-info:focus, .open > .dropdown-toggle.btn-info:hover {
+        color: #fff;
+        background-color: #88D388;
+        border-color: #88D388;
+    }
 
 @media (max-width: 767px) {
     .modal-dialog {

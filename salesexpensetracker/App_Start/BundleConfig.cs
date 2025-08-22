@@ -37,6 +37,7 @@ namespace salesexpensetracker
                       "~/Content/wijmo.min.css",
                       "~/Content/nprogress.css",
                       "~/Content/loader.css",
+                      "~/Content/combobox.css",
                       "~/Content/software.css",
                       "~/Content/Site.css"));
 
@@ -57,6 +58,7 @@ namespace salesexpensetracker
                     "~/Scripts/toastr.js",
                     "~/Scripts/nprogress.js",
                     "~/Scripts/loader.js",
+                    "~/Scripts/combobox.js",
                     "~/Scripts/menu.js",
                     "~/Scripts/software.js",
                     "~/Scripts/jquery.slimscroll.min.js",

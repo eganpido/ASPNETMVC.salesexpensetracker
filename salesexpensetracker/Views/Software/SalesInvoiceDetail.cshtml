@@ -1,0 +1,928 @@
+﻿@*@model easyfis.Entities.MstUserForm*@
+@{
+    // =====================
+    // User Rights Variables
+    // =====================
+    //var canAdd = Model.CanAdd;
+    //var canEdit = Model.CanEdit;
+    //var canDelete = Model.CanDelete;
+    //var canLock = Model.CanLock;
+    //var canUnlock = Model.CanUnlock;
+    //var canPrint = Model.CanPrint;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Sales Invoice Detail</title>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    @Styles.Render("~/Content/Software-css")
+    <style>
+        .calendar-button {
+            position: absolute;
+            right: 14px;
+            top: 52%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            background: transparent;
+            border: none;
+            color: #329494;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="o-wrapper" class="o-wrapper">
+        <main class="o-content">
+            @Html.Partial("_SoftwareHeader")
+            <div class="container">
+                <h3>
+                    🧾 Sales Invoice Detail
+                </h3>
+            </div>
+            <section class="container">
+                <div class="panel panel-default">
+
+                    <!--
+                        Options: Lock, Unlock, and Close Button
+                    -->
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <button class="btn btn-primary" id="btnDetailSave" onclick="saveRecord()">💾 Save</button>
+                            </div>
+                            <div class="col-md-10" align="right">
+                                <button class="btn btn-primary" id="btnDetailLock" onclick="lockRecord()">🔒 Lock</button>
+                                <button class="btn btn-info" id="btnDetailPrint" onclick="printRecord()">🖨️ Print</button>
+                                <button class="btn btn-primary" id="btnDetailUnlock" onclick="unlockRecord()">🔓 Unlock</button>
+                                <button class="btn btn-danger" id="btnDetailClose" onclick="closeDetail()">🗙 Close</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--
+                        Details, Fields and Other Informations
+                    -->
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">SI No.</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="salesNumber" placeholder="Order No." disabled />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">SI Date</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" id="salesDateInput" class="form-control custom-date" placeholder="Select date" />
+                                            <button type="button" class="calendar-button" data-target="#salesDateInput" tabindex="-1">📅</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Client</label>
+                                        <div class="col-sm-6">
+                                            <div class="combo-container">
+                                                <input type="text"
+                                                       class="form-control combo-input"
+                                                       id="salesClientId"
+                                                       data-url="/api/salesInvoice/list/client"
+                                                       data-value-field="Id"
+                                                       data-text-field="ClientName"
+                                                       data-display-fields="ClientName"
+                                                       data-placeholder="Select client..."
+                                                       data-selected-id="1"
+                                                       data-allow-add="false" />
+                                                <span class="combo-clear" style="display:none;">&times;</span>
+                                                <span class="combo-toggle">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path d="M1.5 5.5l6 6 6-6H1.5z" />
+                                                    </svg>
+                                                </span>
+                                                <ul class="dropdown-menu combo-suggestions"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Remarks</label>
+                                        <div class="col-sm-8">
+                                            <textarea id="salesRemarks" class="textarea-custom form-control" rows="2" placeholder="Remarks..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Amount</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control numberField" id="salesAmount" placeholder="0.00" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:40px;">
+                                        <div class="col-md-4">
+                                            <p>Created by:</p>
+                                            <div style="padding-left: 10px;">
+                                                <i class="fa fa-key fa-fw"></i> <label id="createdBy">NA</label>
+                                                <br />
+                                                <small><i class="fa fa-calendar fa-fw"></i> &nbsp;<span id="createdDate">mm/dd/yyyy</span></small>
+                                            </div>
+                                            <br />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p>Updated by:</p>
+                                            <div style="padding-left: 10px;">
+                                                <i class="fa fa-key fa-fw"></i> <label id="updatedBy">NA</label>
+                                                <br />
+                                                <small><i class="fa fa-calendar fa-fw"></i> &nbsp;<span id="updatedDate">mm/dd/yyyy</span></small>
+                                            </div>
+                                            <br />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                </div>
+                                <div class="col-md-10" align="right">
+                                    <button class="btn btn-primary" id="btnOrderDetailAdd" onclick="addLineRecord()" style="margin-right: 15px; margin-bottom: 5px;">🞧 Add  </button>
+                                </div>
+                            </div>
+                            <hr style="margin: 0 15px; " />
+                        </div>
+                        <table id="datagridList" class="table table-striped table-bordered">
+                            <thead>
+                                <tr class="selected">
+                                    <th></th>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Amount</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" style="text-align: right;">Total :</th>
+                                    <th class="text-right" id="amountTotalFooter"></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            @Html.Partial("_SoftwareFooter")
+        </main>
+    </div>
+    <div id="c-mask" class="c-mask"></div>
+
+    <!--
+        Line : Detail Modal
+    -->
+    <div class="modal fade" id="lineEdit" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="lineModalTitle">Sales Invoice Line Detail</h4>
+                </div>
+                <div class="modal-body">
+                    <center>
+                        <span id="lineLoading"></span>
+                    </center>
+                    <div id="lineContent">
+                        <br />
+                        <div class="tab-content">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <input type="hidden" id="lineId" />
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Product</label>
+                                        <div class="col-sm-7">
+                                            <div class="combo-container">
+                                                <input type="text"
+                                                       class="form-control combo-input"
+                                                       id="lineProductId"
+                                                       data-url="/api/salesInvoiceLine/list/product"
+                                                       data-value-field="Id"
+                                                       data-text-field="ProductDescription"
+                                                       data-display-fields="ProductDescription"
+                                                       data-placeholder="Select product..."
+                                                       data-allow-add="false" />
+                                                <span class="combo-clear" style="display:none;">&times;</span>
+                                                <span class="combo-toggle">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path d="M1.5 5.5l6 6 6-6H1.5z" />
+                                                    </svg>
+                                                </span>
+                                                <ul class="dropdown-menu combo-suggestions"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Price</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control numberField" id="linePrice" placeholder="0.00" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Quantity</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control numberField" id="lineQuantity" placeholder="0.00" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Amount</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control numberField" id="lineAmount" placeholder="0.00" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnLineSave" class="btn btn-primary" onclick="saveLineRecord()">💾 Save</button>
+                        <button id="btnLineCloseModal" class="btn btn-danger" data-dismiss="modal">🗙 Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--
+        Line Confirm Delete Modal
+    -->
+    <div class="modal fade" id="deleteLineConfirmModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete</h4>
+                </div>
+                <div class="modal-body">
+                    Delete Line Record?
+                </div>
+                <div class="modal-footer">
+                    <button id="btnLineConfirmDelete" class="btn btn-danger" onclick="confirmDeleteLineRecord()">🗑 Delete</button>
+                    <button id="btnLineCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/Scripts/Software-js")
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript">
+        var isLocked = false;
+        var _lineId = 0;
+
+        // Get URL Parameter Value
+        function getURLParameterValue(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+
+            var regexS = "[\\?&]" + name + "=([^&#]*)";
+            var regex = new RegExp(regexS);
+
+            var results = regex.exec(window.location.href);
+            if (results == null) {
+                return "";
+            } else {
+                return results[1];
+            }
+        }
+
+        // Get Sales Invoice Detail Data
+        function getDetailData() {
+            Loader.show();
+
+            if (document.location.search.length > 0) {
+                $.ajax({
+                    url: '/api/salesInvoice/detail/' + getURLParameterValue("id"),
+                    cache: false,
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (results) {
+                        if (results != null) {
+                            document.getElementById('salesNumber').value = results.SalesNumber;
+
+                            const salesDate = new Date(results.SalesDate);
+                            const formattedSalesDate = salesDate.getFullYear() + '-' +
+                                String(salesDate.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(salesDate.getDate()).padStart(2, '0');
+                            document.querySelector("#salesDateInput")._flatpickr.setDate(formattedSalesDate);
+
+                            const $input = $('#salesClientId');
+                            $input.val(results.Client).data('selected-id', results.ClientId);
+                            document.getElementById('salesRemarks').value = results.Remarks;
+                            document.getElementById('salesAmount').value = parseFloat(results.SalesAmount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');;
+                            document.getElementById('createdBy').innerHTML = results.CreatedBy;
+                            document.getElementById('createdDate').innerHTML = results.CreatedDateTime;
+                            document.getElementById('updatedBy').innerHTML = results.UpdatedBy;
+                            document.getElementById('updatedDate').innerHTML = results.UpdatedDateTime;
+
+                            if (results.IsLocked) {
+                                document.getElementById('salesDateInput').disabled = true;
+                                document.getElementById('salesClientId').disabled = true;
+                                document.getElementById('salesRemarks').disabled = true;
+
+                                $('#btnDetailSave').prop('disabled', true);
+                                $('#btnDetailLock').prop('disabled', true);
+                                $('#btnDetailAdd').prop('disabled', true);
+
+                                //$('#datagridList_wrapper').css({
+                                //    'pointer-events': 'none',
+                                //    'opacity': '0.8'
+                                //});
+
+                                isLocked = true;
+                            } else {
+                                $('#btnDetailUnlock').prop('disabled', true);
+                            }
+                        } else {
+                            alert("No Data");
+                            window.location = "/Software/SalesInvoiceList";
+                        }
+                    }
+                });
+            } else {
+                alert("No Id Parameter Value");
+                window.location = "/Software/SalesInvoiceList";
+            }
+
+            populateLines();
+
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        }
+
+        function populateLines() {
+            if ($.fn.DataTable.isDataTable('#datagridList')) {
+                $('#datagridList').DataTable().clear().destroy();
+            }
+
+            $('#datagridList tbody').off('click').on('click', 'tr', function () {
+                $('#datagridList tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            let table = $('#datagridList').DataTable({
+                ajax: {
+                    url: '/api/salesInvoiceLine/list/' + getURLParameterValue("id"),
+                    dataSrc: '',
+                },
+                columns: [
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary btn-sm" onclick="editLineRecord(' + row.Id + ')">📝 Edit</button>';
+                        }, width: '8%'
+                    },
+                    { data: 'Product', className: 'text-left', width: 'auto' },
+                    {
+                        data: 'Price',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            }
+                            return data;
+                        },
+                        width: '10%'
+                    },
+                    {
+                        data: 'Quantity',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            }
+                            return data;
+                        },
+                        width: '10%'
+                    },
+                    {
+                        data: 'Amount',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            }
+                            return data;
+                        },
+                        width: '15%'
+                    },
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteLineRecord(' + row.Id + ',' + row.SalesId + ')">🗑 Delete</button>';
+                        }, width: '8%'
+                    }
+                ],
+                columnDefs: [
+                    { targets: 1, className: 'text-left' },
+                    { targets: [0, 4], orderable: false }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "Search :  ",
+                    emptyTable: "No record(s) available",
+                    lengthMenu: "_MENU_ Records per page",
+                    info: "_START_ - _END_ of _TOTAL_ record(s) is displayed"
+                },
+                footerCallback: function (row, data, start, end, display) {
+                    const api = this.api();
+
+                    let total = api
+                        .column(4, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return parseFloat(a || 0) + parseFloat(b || 0);
+                        }, 0);
+
+                    $(api.column(4).footer()).html(
+                        total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+                    );
+
+                    document.getElementById('salesAmount').value = total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                },
+                drawCallback: function () {
+                    if (isLocked) {
+                        $('#datagridList tbody tr')
+                            .find('input, select, textarea, button')
+                            .prop('disabled', true)
+                            .css({
+                                'pointer-events': 'none',
+                                'opacity': '0.5'
+                            });
+                    }
+                }
+            });
+        }
+
+
+        // Detail Data Object
+        function detailDataObject() {
+            var detailObject = new Object();
+            detailObject.SalesNumber = document.getElementById('salesNumber').value;
+            detailObject.SalesDate = document.getElementById('salesDateInput').value;
+            const selectedId = $('#salesClientId').data('selected-id');
+            detailObject.ClientId = selectedId;
+            detailObject.Remarks = document.getElementById('salesRemarks').value;
+            detailObject.SalesAmount = document.getElementById('salesAmount').value;
+            var data = JSON.stringify(detailObject);
+            return data;
+        }
+
+        // Save Sales Invoice
+        function saveRecord() {
+            document.getElementById('btnDetailSave').innerHTML = "💾 Saving...";
+            $('#btnDetailSave').prop('disabled', true);
+            $('#btnDetailLock').prop('disabled', true);
+            $('#btnDetailUnlock').prop('disabled', true);
+            $('#btnDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/salesInvoice/save/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: detailDataObject(),
+                statusCode: {
+                    200: function () {
+                        toastr.success("Save Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailSave').innerHTML = "💾 Save";
+                        $("#btnDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnDetailClose").prop("disabled", false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailSave').innerHTML = "💾 Save";
+                        $("#btnDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnDetailClose").prop("disabled", false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailSave').innerHTML = "💾 Save";
+                        $("#btnDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnDetailClose").prop("disabled", false);
+                    }
+                },
+            });
+        }
+
+        // Lock Sales Invoice
+        function lockRecord() {
+            document.getElementById('btnDetailLock').innerHTML = "🔒 Locking...";
+            $('#btnDetailSave').prop('disabled', true);
+            $('#btnDetailLock').prop('disabled', true);
+            $('#btnDetailUnlock').prop('disabled', true);
+            $('#btnDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/salesInvoice/lock/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: detailDataObject(),
+                statusCode: {
+                    200: function () {
+                        toastr.success("Lock Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnDetailSave').prop('disabled', false);
+                        $('#btnDetailLock').prop('disabled', false);
+                        $('#btnDetailClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnDetailSave').prop('disabled', false);
+                        $('#btnDetailLock').prop('disabled', false);
+                        $('#btnDetailClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnDetailSave').prop('disabled', false);
+                        $('#btnDetailLock').prop('disabled', false);
+                        $('#btnDetailClose').prop('disabled', false);
+                    }
+                },
+            });
+        }
+
+        // Unlock Sales Invoice
+        function unlockRecord() {
+            document.getElementById('btnDetailUnlock').innerHTML = "🔓 Unlocking...";
+            $('#btnDetailSave').prop('disabled', true);
+            $('#btnDetailLock').prop('disabled', true);
+            $('#btnDetailUnlock').prop('disabled', true);
+            $('#btnDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/salesInvoice/unlock/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                statusCode: {
+                    200: function () {
+                        toastr.success("Unlock Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnDetailSave').prop('disabled', false);
+                        $('#btnDetailUnlock').prop('disabled', false);
+                        $('#btnDetailClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnDetailSave').prop('disabled', false);
+                        $('#btnDetailUnlock').prop('disabled', false);
+                        $('#btnDetailClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnDetailSave').prop('disabled', false);
+                        $('#btnDetailUnlock').prop('disabled', false);
+                        $('#btnDetailClose').prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+        // Print Sales Invoice
+        function printRecord() {
+            var salesId = getURLParameterValue("id");
+
+            var printLink = '/RepSalesInvoice/SalesInvoice?SalesId=' + salesId;
+            window.open(printLink, '_blank');
+        }
+
+        // Add Sales Invoice Line
+        function addLineRecord() {
+            _lineId = 0;
+            $('#lineEdit').modal({
+                show: true,
+                backdrop: 'static'
+            });
+
+            $("#lineLoading").show();
+            document.getElementById("lineLoading").innerHTML = 'Loading...';
+            $("#lineContent").hide();
+
+            document.getElementById("lineModalTitle").innerHTML = 'Add Sales Invoice Line';
+
+            document.getElementById('btnLineSave').innerHTML = "💾 Save";
+            $("#btnLineSave").prop("disabled", true);
+            $("#btnLineCloseModal").prop("disabled", false);
+
+            document.getElementById('linePrice').value = formatDecimalValues(1);
+            document.getElementById('lineQuantity').value = formatDecimalValues(1);
+            computeAmount();
+
+            $("#lineLoading").hide();
+            $("#lineContent").show();
+            $("#btnLineSave").prop("disabled", false);
+        }
+
+        // Edit Sales Invoice Line
+        function editLineRecord(lineId) {
+            $('#lineEdit').modal({
+                show: true,
+                backdrop: 'static'
+            });
+
+            $("#lineLoading").show();
+            document.getElementById("lineLoading").innerHTML = 'Loading...';
+            $("#lineContent").hide();
+
+            document.getElementById("lineModalTitle").innerHTML = 'Edit Order Item';
+
+            document.getElementById('btnLineSave').innerHTML = "💾 Save";
+            $("#btnLineSave").prop("disabled", true);
+            $("#btnLineCloseModal").prop("disabled", false);
+
+            $.ajax({
+                url: '/api/salesInvoiceLine/detail/' + lineId + '/' + getURLParameterValue("id"),
+                cache: false,
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                success: function (results) {
+                    if (results != null) {
+                        const $input = $('#lineProductId');
+                        document.getElementById('lineId').value = results.Id;
+                        _lineId = results.Id;
+                        $input.val(results.Product).data('selected-id', results.ProductId);
+                        document.getElementById('linePrice').value = formatDecimalValues(results.Price);
+                        document.getElementById('lineQuantity').value = formatDecimalValues(results.Quantity);
+                        document.getElementById('lineAmount').value = formatDecimalValues(results.Amount);
+
+                        $("#btnLineSave").prop("disabled", false);
+                        $("#lineLoading").hide();
+                        $("#lineContent").show();
+                    } else {
+                        alert("No Data");
+                        window.location = "/Software/SalesInvoiceList";
+                    }
+                }
+            });
+        }
+
+        // Save Sales Invoice Line
+        function saveLineRecord() {
+            const selectedId = $('#lineProductId').data('selected-id');
+            var lineObject = new Object();
+            var detailId = getURLParameterValue('id');
+            lineObject.SalesId = detailId;
+            lineObject.ProductId = selectedId;
+            lineObject.Price = document.getElementById('linePrice').value;
+            lineObject.Quantity = document.getElementById('lineQuantity').value;
+            lineObject.Amount = document.getElementById('lineAmount').value;
+            var lineData = JSON.stringify(lineObject);
+
+            document.getElementById('btnLineSave').innerHTML = "💾 Saving...";
+            $("#btnLineSave").prop("disabled", true);
+            $("#btnLineCloseModal").prop("disabled", true);
+
+            if (_lineId == 0) {
+                $.ajax({
+                    type: "POST",
+                    url: '/api/salesInvoiceLine/add/' + detailId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: lineData,
+                    statusCode: {
+                        200: function () {
+                            toastr.success("Save Succesful");
+                            $('#lineEdit').modal('hide');
+                            Loader.show();
+                            populateLines();
+                            setTimeout(() => {
+                                Loader.hide();
+                            }, 1000);
+                        },
+                        404: function (message) {
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
+                            document.getElementById('btnLineSave').innerHTML = "💾 Save";
+                            $("#btnLineSave").prop("disabled", false);
+                            $("#btnLineCloseModal").prop("disabled", false);
+                        },
+                        400: function (message) {
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
+                            document.getElementById('btnLineSave').innerHTML = "💾 Save";
+                            $("#btnLineSave").prop("disabled", false);
+                            $("#btnLineCloseModal").prop("disabled", false);
+                        },
+                        500: function (message) {
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
+                            document.getElementById('btnLineSave').innerHTML = "💾 Save";
+                            $("#btnLineSave").prop("disabled", false);
+                            $("#btnLineCloseModal").prop("disabled", false);
+                        }
+                    }
+                });
+            } else {
+                $.ajax({
+                    type: "PUT",
+                    url: '/api/salesInvoiceLine/update/' + _lineId + '/' + detailId,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: lineData,
+                    statusCode: {
+                        200: function () {
+                            toastr.success("Update Successful");
+                            $('#lineEdit').modal('hide');
+                            Loader.show();
+                            populateLines();
+                            setTimeout(() => {
+                                Loader.hide();
+                            }, 1000);
+                        },
+                        404: function (message) {
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
+                            document.getElementById('btnLineSave').innerHTML = "💾 Save";
+                            $("#btnLineSave").prop("disabled", false);
+                            $("#btnLineCloseModal").prop("disabled", false);
+                        },
+                        400: function (message) {
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
+                            document.getElementById('btnLineSave').innerHTML = "💾 Save";
+                            $("#btnLineSave").prop("disabled", false);
+                            $("#btnLineCloseModal").prop("disabled", false);
+                        },
+                        500: function (message) {
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
+                            document.getElementById('btnLineSave').innerHTML = "💾 Save";
+                            $("#btnLineSave").prop("disabled", false);
+                            $("#btnLineCloseModal").prop("disabled", false);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Delete Sales Invoice Line
+        var delLineId = 0;
+        var deliDetailId = 0;
+        function deleteLineRecord(lineId, detailId) {
+            delLineId = lineId;
+            deliDetailId = detailId;
+            $('#deleteLineConfirmModal').modal({
+                show: true,
+                backdrop: 'static'
+            });
+
+            document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Delete";
+            $("#btnLineConfirmDelete").prop("disabled", false);
+            $("#btnLineCloseConfirmDelete").prop("disabled", false);
+        }
+
+        // Delete Confirm Sales Invoice Line
+        function confirmDeleteLineRecord() {
+            document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Deleting...";
+            $("#btnLineConfirmDelete").prop("disabled", true);
+            $("#btnLineCloseConfirmDelete").prop("disabled", true);
+
+            $.ajax({
+                url: '/api/salesInvoiceLine/delete/' + delLineId + '/' + deliDetailId,
+                type: "DELETE",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                statusCode: {
+                    200: function () {
+                        toastr.success("Delete Successful");
+                        $('#deleteLineConfirmModal').modal('hide');
+                        Loader.show();
+                        populateLines();
+                        setTimeout(() => {
+                            Loader.hide();
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
+                        document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Delete";
+                        $("#btnLineConfirmDelete").prop("disabled", false);
+                        $("#btnLineCloseConfirmDelete").prop("disabled", false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
+                        document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Delete";
+                        $("#btnLineConfirmDelete").prop("disabled", false);
+                        $("#btnLineCloseConfirmDelete").prop("disabled", false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
+                        document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Delete";
+                        $("#btnLineConfirmDelete").prop("disabled", false);
+                        $("#btnLineCloseConfirmDelete").prop("disabled", false);
+                    }
+                }
+            });
+        }
+
+        $("#linePrice").keyup(function (e) { computeAmount(); });
+        $("#lineQuantity").keyup(function (e) { computeAmount(); });
+        $('#lineProductId').on('change', function () {
+            const list = $(this).data('selected-item');
+            if (list) {
+                $('#linePrice').val(list.Price); // Assign to hidden or display field
+                computeAmount();
+            }
+        });
+
+        // Compute Amount
+        function computeAmount() {
+            var price = document.getElementById('linePrice').value.replace(/\,/g, '');
+            var quantity = document.getElementById('lineQuantity').value.replace(/\,/g, '');
+            var amount = price * quantity;
+
+            document.getElementById('lineAmount').value = formatDecimalValues(amount);
+        }
+
+        // Close Sales Invoice
+        function closeDetail() {
+            window.location = '/Software/SalesInvoiceList';
+        }
+
+        function initializeDate() {
+            const today = new Date();
+
+            flatpickr("#salesDateInput", {
+                dateFormat: "Y-m-d",
+                defaultDate: today,
+                minDate: "1753-01-01",
+                maxDate: "9999-12-31",
+                disableMobile: true
+            });
+
+            getDetailData();
+        }
+
+        document.querySelectorAll('.calendar-button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const targetInput = document.querySelector(this.dataset.target);
+                if (targetInput && targetInput._flatpickr) {
+                    targetInput._flatpickr.open();
+                }
+            });
+        });
+
+        // ============
+        // On Load Page
+        // ============
+        $(document).ready(function () {
+            initializeDate();
+            initComboBoxes();
+        });
+    </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
+</body>
+</html>

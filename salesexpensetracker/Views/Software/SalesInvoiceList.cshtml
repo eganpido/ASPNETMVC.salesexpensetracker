@@ -296,23 +296,23 @@
         }
         // Edit
         function editRecord(salesId) {
-            window.location = '/Software/SalesInvoiceDetail?id=' + clientId;
+            window.location = '/Software/SalesInvoiceDetail?id=' + salesId;
         }
 
         // Delete
         function deleteRecord(salesId, isLocked) {
-            Id = clientId;
+            Id = salesId;
             if (isLocked) {
                 toastr.error("Please unlock the record first before deleting...", "", { positionClass: "toast-bottom-right" });
             } else {
-                $('#deleteClientConfirm').modal({
+                $('#deleteConfirm').modal({
                     show: true,
                     backdrop: 'static'
                 });
 
-                document.getElementById('btnClientConfirmDelete').innerHTML = "🗑 Delete";
-                $('#btnClientConfirmDelete').prop('disabled', false);
-                $('#btnClientCloseConfirmDelete').prop('disabled', false);
+                document.getElementById('btnConfirmDelete').innerHTML = "🗑 Delete";
+                $('#btnConfirmDelete').prop('disabled', false);
+                $('#btnCloseConfirmDelete').prop('disabled', false);
             }
         }
 
