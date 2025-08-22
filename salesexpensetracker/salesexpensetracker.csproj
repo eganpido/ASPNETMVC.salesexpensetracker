@@ -819,7 +819,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApiControllers\ApiTrnSalesInvoiceController.cs" />
+    <Compile Include="ApiControllers\ApiTrnSalesInvoiceLineController.cs" />
     <Compile Include="ApiControllers\ApiMstUserController.cs" />
     <Compile Include="ApiControllers\ApiMstPayTypeController.cs" />
     <Compile Include="ApiControllers\ApiMstClientController.cs" />
@@ -827,6 +827,7 @@
     <Compile Include="ApiControllers\ApiMstExpenseController.cs" />
     <Compile Include="ApiControllers\ApiMstSupplierController.cs" />
     <Compile Include="ApiControllers\ApiMstProductController.cs" />
+    <Compile Include="ApiControllers\ApiTrnSalesInvoiceController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -903,6 +904,60 @@
     <Content Include="Views\Software\PayTypeDetail.cshtml" />
     <Content Include="Views\Software\UserList.cshtml" />
     <Content Include="Views\Software\UserDetail.cshtml" />
+    <Content Include="Views\Software\SalesInvoiceList.cshtml" />
+    <Content Include="Views\Manage\views\Account\ConfirmEmail.cshtml" />
+    <Content Include="Views\Manage\views\Account\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Manage\views\Account\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Manage\views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Manage\views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Manage\views\Account\Login.cshtml" />
+    <Content Include="Views\Manage\views\Account\Register.cshtml" />
+    <Content Include="Views\Manage\views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Manage\views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Manage\views\Account\SendCode.cshtml" />
+    <Content Include="Views\Manage\views\Account\VerifyCode.cshtml" />
+    <Content Include="Views\Manage\views\Account\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Manage\views\Home\About.cshtml" />
+    <Content Include="Views\Manage\views\Home\Contact.cshtml" />
+    <Content Include="Views\Manage\views\Home\Index.cshtml" />
+    <Content Include="Views\Manage\views\Manage\AddPhoneNumber.cshtml" />
+    <Content Include="Views\Manage\views\Manage\ChangePassword.cshtml" />
+    <Content Include="Views\Manage\views\Manage\Index.cshtml" />
+    <Content Include="Views\Manage\views\Manage\ManageLogins.cshtml" />
+    <Content Include="Views\Manage\views\Manage\SetPassword.cshtml" />
+    <Content Include="Views\Manage\views\Manage\VerifyPhoneNumber.cshtml" />
+    <Content Include="Views\Manage\views\Shared\Error.cshtml" />
+    <Content Include="Views\Manage\views\Shared\Lockout.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_AccountFooter.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_AccountHeader.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_AccountLogin.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_AccountRegister.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_HomeIndex.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_ManageFooter.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_ManageHeader.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_ManageIndex.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_SoftwareFooter.cshtml" />
+    <Content Include="Views\Manage\views\Shared\_SoftwareHeader.cshtml" />
+    <Content Include="Views\Manage\views\Software\BankDetail.cshtml" />
+    <Content Include="Views\Manage\views\Software\BankList.cshtml" />
+    <Content Include="Views\Manage\views\Software\ClientDetail.cshtml" />
+    <Content Include="Views\Manage\views\Software\ClientList.cshtml" />
+    <Content Include="Views\Manage\views\Software\ExpenseDetail.cshtml" />
+    <Content Include="Views\Manage\views\Software\ExpenseList.cshtml" />
+    <Content Include="Views\Manage\views\Software\Index.cshtml" />
+    <Content Include="Views\Manage\views\Software\PayTypeDetail.cshtml" />
+    <Content Include="Views\Manage\views\Software\PayTypeList.cshtml" />
+    <Content Include="Views\Manage\views\Software\ProductDetail.cshtml" />
+    <Content Include="Views\Manage\views\Software\ProductList.cshtml" />
+    <Content Include="Views\Manage\views\Software\SalesInvoiceList.cshtml" />
+    <Content Include="Views\Manage\views\Software\SupplierDetail.cshtml" />
+    <Content Include="Views\Manage\views\Software\SupplierList.cshtml" />
+    <Content Include="Views\Manage\views\Software\UserDetail.cshtml" />
+    <Content Include="Views\Manage\views\Software\UserList.cshtml" />
+    <Content Include="Views\Manage\views\web.config" />
+    <Content Include="Views\Manage\views\_ViewStart.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

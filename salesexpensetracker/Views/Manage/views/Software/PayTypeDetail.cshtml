@@ -1,0 +1,348 @@
+﻿@*@model easyfis.Entities.MstUserForm*@
+@{
+    // =====================
+    // User Rights Variables
+    // =====================
+    //var canAdd = Model.CanAdd;
+    //var canEdit = Model.CanEdit;
+    //var canDelete = Model.CanDelete;
+    //var canLock = Model.CanLock;
+    //var canUnlock = Model.CanUnlock;
+    //var canPrint = Model.CanPrint;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Pay Type Detail</title>
+
+    @Styles.Render("~/Content/Software-css")
+</head>
+<body>
+    <div id="o-wrapper" class="o-wrapper">
+        <main class="o-content">
+            @Html.Partial("_SoftwareHeader")
+            <div class="container">
+                <h3>
+                    💳 Pay Type Detail
+                </h3>
+            </div>
+            <section class="container">
+                <div class="panel panel-default">
+
+                    <!--
+                        Options: Lock, Unlock, and Close Button
+                    -->
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <button class="btn btn-primary" id="btnPayTypeDetailSave" onclick="savePayType()">💾 Save</button>
+                            </div>
+                            <div class="col-md-10" align="right">
+                                <button class="btn btn-primary" id="btnPayTypeDetailLock" onclick="lockPayType()">🔒 Lock</button>
+                                <button class="btn btn-primary" id="btnPayTypeDetailUnlock" onclick="unlockPayType()">🔓 Unlock</button>
+                                <button class="btn btn-danger" id="btnPayTypeDetailClose" onclick="closePayTypeDetail()">🗙 Close</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--
+                        Details, Fields and Other Informations
+                    -->
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Code</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="inpPayTypeDetailPayTypeCode" placeholder="Code" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Pay Type</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="inpPayTypeDetailPayType" placeholder="Pay Type" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:40px;">
+                                <div class="col-md-2">
+                                    <p>Created by:</p>
+                                    <div style="padding-left: 10px;">
+                                        <i class="fa fa-key fa-fw"></i> <label id="createdBy">NA</label>
+                                        <br />
+                                        <small><i class="fa fa-calendar fa-fw"></i> &nbsp;<span id="createdDate">mm/dd/yyyy</span></small>
+                                    </div>
+                                    <br />
+                                </div>
+                                <div class="col-md-4">
+                                    <p>Updated by:</p>
+                                    <div style="padding-left: 10px;">
+                                        <i class="fa fa-key fa-fw"></i> <label id="updatedBy">NA</label>
+                                        <br />
+                                        <small><i class="fa fa-calendar fa-fw"></i> &nbsp;<span id="updatedDate">mm/dd/yyyy</span></small>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            @Html.Partial("_SoftwareFooter")
+        </main>
+    </div>
+    <div id="c-mask" class="c-mask"></div>
+
+    @Scripts.Render("~/Scripts/Software-js")
+    <script type="text/javascript">
+        var isLocked = false;
+
+        // =======================
+        // Get URL Parameter Value
+        // =======================
+        function getURLParameterValue(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+
+            var regexS = "[\\?&]" + name + "=([^&#]*)";
+            var regex = new RegExp(regexS);
+
+            var results = regex.exec(window.location.href);
+            if (results == null) {
+                return "";
+            } else {
+                return results[1];
+            }
+        }
+
+        // Get PayType Detail Data
+        function getPayTypeDetailData() {
+            Loader.show();
+
+            if (document.location.search.length > 0) {
+                $.ajax({
+                    url: '/api/paytype/detail/' + getURLParameterValue("id"),
+                    cache: false,
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (results) {
+                        if (results != null) {
+                            document.getElementById('inpPayTypeDetailPayTypeCode').value = results.PayTypeCode;
+                            document.getElementById('inpPayTypeDetailPayType').value = results.PayType;
+                            document.getElementById('createdBy').innerHTML = results.CreatedBy;
+                            document.getElementById('createdDate').innerHTML = results.CreatedDateTime;
+                            document.getElementById('updatedBy').innerHTML = results.UpdatedBy;
+                            document.getElementById('updatedDate').innerHTML = results.UpdatedDateTime;
+
+                            if (results.IsLocked) {
+                                document.getElementById('inpPayTypeDetailPayTypeCode').disabled = true;
+                                document.getElementById('inpPayTypeDetailPayType').disabled = true;
+
+                                $('#btnPayTypeDetailSave').prop('disabled', true);
+                                $('#btnPayTypeDetailLock').prop('disabled', true);
+
+                                isLocked = true;
+                            } else {
+                                $('#btnPayTypeDetailUnlock').prop('disabled', true);
+                            }
+                        } else {
+                            alert("No Data");
+                            window.location = "/Software/PayTypeList";
+                        }
+                    }
+                });
+            } else {
+                alert("No Id Parameter Value");
+                window.location = "/Software/PayTypeList";
+            }
+        }
+
+        // PayType Data Object
+        function paytypeDataObject() {
+            var paytpeObject = new Object();
+            paytpeObject.PayTypeCode = document.getElementById('inpPayTypeDetailPayTypeCode').value;
+            paytpeObject.PayType = document.getElementById('inpPayTypeDetailPayType').value;
+            var data = JSON.stringify(paytpeObject);
+            return data;
+        }
+
+        // Save PayType
+        function savePayType() {
+            document.getElementById('btnPayTypeDetailSave').innerHTML = "💾 Saving...";
+            $('#btnPayTypeDetailSave').prop('disabled', true);
+            $('#btnPayTypeDetailLock').prop('disabled', true);
+            $('#btnPayTypeDetailUnlock').prop('disabled', true);
+            $('#btnPayTypeDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/paytype/save/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: paytypeDataObject(),
+                statusCode: {
+                    200: function () {
+                        toastr.success("Save Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailSave').innerHTML = "💾 Save";
+                        $("#btnPayTypeDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnPayTypeDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnPayTypeDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnPayTypeDetailClose").prop("disabled", false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailSave').innerHTML = "💾 Save";
+                        $("#btnPayTypeDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnPayTypeDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnPayTypeDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnPayTypeDetailClose").prop("disabled", false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailSave').innerHTML = "💾 Save";
+                        $("#btnPayTypeDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnPayTypeDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnPayTypeDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnPayTypeDetailClose").prop("disabled", false);
+                    }
+                },
+            });
+        }
+
+        // Lock PayType
+        function lockPayType() {
+            document.getElementById('btnPayTypeDetailLock').innerHTML = "🔒 Locking...";
+            $('#btnPayTypeDetailSave').prop('disabled', true);
+            $('#btnPayTypeDetailLock').prop('disabled', true);
+            $('#btnPayTypeDetailUnlock').prop('disabled', true);
+            $('#btnPayTypeDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/paytype/lock/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: paytypeDataObject(),
+                statusCode: {
+                    200: function () {
+                        toastr.success("Lock Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnPayTypeDetailSave').prop('disabled', false);
+                        $('#btnPayTypeDetailLock').prop('disabled', false);
+                        $('#btnPayTypeDetailClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnPayTypeDetailSave').prop('disabled', false);
+                        $('#btnPayTypeDetailLock').prop('disabled', false);
+                        $('#btnPayTypeDetailClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnPayTypeDetailSave').prop('disabled', false);
+                        $('#btnPayTypeDetailLock').prop('disabled', false);
+                        $('#btnPayTypeDetailClose').prop('disabled', false);
+                    }
+                },
+            });
+        }
+
+        // Unlock PayType
+        function unlockPayType() {
+            document.getElementById('btnPayTypeDetailUnlock').innerHTML = "🔓 Unlocking...";
+            $('#btnPayTypeDetailSave').prop('disabled', true);
+            $('#btnPayTypeDetailLock').prop('disabled', true);
+            $('#btnPayTypeDetailUnlock').prop('disabled', true);
+            $('#btnPayTypeDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/paytype/unlock/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                statusCode: {
+                    200: function () {
+                        toastr.success("Unlock Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnPayTypeDetailSave').prop('disabled', false);
+                        $('#btnPayTypeDetailUnlock').prop('disabled', false);
+                        $('#btnPayTypeDetailClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnPayTypeDetailSave').prop('disabled', false);
+                        $('#btnPayTypeDetailUnlock').prop('disabled', false);
+                        $('#btnPayTypeDetailClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnPayTypeDetailSave').prop('disabled', false);
+                        $('#btnPayTypeDetailUnlock').prop('disabled', false);
+                        $('#btnPayTypeDetailClose').prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+        // Close PayType
+        function closePayTypeDetail() {
+            window.location = '/Software/PayTypeList';
+        }
+
+        // ============
+        // On Load Page
+        // ============
+        $(document).ready(function () {
+            getPayTypeDetailData();
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        });
+    </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
+</body>
+</html>

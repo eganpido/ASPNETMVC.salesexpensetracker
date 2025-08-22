@@ -1,0 +1,296 @@
+﻿@*@model easyfis.Entities.MstUserForm*@
+@{
+    // =====================
+    // User Rights Variables
+    // =====================
+    //var canAdd = Model.CanAdd;
+    //var canEdit = Model.CanEdit;
+    //var canDelete = Model.CanDelete;
+    //var canLock = Model.CanLock;
+    //var canUnlock = Model.CanUnlock;
+    //var canPrint = Model.CanPrint;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Bank List</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
+    @Styles.Render("~/Content/Software-css")
+</head>
+<body>
+    <div id="o-wrapper" class="o-wrapper">
+        <main class="o-content">
+            @Html.Partial("_SoftwareHeader")
+
+            <div class="container">
+                <h3>
+                    🏦 Bank List
+                </h3>
+            </div>
+            <section class="container">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <table style="width: 100%" border="0">
+                            <tr>
+                                <td style="width: 59%">
+                                    <button class="btn btn-primary" id="btnBankAdd" onclick="addBank()">🞧 Add</button>
+                                </td>
+                                <td style="width: 1%"></td>
+                                <td style="width: 40%" align="right">
+                                    <button class="btn btn-danger" id="btnBankClose" onclick="closeBank()">🗙 Close</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <table id="datagridList" class="table table-striped table-bordered">
+                        <thead>
+                            <tr class="selected">
+                                <th></th>
+                                <th>Code</th>
+                                <th>Bank</th>
+                                <th>Created By</th>
+                                <th>Created Date</th>
+                                <th>Locked</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!--
+                Bank Confirm Delete Modal
+            -->
+            <div class="modal fade" id="deleteBankConfirm" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Delete</h4>
+                        </div>
+                        <div class="modal-body">
+                            Delete Bank?
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnBankConfirmDelete" class="btn btn-danger" onclick="confirmDeleteBank()">🗑 Delete</button>
+                            <button id="btnBankCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Partial("_SoftwareFooter")
+        </main>
+    </div>
+    <div id="c-mask" class="c-mask"></div>
+
+    @Scripts.Render("~/Scripts/Software-js")
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
+    <script type="text/javascript">
+        var Id = 0;
+        function populateBank() {
+            Loader.show();
+            // ✅ Destroy existing DataTable if already initialized
+            if ($.fn.DataTable.isDataTable('#datagridList')) {
+                $('#datagridList').DataTable().clear().destroy();
+            }
+
+            // ✅ Clear previous row click bindings (optional but recommended to avoid duplicates)
+            $('#datagridList tbody').off('click');
+
+            // ✅ Row selection logic
+            $('#datagridList tbody').on('click', 'tr', function () {
+                $('#datagridList tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            // ✅ Initialize DataTable
+            $('#datagridList').DataTable({
+                ajax: {
+                    url: '/api/bank/list',
+                    dataSrc: ''
+                },
+                columns: [
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary btn-sm" onclick="editBank(' + row.Id + ')">📝 Edit</button>';
+                        }
+                    },
+                    { data: 'BankCode', className: 'text-left' },
+                    { data: 'Bank' },
+                    { data: 'CreatedBy' },
+                    {
+                        data: 'CreatedDateTime',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.getFullYear() + '-' +
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(date.getDate()).padStart(2, '0');
+                        }, className: 'text-left'
+                    },
+                    {
+                        data: 'IsLocked',
+                        className: 'dt-checkboxes',
+                        render: function (data) {
+                            return '<input type="checkbox" ' + (data ? 'checked' : '') + ' disabled>';
+                        }
+                    },
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteBank(' + row.Id + ', ' + row.IsLocked + ')">🗑 Delete</button>';
+                        }
+                    }
+                ],
+                columnDefs: [
+                    {
+                        targets: 1,
+                        className: 'text-left'
+                    },
+                    {
+                        targets: [0, 6],
+                        orderable: false
+                    }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "Search:  ",
+                    emptyTable: "No record(s) available",
+                    "lengthMenu": "_MENU_ Records per page",
+                    "info": "_START_ - _END_ of _TOTAL_ record(s) is displayed"
+                }
+            });
+        }
+
+        // Add Bank
+        function addBank() {
+            document.getElementById('btnBankAdd').innerHTML = "🞧 Adding...";
+            $('#btnBankAdd').prop('disabled', true);
+            $('#btnBankClose').prop('disabled', true);
+
+            $.ajax({
+                type: "POST",
+                url: '/api/bank/add',
+                contentType: "application/json; charset=utf-8",
+                statusCode: {
+                    200: function (id) {
+                        window.location = '/Software/BankDetail?id=' + id;
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnBankAdd').innerHTML = "🞧 Add";
+                        $('#btnBankAdd').prop('disabled', false);
+                        $('#btnBankClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnBankAdd').innerHTML = "🞧 Add";
+                        $('#btnBankAdd').prop('disabled', false);
+                        $('#btnBankClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnBankAdd').innerHTML = "🞧 Add";
+                        $('#btnBankAdd').prop('disabled', false);
+                        $('#btnBankClose').prop('disabled', false);
+                    }
+                }
+            });
+        }
+        // Edit Bank
+        function editBank(bankId) {
+            window.location = '/Software/BankDetail?id=' + bankId;
+        }
+
+        // Delete Bank
+        function deleteBank(bankId, isLocked) {
+            Id = bankId;
+            if (isLocked) {
+                toastr.error("Please unlock the record first before deleting...", "", { positionClass: "toast-bottom-right" });
+            } else {
+                $('#deleteBankConfirm').modal({
+                    show: true,
+                    backdrop: 'static'
+                });
+
+                document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Delete";
+                $('#btnBankConfirmDelete').prop('disabled', false);
+                $('#btnBankCloseConfirmDelete').prop('disabled', false);
+            }
+        }
+
+        // Confirm Delete Bank
+        function confirmDeleteBank() {
+            document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Deleting...";
+            $('#btnBankConfirmDelete').prop('disabled', true);
+            $('#btnBankCloseConfirmDelete').prop('disabled', true);
+
+            $.ajax({
+                url: '/api/bank/delete/' + Id,
+                type: "DELETE",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                statusCode: {
+                    200: function () {
+                        toastr.success("Delete Successful", "", { positionClass: "toast-bottom-right" });
+                        $('#deleteBankConfirm').modal('hide');
+                        populateBank();
+                        setTimeout(() => {
+                            Loader.hide();
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        $('#deleteBankConfirm').modal('hide');
+                        document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnBankConfirmDelete').prop('disabled', false);
+                        $('#btnBankCloseConfirmDelete').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        $('#deleteBankConfirm').modal('hide');
+                        document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnBankConfirmDelete').prop('disabled', false);
+                        $('#btnBankCloseConfirmDelete').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        $('#deleteBankConfirm').modal('hide');
+                        document.getElementById('btnBankConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnBankConfirmDelete').prop('disabled', false);
+                        $('#btnBankCloseConfirmDelete').prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+        // Close Bank
+        function closeBank() {
+            window.location = '/Software';
+        }
+
+        // On Load Page
+        $(document).ready(function () {
+            populateBank();
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        });
+    </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
+</body>
+</html>

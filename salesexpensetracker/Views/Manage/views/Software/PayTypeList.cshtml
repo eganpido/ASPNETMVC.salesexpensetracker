@@ -1,0 +1,296 @@
+﻿@*@model easyfis.Entities.MstUserForm*@
+@{
+    // =====================
+    // User Rights Variables
+    // =====================
+    //var canAdd = Model.CanAdd;
+    //var canEdit = Model.CanEdit;
+    //var canDelete = Model.CanDelete;
+    //var canLock = Model.CanLock;
+    //var canUnlock = Model.CanUnlock;
+    //var canPrint = Model.CanPrint;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Pay Type List</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
+    @Styles.Render("~/Content/Software-css")
+</head>
+<body>
+    <div id="o-wrapper" class="o-wrapper">
+        <main class="o-content">
+            @Html.Partial("_SoftwareHeader")
+
+            <div class="container">
+                <h3>
+                    💳 Pay Type List
+                </h3>
+            </div>
+            <section class="container">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <table style="width: 100%" border="0">
+                            <tr>
+                                <td style="width: 59%">
+                                    <button class="btn btn-primary" id="btnPayTypeAdd" onclick="addPayType()">🞧 Add</button>
+                                </td>
+                                <td style="width: 1%"></td>
+                                <td style="width: 40%" align="right">
+                                    <button class="btn btn-danger" id="btnPayTypeClose" onclick="closePayType()">🗙 Close</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <table id="datagridList" class="table table-striped table-bordered">
+                        <thead>
+                            <tr class="selected">
+                                <th></th>
+                                <th>Code</th>
+                                <th>Pay Type</th>
+                                <th>Created By</th>
+                                <th>Created Date</th>
+                                <th>Locked</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!--
+                PayType Confirm Delete Modal
+            -->
+            <div class="modal fade" id="deletePayTypeConfirm" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Delete</h4>
+                        </div>
+                        <div class="modal-body">
+                            Delete Pay Type?
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnPayTypeConfirmDelete" class="btn btn-danger" onclick="confirmDeletePayType()">🗑 Delete</button>
+                            <button id="btnPayTypeCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Partial("_SoftwareFooter")
+        </main>
+    </div>
+    <div id="c-mask" class="c-mask"></div>
+
+    @Scripts.Render("~/Scripts/Software-js")
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
+    <script type="text/javascript">
+        var payId = 0;
+        function populatePayType() {
+            Loader.show();
+            // ✅ Destroy existing DataTable if already initialized
+            if ($.fn.DataTable.isDataTable('#datagridList')) {
+                $('#datagridList').DataTable().clear().destroy();
+            }
+
+            // ✅ Clear previous row click bindings (optional but recommended to avoid duplicates)
+            $('#datagridList tbody').off('click');
+
+            // ✅ Row selection logic
+            $('#datagridList tbody').on('click', 'tr', function () {
+                $('#datagridList tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            // ✅ Initialize DataTable
+            $('#datagridList').DataTable({
+                ajax: {
+                    url: '/api/paytype/list',
+                    dataSrc: ''
+                },
+                columns: [
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary btn-sm" onclick="editPayType(' + row.Id + ')">📝 Edit</button>';
+                        }
+                    },
+                    { data: 'PayTypeCode', className: 'text-left' },
+                    { data: 'PayType' },
+                    { data: 'CreatedBy' },
+                    {
+                        data: 'CreatedDateTime',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.getFullYear() + '-' +
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(date.getDate()).padStart(2, '0');
+                        }, className: 'text-left'
+                    },
+                    {
+                        data: 'IsLocked',
+                        className: 'dt-checkboxes',
+                        render: function (data) {
+                            return '<input type="checkbox" ' + (data ? 'checked' : '') + ' disabled>';
+                        }
+                    },
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-danger btn-sm" onclick="deletePayType(' + row.Id + ', ' + row.IsLocked + ')">🗑 Delete</button>';
+                        }
+                    }
+                ],
+                columnDefs: [
+                    {
+                        targets: 1,
+                        className: 'text-left'
+                    },
+                    {
+                        targets: [0, 6],
+                        orderable: false
+                    }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "Search:  ",
+                    emptyTable: "No record(s) available",
+                    "lengthMenu": "_MENU_ Records per page",
+                    "info": "_START_ - _END_ of _TOTAL_ record(s) is displayed"
+                }
+            });
+        }
+
+        // Add PayType
+        function addPayType() {
+            document.getElementById('btnPayTypeAdd').innerHTML = "🞧 Adding...";
+            $('#btnPayTypeAdd').prop('disabled', true);
+            $('#btnPayTypeClose').prop('disabled', true);
+
+            $.ajax({
+                type: "POST",
+                url: '/api/paytype/add',
+                contentType: "application/json; charset=utf-8",
+                statusCode: {
+                    200: function (id) {
+                        window.location = '/Software/PayTypeDetail?id=' + id;
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeAdd').innerHTML = "🞧 Add";
+                        $('#btnPayTypeAdd').prop('disabled', false);
+                        $('#btnPayTypeClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeAdd').innerHTML = "🞧 Add";
+                        $('#btnPayTypeAdd').prop('disabled', false);
+                        $('#btnPayTypeClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnPayTypeAdd').innerHTML = "🞧 Add";
+                        $('#btnPayTypeAdd').prop('disabled', false);
+                        $('#btnPayTypeClose').prop('disabled', false);
+                    }
+                }
+            });
+        }
+        // Edit PayType
+        function editPayType(paytypeId) {
+            window.location = '/Software/PayTypeDetail?id=' + paytypeId;
+        }
+
+        // Delete PayType
+        function deletePayType(paytypeId, isLocked) {
+            payId = paytypeId;
+            if (isLocked) {
+                toastr.error("Please unlock the record first before deleting...", "", { positionClass: "toast-bottom-right" });
+            } else {
+                $('#deletePayTypeConfirm').modal({
+                    show: true,
+                    backdrop: 'static'
+                });
+
+                document.getElementById('btnPayTypeConfirmDelete').innerHTML = "🗑 Delete";
+                $('#btnPayTypeConfirmDelete').prop('disabled', false);
+                $('#btnPayTypeCloseConfirmDelete').prop('disabled', false);
+            }
+        }
+
+        // Confirm Delete PayType
+        function confirmDeletePayType() {
+            document.getElementById('btnPayTypeConfirmDelete').innerHTML = "🗑 Deleting...";
+            $('#btnPayTypeConfirmDelete').prop('disabled', true);
+            $('#btnPayTypeCloseConfirmDelete').prop('disabled', true);
+
+            $.ajax({
+                url: '/api/paytype/delete/' + payId,
+                type: "DELETE",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                statusCode: {
+                    200: function () {
+                        toastr.success("Delete Successful", "", { positionClass: "toast-bottom-right" });
+                        $('#deletePayTypeConfirm').modal('hide');
+                        populatePayType();
+                        setTimeout(() => {
+                            Loader.hide();
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        $('#deletePayTypeConfirm').modal('hide');
+                        document.getElementById('btnPayTypeConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnPayTypeConfirmDelete').prop('disabled', false);
+                        $('#btnPayTypeCloseConfirmDelete').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        $('#deletePayTypeConfirm').modal('hide');
+                        document.getElementById('btnPayTypeConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnPayTypeConfirmDelete').prop('disabled', false);
+                        $('#btnPayTypeCloseConfirmDelete').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        $('#deletePayTypeConfirm').modal('hide');
+                        document.getElementById('btnPayTypeConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnPayTypeConfirmDelete').prop('disabled', false);
+                        $('#btnPayTypeCloseConfirmDelete').prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+        // Close PayType
+        function closePayType() {
+            window.location = '/Software';
+        }
+
+        // On Load Page
+        $(document).ready(function () {
+            populatePayType();
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        });
+    </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
+</body>
+</html>

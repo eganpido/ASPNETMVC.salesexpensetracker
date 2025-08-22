@@ -1,0 +1,296 @@
+﻿@*@model easyfis.Entities.MstUserForm*@
+@{
+    // =====================
+    // User Rights Variables
+    // =====================
+    //var canAdd = Model.CanAdd;
+    //var canEdit = Model.CanEdit;
+    //var canDelete = Model.CanDelete;
+    //var canLock = Model.CanLock;
+    //var canUnlock = Model.CanUnlock;
+    //var canPrint = Model.CanPrint;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Supplier List</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
+    @Styles.Render("~/Content/Software-css")
+</head>
+<body>
+    <div id="o-wrapper" class="o-wrapper">
+        <main class="o-content">
+            @Html.Partial("_SoftwareHeader")
+
+            <div class="container">
+                <h3>
+                    🧑‍💼 Supplier List
+                </h3>
+            </div>
+            <section class="container">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <table style="width: 100%" border="0">
+                            <tr>
+                                <td style="width: 59%">
+                                    <button class="btn btn-primary" id="btnSupplierAdd" onclick="addSupplier()">🞧 Add</button>
+                                </td>
+                                <td style="width: 1%"></td>
+                                <td style="width: 40%" align="right">
+                                    <button class="btn btn-danger" id="btnSupplierClose" onclick="closeSupplier()">🗙 Close</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <table id="datagridList" class="table table-striped table-bordered">
+                        <thead>
+                            <tr class="selected">
+                                <th></th>
+                                <th>Code</th>
+                                <th>Supplier</th>
+                                <th>Created By</th>
+                                <th>Created Date</th>
+                                <th>Locked</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!--
+                Supplier Confirm Delete Modal
+            -->
+            <div class="modal fade" id="deleteSupplierConfirm" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Delete</h4>
+                        </div>
+                        <div class="modal-body">
+                            Delete Supplier?
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnSupplierConfirmDelete" class="btn btn-danger" onclick="confirmDeleteSupplier()">🗑 Delete</button>
+                            <button id="btnSupplierCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Partial("_SoftwareFooter")
+        </main>
+    </div>
+    <div id="c-mask" class="c-mask"></div>
+
+    @Scripts.Render("~/Scripts/Software-js")
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
+    <script type="text/javascript">
+        var suppId = 0;
+        function populateSupplier() {
+            Loader.show();
+            // ✅ Destroy existing DataTable if already initialized
+            if ($.fn.DataTable.isDataTable('#datagridList')) {
+                $('#datagridList').DataTable().clear().destroy();
+            }
+
+            // ✅ Clear previous row click bindings (optional but recommended to avoid duplicates)
+            $('#datagridList tbody').off('click');
+
+            // ✅ Row selection logic
+            $('#datagridList tbody').on('click', 'tr', function () {
+                $('#datagridList tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            // ✅ Initialize DataTable
+            $('#datagridList').DataTable({
+                ajax: {
+                    url: '/api/supplier/list',
+                    dataSrc: ''
+                },
+                columns: [
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary btn-sm" onclick="editSupplier(' + row.Id + ')">📝 Edit</button>';
+                        }
+                    },
+                    { data: 'SupplierCode', className: 'text-left' },
+                    { data: 'SupplierName' },
+                    { data: 'CreatedBy' },
+                    {
+                        data: 'CreatedDateTime',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.getFullYear() + '-' +
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(date.getDate()).padStart(2, '0');
+                        }, className: 'text-left'
+                    },
+                    {
+                        data: 'IsLocked',
+                        className: 'dt-checkboxes',
+                        render: function (data) {
+                            return '<input type="checkbox" ' + (data ? 'checked' : '') + ' disabled>';
+                        }
+                    },
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteSupplier(' + row.Id + ', ' + row.IsLocked + ')">🗑 Delete</button>';
+                        }
+                    }
+                ],
+                columnDefs: [
+                    {
+                        targets: 1,
+                        className: 'text-left'
+                    },
+                    {
+                        targets: [0, 6],
+                        orderable: false
+                    }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "Search:  ",
+                    emptyTable: "No record(s) available",
+                    "lengthMenu": "_MENU_ Records per page",
+                    "info": "_START_ - _END_ of _TOTAL_ record(s) is displayed"
+                }
+            });
+        }
+
+        // Add Supplier
+        function addSupplier() {
+            document.getElementById('btnSupplierAdd').innerHTML = "🞧 Adding...";
+            $('#btnSupplierAdd').prop('disabled', true);
+            $('#btnSupplierClose').prop('disabled', true);
+
+            $.ajax({
+                type: "POST",
+                url: '/api/supplier/add',
+                contentType: "application/json; charset=utf-8",
+                statusCode: {
+                    200: function (id) {
+                        window.location = '/Software/SupplierDetail?id=' + id;
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnSupplierAdd').innerHTML = "🞧 Add";
+                        $('#btnSupplierAdd').prop('disabled', false);
+                        $('#btnSupplierClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnSupplierAdd').innerHTML = "🞧 Add";
+                        $('#btnSupplierAdd').prop('disabled', false);
+                        $('#btnSupplierClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnSupplierAdd').innerHTML = "🞧 Add";
+                        $('#btnSupplierAdd').prop('disabled', false);
+                        $('#btnSupplierClose').prop('disabled', false);
+                    }
+                }
+            });
+        }
+        // Edit Supplier
+        function editSupplier(supplierId) {
+            window.location = '/Software/SupplierDetail?id=' + supplierId;
+        }
+
+        // Delete Supplier
+        function deleteSupplier(supplierId, isLocked) {
+            suppId = supplierId;
+            if (isLocked) {
+                toastr.error("Please unlock the record first before deleting...", "", { positionClass: "toast-bottom-right" });
+            } else {
+                $('#deleteSupplierConfirm').modal({
+                    show: true,
+                    backdrop: 'static'
+                });
+
+                document.getElementById('btnSupplierConfirmDelete').innerHTML = "🗑 Delete";
+                $('#btnSupplierConfirmDelete').prop('disabled', false);
+                $('#btnSupplierCloseConfirmDelete').prop('disabled', false);
+            }
+        }
+
+        // Confirm Delete Supplier
+        function confirmDeleteSupplier() {
+            document.getElementById('btnSupplierConfirmDelete').innerHTML = "🗑 Deleting...";
+            $('#btnSupplierConfirmDelete').prop('disabled', true);
+            $('#btnSupplierCloseConfirmDelete').prop('disabled', true);
+
+            $.ajax({
+                url: '/api/supplier/delete/' + suppId,
+                type: "DELETE",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                statusCode: {
+                    200: function () {
+                        toastr.success("Delete Successful", "", { positionClass: "toast-bottom-right" });
+                        $('#deleteSupplierConfirm').modal('hide');
+                        populateSupplier();
+                        setTimeout(() => {
+                            Loader.hide();
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        $('#deleteSupplierConfirm').modal('hide');
+                        document.getElementById('btnSupplierConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnSupplierConfirmDelete').prop('disabled', false);
+                        $('#btnSupplierCloseConfirmDelete').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        $('#deleteSupplierConfirm').modal('hide');
+                        document.getElementById('btnSupplierConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnSupplierConfirmDelete').prop('disabled', false);
+                        $('#btnSupplierCloseConfirmDelete').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        $('#deleteSupplierConfirm').modal('hide');
+                        document.getElementById('btnSupplierConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnSupplierConfirmDelete').prop('disabled', false);
+                        $('#btnSupplierCloseConfirmDelete').prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+        // Close Supplier
+        function closeSupplier() {
+            window.location = '/Software';
+        }
+
+        // On Load Page
+        $(document).ready(function () {
+            populateSupplier();
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        });
+    </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
+</body>
+</html>

@@ -181,8 +181,8 @@ namespace salesexpensetracker.Controllers
         public ActionResult PayTypeDetail() { return View(); }
 
         // Activity
-        public ActionResult SalesList() { return View(); }
-        public ActionResult SalesDetail() { return View(); ; }
+        public ActionResult SalesInvoiceList() { return View(); }
+        public ActionResult SalesInvoiceDetail() { return View(); ; }
 
         // ======
         // System

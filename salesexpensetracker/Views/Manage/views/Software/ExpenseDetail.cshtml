@@ -1,0 +1,348 @@
+﻿@*@model easyfis.Entities.MstUserForm*@
+@{
+    // =====================
+    // User Rights Variables
+    // =====================
+    //var canAdd = Model.CanAdd;
+    //var canEdit = Model.CanEdit;
+    //var canDelete = Model.CanDelete;
+    //var canLock = Model.CanLock;
+    //var canUnlock = Model.CanUnlock;
+    //var canPrint = Model.CanPrint;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Expense Detail</title>
+
+    @Styles.Render("~/Content/Software-css")
+</head>
+<body>
+    <div id="o-wrapper" class="o-wrapper">
+        <main class="o-content">
+            @Html.Partial("_SoftwareHeader")
+            <div class="container">
+                <h3>
+                    💸 Expense Detail
+                </h3>
+            </div>
+            <section class="container">
+                <div class="panel panel-default">
+
+                    <!--
+                        Options: Lock, Unlock, and Close Button
+                    -->
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <button class="btn btn-primary" id="btnExpenseDetailSave" onclick="saveExpense()">💾 Save</button>
+                            </div>
+                            <div class="col-md-10" align="right">
+                                <button class="btn btn-primary" id="btnExpenseDetailLock" onclick="lockExpense()">🔒 Lock</button>
+                                <button class="btn btn-primary" id="btnExpenseDetailUnlock" onclick="unlockExpense()">🔓 Unlock</button>
+                                <button class="btn btn-danger" id="btnExpenseDetailClose" onclick="closeExpenseDetail()">🗙 Close</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--
+                        Details, Fields and Other Informations
+                    -->
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Code</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="inpExpenseDetailExpenseCode" placeholder="Code" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Expense</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="inpExpenseDetailExpenseName" placeholder="Expense" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:40px;">
+                                <div class="col-md-2">
+                                    <p>Created by:</p>
+                                    <div style="padding-left: 10px;">
+                                        <i class="fa fa-key fa-fw"></i> <label id="createdBy">NA</label>
+                                        <br />
+                                        <small><i class="fa fa-calendar fa-fw"></i> &nbsp;<span id="createdDate">mm/dd/yyyy</span></small>
+                                    </div>
+                                    <br />
+                                </div>
+                                <div class="col-md-4">
+                                    <p>Updated by:</p>
+                                    <div style="padding-left: 10px;">
+                                        <i class="fa fa-key fa-fw"></i> <label id="updatedBy">NA</label>
+                                        <br />
+                                        <small><i class="fa fa-calendar fa-fw"></i> &nbsp;<span id="updatedDate">mm/dd/yyyy</span></small>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            @Html.Partial("_SoftwareFooter")
+        </main>
+    </div>
+    <div id="c-mask" class="c-mask"></div>
+
+    @Scripts.Render("~/Scripts/Software-js")
+    <script type="text/javascript">
+        var isLocked = false;
+
+        // =======================
+        // Get URL Parameter Value
+        // =======================
+        function getURLParameterValue(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+
+            var regexS = "[\\?&]" + name + "=([^&#]*)";
+            var regex = new RegExp(regexS);
+
+            var results = regex.exec(window.location.href);
+            if (results == null) {
+                return "";
+            } else {
+                return results[1];
+            }
+        }
+
+        // Get Expense Detail Data
+        function getExpenseDetailData() {
+            Loader.show();
+
+            if (document.location.search.length > 0) {
+                $.ajax({
+                    url: '/api/expense/detail/' + getURLParameterValue("id"),
+                    cache: false,
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (results) {
+                        if (results != null) {
+                            document.getElementById('inpExpenseDetailExpenseCode').value = results.ExpenseCode;
+                            document.getElementById('inpExpenseDetailExpenseName').value = results.ExpenseName;
+                            document.getElementById('createdBy').innerHTML = results.CreatedBy;
+                            document.getElementById('createdDate').innerHTML = results.CreatedDateTime;
+                            document.getElementById('updatedBy').innerHTML = results.UpdatedBy;
+                            document.getElementById('updatedDate').innerHTML = results.UpdatedDateTime;
+
+                            if (results.IsLocked) {
+                                document.getElementById('inpExpenseDetailExpenseCode').disabled = true;
+                                document.getElementById('inpExpenseDetailExpenseName').disabled = true;
+
+                                $('#btnExpenseDetailSave').prop('disabled', true);
+                                $('#btnExpenseDetailLock').prop('disabled', true);
+
+                                isLocked = true;
+                            } else {
+                                $('#btnExpenseDetailUnlock').prop('disabled', true);
+                            }
+                        } else {
+                            alert("No Data");
+                            window.location = "/Software/ExpenseList";
+                        }
+                    }
+                });
+            } else {
+                alert("No Id Parameter Value");
+                window.location = "/Software/ExpenseList";
+            }
+        }
+
+        // Expense Data Object
+        function expenseDataObject() {
+            var expenseObject = new Object();
+            expenseObject.ExpenseCode = document.getElementById('inpExpenseDetailExpenseCode').value;
+            expenseObject.ExpenseName = document.getElementById('inpExpenseDetailExpenseName').value;
+            var data = JSON.stringify(expenseObject);
+            return data;
+        }
+
+        // Save Expense
+        function saveExpense() {
+            document.getElementById('btnExpenseDetailSave').innerHTML = "💾 Saving...";
+            $('#btnExpenseDetailSave').prop('disabled', true);
+            $('#btnExpenseDetailLock').prop('disabled', true);
+            $('#btnExpenseDetailUnlock').prop('disabled', true);
+            $('#btnExpenseDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/expense/save/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: expenseDataObject(),
+                statusCode: {
+                    200: function () {
+                        toastr.success("Save Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailSave').innerHTML = "💾 Save";
+                        $("#btnExpenseDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnExpenseDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnExpenseDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnExpenseDetailClose").prop("disabled", false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailSave').innerHTML = "💾 Save";
+                        $("#btnExpenseDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnExpenseDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnExpenseDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnExpenseDetailClose").prop("disabled", false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailSave').innerHTML = "💾 Save";
+                        $("#btnExpenseDetailSave").prop("disabled", false);
+
+                        if (isLocked) {
+                            $("#btnExpenseDetailUnlock").prop("disabled", false);
+                        } else {
+                            $("#btnExpenseDetailLock").prop("disabled", false);
+                        }
+
+                        $("#btnExpenseDetailClose").prop("disabled", false);
+                    }
+                },
+            });
+        }
+
+        // Lock Expense
+        function lockExpense() {
+            document.getElementById('btnExpenseDetailLock').innerHTML = "🔒 Locking...";
+            $('#btnExpenseDetailSave').prop('disabled', true);
+            $('#btnExpenseDetailLock').prop('disabled', true);
+            $('#btnExpenseDetailUnlock').prop('disabled', true);
+            $('#btnExpenseDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/expense/lock/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: expenseDataObject(),
+                statusCode: {
+                    200: function () {
+                        toastr.success("Lock Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailLock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailLock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailLock').innerHTML = "🔒 Lock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailLock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
+                    }
+                },
+            });
+        }
+
+        // Unlock Expense
+        function unlockExpense() {
+            document.getElementById('btnExpenseDetailUnlock').innerHTML = "🔓 Unlocking...";
+            $('#btnExpenseDetailSave').prop('disabled', true);
+            $('#btnExpenseDetailLock').prop('disabled', true);
+            $('#btnExpenseDetailUnlock').prop('disabled', true);
+            $('#btnExpenseDetailClose').prop('disabled', true);
+
+            $.ajax({
+                type: "PUT",
+                url: '/api/expense/unlock/' + getURLParameterValue("id"),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                statusCode: {
+                    200: function () {
+                        toastr.success("Unlock Successful", "", { positionClass: "toast-bottom-right" });
+                        window.setTimeout(function () {
+                            location.reload()
+                        }, 1000);
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailUnlock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailUnlock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnExpenseDetailUnlock').innerHTML = "🔓 Unlock";
+                        $('#btnExpenseDetailSave').prop('disabled', false);
+                        $('#btnExpenseDetailUnlock').prop('disabled', false);
+                        $('#btnExpenseDetailClose').prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+        // Close Expense
+        function closeExpenseDetail() {
+            window.location = '/Software/ExpenseList';
+        }
+
+        // ============
+        // On Load Page
+        // ============
+        $(document).ready(function () {
+            getExpenseDetailData();
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        });
+    </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
+</body>
+</html>

@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Web.Http;
-using System.Web.UI;
-using System.Web.Util;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace salesexpensetracker.ApiControllers
 {
@@ -21,16 +18,76 @@ namespace salesexpensetracker.ApiControllers
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
         // List Sales Invoice
-        [Authorize, HttpGet, Route("api/salesInvoice/list")]
-        public List<Entities.TrnSalesInvoice> ListSalesInvoice()
+        [Authorize, HttpGet, Route("api/salesInvoice/list/{fromDate}/{toDate}")]
+        public List<Entities.TrnSalesInvoice> List(string fromDate, string toDate)
         {
+            DateTime from = Convert.ToDateTime(fromDate);
+            DateTime to = Convert.ToDateTime(toDate);
+
             var list = db.TrnSalesInvoices
-                        .OrderByDescending(d => d.Id)
+                    .AsNoTracking()
+                    .Where(d => d.SalesDate >= from && d.SalesDate <= to)
+                    .OrderByDescending(d => d.Id)
+                    .Select(d => new Entities.TrnSalesInvoice
+                    {
+                        Id = d.Id,
+                        SalesNumber = d.SalesNumber,
+                        SalesDate = d.SalesDate.ToShortDateString(),
+                        ClientId = d.ClientId,
+                        Client = d.MstClient.ClientName,
+                        Remarks = d.Remarks,
+                        SalesAmount = d.SalesAmount,
+                        PaidAmount = d.PaidAmount,
+                        BalanceAmount = d.BalanceAmount,
+                        IsLocked = d.IsLocked,
+                        CreatedBy = d.MstUser.FullName,
+                        CreatedDateTime = d.CreatedDateTime.ToShortDateString(),
+                        UpdatedBy = d.MstUser1.FullName,
+                        UpdatedDateTime = d.UpdatedDateTime.ToShortDateString()
+                    })
+                    .ToList();
+
+            return list;
+
+        }
+        // Dropdown List Client
+        [Authorize, HttpGet, Route("api/salesInvoice/list/client")]
+        public List<Entities.MstClient> DropdownListClient()
+        {
+            var list = db.MstClients
+                        .AsNoTracking()
+                        .Where(d => d.IsLocked)
+                        .OrderBy(d => d.ClientName)
+                        .Select(d => new
+                        {
+                            d.Id,
+                            d.ClientName
+                        })
+                        .ToList()
+                        .Select(d => new Entities.MstClient
+                        {
+                            Id = d.Id,
+                            ClientName = d.ClientName,
+                        })
+                        .ToList();
+
+            return list;
+        }
+        // Detail Sales Invoice
+        [Authorize, HttpGet, Route("api/salesInvoice/detail/{id}")]
+        public Entities.TrnSalesInvoice Detail(String id)
+        {
+            int invoiceId = Convert.ToInt32(id);
+
+            var detail = db.TrnSalesInvoices
+                        .AsNoTracking()
+                        .Where(d => d.Id == invoiceId)
                         .Select(d => new Entities.TrnSalesInvoice
                         {
                             Id = d.Id,
                             SalesNumber = d.SalesNumber,
-                            SalesDate = d.SalesDate.ToShortDateString(), // handled in memory
+                            // Better to keep as DateTime, format in UI
+                            SalesDate = d.SalesDate.ToShortDateString(),
                             ClientId = d.ClientId,
                             Client = d.MstClient.ClientName,
                             Remarks = d.Remarks,
@@ -38,316 +95,273 @@ namespace salesexpensetracker.ApiControllers
                             PaidAmount = d.PaidAmount,
                             BalanceAmount = d.BalanceAmount,
                             IsLocked = d.IsLocked,
-                            CreatedById = d.CreatedById,
                             CreatedBy = d.MstUser.FullName,
                             CreatedDateTime = d.CreatedDateTime.ToShortDateString(),
-                            UpdatedById = d.UpdatedById,
                             UpdatedBy = d.MstUser1.FullName,
                             UpdatedDateTime = d.UpdatedDateTime.ToShortDateString()
                         })
-                        .ToList();
+                        .FirstOrDefault();
 
-            return list;
+            return detail;
         }
 
-        //// Detail Bank
-        //[Authorize, HttpGet, Route("api/bank/detail/{id}")]
-        //public Entities.MstBank DetailBank(String id)
-        //{
-        //    var bank = (from d in db.MstBanks
-        //                where d.Id == Convert.ToInt32(id)
-        //                select new
-        //                {
-        //                    d.Id,
-        //                    d.BankCode,
-        //                    d.Bank,
-        //                    d.IsLocked,
-        //                    d.CreatedById,
-        //                    CreatedBy = d.MstUser != null ? d.MstUser.FullName : "",
-        //                    d.CreatedDateTime,
-        //                    d.UpdatedById,
-        //                    UpdatedBy = d.MstUser1 != null ? d.MstUser1.FullName : "",
-        //                    d.UpdatedDateTime
-        //                }).FirstOrDefault();
+        // Fill Leading Zeroes
+        public String FillLeadingZeroes(Int32 number, Int32 length)
+        {
+            var result = number.ToString();
+            var pad = length - result.Length;
+            while (pad > 0)
+            {
+                result = '0' + result;
+                pad--;
+            }
 
-        //    if (bank != null)
-        //    {
-        //        return new Entities.MstBank
-        //        {
-        //            Id = bank.Id,
-        //            BankCode = bank.BankCode,
-        //            Bank = bank.Bank,
-        //            IsLocked = bank.IsLocked,
-        //            CreatedById = bank.CreatedById,
-        //            CreatedBy = bank.CreatedBy,
-        //            CreatedDateTime = bank.CreatedDateTime.ToShortDateString(),
-        //            UpdatedById = bank.UpdatedById,
-        //            UpdatedBy = bank.UpdatedBy,
-        //            UpdatedDateTime = bank.UpdatedDateTime.ToShortDateString()
-        //        };
-        //    }
+            return result;
+        }
 
-        //    return null;
+        // Add Sales Invoice
+        [Authorize, HttpPost, Route("api/salesInvoice/add")]
+        public HttpResponseMessage Add()
+        {
+            try
+            {
+                string currentUserName = User.Identity.GetUserId();
+                var currentUser = db.MstUsers.FirstOrDefault(d => d.UserId == currentUserName);
+                if (currentUser == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
+                }
 
-        //}
+                // Default sales number
+                string defaultNumber = "0000000001";
 
-        //// Add Bank
-        //[Authorize, HttpPost, Route("api/bank/add")]
-        //public HttpResponseMessage AddBank()
-        //{
-        //    try
-        //    {
-        //        var currentUser = from d in db.MstUsers
-        //                          where d.UserId == User.Identity.GetUserId()
-        //                          select d;
+                // Get last record once
+                var lastRecord = db.TrnSalesInvoices
+                                   .OrderByDescending(d => d.Id)
+                                   .FirstOrDefault();
 
-        //        if (currentUser.Any())
-        //        {
-        //            var currentUserId = currentUser.FirstOrDefault().Id;
+                if (lastRecord != null)
+                {
+                    int number = Convert.ToInt32(lastRecord.SalesNumber) + 1;
+                    defaultNumber = FillLeadingZeroes(number, 10);
+                }
 
-        //            Data.MstBank newBank = new Data.MstBank
-        //            {
-        //                BankCode = "NA",
-        //                Bank = "NA",
-        //                IsLocked = false,
-        //                CreatedById = currentUserId,
-        //                CreatedDateTime = DateTime.Now,
-        //                UpdatedById = currentUserId,
-        //                UpdatedDateTime = DateTime.Now,
-        //            };
+                // Build new invoice
+                var newRecord = new Data.TrnSalesInvoice
+                {
+                    SalesNumber = defaultNumber,
+                    SalesDate = DateTime.Today,
+                    ClientId = 1,
+                    Remarks = "NA",
+                    SalesAmount = 0,
+                    PaidAmount = 0,
+                    BalanceAmount = 0,
+                    IsLocked = false,
+                    CreatedById = currentUser.Id,
+                    CreatedDateTime = DateTime.Now,
+                    UpdatedById = currentUser.Id,
+                    UpdatedDateTime = DateTime.Now
+                };
 
-        //            db.MstBanks.InsertOnSubmit(newBank);
-        //            db.SubmitChanges();
+                db.TrnSalesInvoices.InsertOnSubmit(newRecord);
+                db.SubmitChanges();
 
-        //            return Request.CreateResponse(HttpStatusCode.OK, newBank.Id);
-        //        }
-        //        else
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.BadRequest, "Theres no current user logged in.");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e);
-        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
-        //    }
-        //}
+                return Request.CreateResponse(HttpStatusCode.OK, newRecord.Id);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
+            }
+        }
 
-        //// Save Bank
-        //[Authorize, HttpPut, Route("api/bank/save/{id}")]
-        //public HttpResponseMessage SaveBank(Entities.MstBank objBank, String id)
-        //{
-        //    try
-        //    {
-        //        var currentUser = from d in db.MstUsers
-        //                          where d.UserId == User.Identity.GetUserId()
-        //                          select d;
+        // Save Sales Invoice
+        [Authorize, HttpPut, Route("api/salesInvoice/save/{id}")]
+        public HttpResponseMessage Save(Entities.TrnSalesInvoice detail, String id)
+        {
+            try
+            {
+                int invoiceId = Convert.ToInt32(id);
+                string currentUserName = User.Identity.GetUserId();
 
-        //        if (currentUser.Any())
-        //        {
-        //            var currentUserId = currentUser.FirstOrDefault().Id;
+                // Get current user once
+                var currentUser = db.MstUsers.FirstOrDefault(d => d.UserId == currentUserName);
+                if (currentUser == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
+                }
 
-        //            var bank = from d in db.MstBanks
-        //                       where d.Id == Convert.ToInt32(id)
-        //                       select d;
+                // Get record once
+                var record = db.TrnSalesInvoices.FirstOrDefault(d => d.Id == invoiceId);
+                if (record == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These order details are not found in the server.");
+                }
 
-        //            if (bank.Any())
-        //            {
-        //                if (!bank.FirstOrDefault().IsLocked)
-        //                {
-        //                    var saveBank = bank.FirstOrDefault();
-        //                    saveBank.BankCode = objBank.BankCode;
-        //                    saveBank.Bank = objBank.Bank;
-        //                    saveBank.UpdatedById = currentUserId;
-        //                    saveBank.UpdatedDateTime = DateTime.Now;
-        //                    db.SubmitChanges();
+                if (record.IsLocked)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Saving Error. These order details are already locked.");
+                }
 
-        //                    return Request.CreateResponse(HttpStatusCode.OK);
-        //                }
-        //                else
-        //                {
-        //                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Saving Error. These details are already locked.");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These details are not found in the server.");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.BadRequest, "Theres no current user logged in.");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e);
-        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
-        //    }
-        //}
+                // Update record
+                record.SalesDate = Convert.ToDateTime(detail.SalesDate);
+                record.ClientId = detail.ClientId;
+                record.Remarks = detail.Remarks;
+                record.SalesAmount = detail.SalesAmount;
+                record.UpdatedById = currentUser.Id;
+                record.UpdatedDateTime = DateTime.Now;
 
-        //// Lock Bank
-        //[Authorize, HttpPut, Route("api/bank/lock/{id}")]
-        //public HttpResponseMessage LockBank(Entities.MstBank objBank, String id)
-        //{
-        //    try
-        //    {
-        //        var currentUser = from d in db.MstUsers
-        //                          where d.UserId == User.Identity.GetUserId()
-        //                          select d;
+                db.SubmitChanges();
 
-        //        if (currentUser.Any())
-        //        {
-        //            var currentUserId = currentUser.FirstOrDefault().Id;
+                return Request.CreateResponse(HttpStatusCode.OK);
 
-        //            var bank = from d in db.MstBanks
-        //                       where d.Id == Convert.ToInt32(id)
-        //                       select d;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
+            }
+        }
 
-        //            if (bank.Any())
-        //            {
-        //                if (!bank.FirstOrDefault().IsLocked)
-        //                {
-        //                    var bankByCode = from d in db.MstBanks
-        //                                     where d.BankCode.Equals(objBank.BankCode)
-        //                                     && d.IsLocked == true
-        //                                     select d;
+        // Lock Sales Invoice
+        [Authorize, HttpPut, Route("api/salesInvoice/lock/{id}")]
+        public HttpResponseMessage Lock(Entities.TrnSalesInvoice detail, String id)
+        {
+            try
+            {
+                int invoiceId = Convert.ToInt32(id);
+                string currentUserName = User.Identity.GetUserId();
 
-        //                    if (!bankByCode.Any())
-        //                    {
-        //                        var lockBank = bank.FirstOrDefault();
-        //                        lockBank.BankCode = objBank.BankCode;
-        //                        lockBank.Bank = objBank.Bank;
-        //                        lockBank.IsLocked = true;
-        //                        lockBank.UpdatedById = currentUserId;
-        //                        lockBank.UpdatedDateTime = DateTime.Now;
+                // Get current user once
+                var currentUser = db.MstUsers.FirstOrDefault(d => d.UserId == currentUserName);
+                if (currentUser == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
+                }
 
-        //                        db.SubmitChanges();
+                // Get record once
+                var record = db.TrnSalesInvoices.FirstOrDefault(d => d.Id == invoiceId);
+                if (record == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These details are not found in the server.");
+                }
 
+                if (record.IsLocked)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Locking Error. This record is already locked.");
+                }
 
-        //                        return Request.CreateResponse(HttpStatusCode.OK);
-        //                    }
-        //                    else
-        //                    {
-        //                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Bank Code is already taken.");
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Locking Error. These details are already locked.");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These details are not found in the server.");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.BadRequest, "Theres no current user logged in.");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e);
-        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
-        //    }
-        //}
+                // Update and lock record
+                record.SalesDate = Convert.ToDateTime(detail.SalesDate);
+                record.ClientId = detail.ClientId;
+                record.Remarks = detail.Remarks;
+                record.SalesAmount = detail.SalesAmount;
+                record.IsLocked = true;
+                record.UpdatedById = currentUser.Id;
+                record.UpdatedDateTime = DateTime.Now;
 
-        //// Unlock Bank
-        //[Authorize, HttpPut, Route("api/bank/unlock/{id}")]
-        //public HttpResponseMessage UnlockBank(String id)
-        //{
-        //    try
-        //    {
-        //        var currentUser = from d in db.MstUsers
-        //                          where d.UserId == User.Identity.GetUserId()
-        //                          select d;
+                db.SubmitChanges();
 
-        //        if (currentUser.Any())
-        //        {
-        //            var currentUserId = currentUser.FirstOrDefault().Id;
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
+            }
+        }
 
-        //            var bank = from d in db.MstBanks
-        //                           where d.Id == Convert.ToInt32(id)
-        //                           select d;
+        // Unlock Sales Invoice
+        [Authorize, HttpPut, Route("api/salesInvoice/unlock/{id}")]
+        public HttpResponseMessage Unlock(String id)
+        {
+            try
+            {
+                int invoiceId = Convert.ToInt32(id);
+                string currentUserName = User.Identity.GetUserId();
 
-        //            if (bank.Any())
-        //            {
-        //                if (bank.FirstOrDefault().IsLocked)
-        //                {
-        //                    var unlockBank = bank.FirstOrDefault();
-        //                    unlockBank.IsLocked = false;
-        //                    unlockBank.UpdatedById = currentUserId;
-        //                    unlockBank.UpdatedDateTime = DateTime.Now;
+                // Get current user once
+                var currentUser = db.MstUsers
+                    .FirstOrDefault(d => d.UserId == currentUserName);
 
-        //                    db.SubmitChanges();
+                if (currentUser == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
+                }
 
-        //                    return Request.CreateResponse(HttpStatusCode.OK);
-        //                }
-        //                else
-        //                {
-        //                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Unlocking Error. These details are already unlocked.");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These details are not found in the server.");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.BadRequest, "Theres no current user logged in.");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e);
-        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
-        //    }
-        //}
+                // Get record once
+                var record = db.TrnSalesInvoices.FirstOrDefault(d => d.Id == invoiceId);
 
-        //// Delete Bank
-        //[Authorize, HttpDelete, Route("api/bank/delete/{id}")]
-        //public HttpResponseMessage DeleteBank(String id)
-        //{
-        //    try
-        //    {
-        //        var currentUser = from d in db.MstUsers
-        //                          where d.UserId == User.Identity.GetUserId()
-        //                          select d;
+                if (record == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These details are not found in the server.");
+                }
 
-        //        if (currentUser.Any())
-        //        {
-        //            var currentUserId = currentUser.FirstOrDefault().Id;
+                if (!record.IsLocked)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Unlocking Error. This record is already unlocked.");
+                }
 
-        //            var bank = from d in db.MstBanks
-        //                           where d.Id == Convert.ToInt32(id)
-        //                           select d;
+                // Unlock record
+                record.IsLocked = false;
+                record.UpdatedById = currentUser.Id;
+                record.UpdatedDateTime = DateTime.Now;
 
-        //            if (bank.Any())
-        //            {
-        //                db.MstBanks.DeleteOnSubmit(bank.First());
+                db.SubmitChanges();
 
-        //                db.SubmitChanges();
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
+            }
+        }
 
-        //                return Request.CreateResponse(HttpStatusCode.OK);
-        //            }
-        //            else
-        //            {
-        //                return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. This selected record is not found in the server.");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.BadRequest, "Theres no current user logged in.");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine(e);
-        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
-        //    }
-        //}
+        // Delete Sales Invoice
+        [Authorize, HttpDelete, Route("api/salesInvoice/delete/{id}")]
+        public HttpResponseMessage DeleteOrder(String id)
+        {
+            try
+            {
+                int invoiceId = Convert.ToInt32(id);
+                string currentUserName = User.Identity.GetUserId();
+
+                // Get current user once
+                var currentUser = db.MstUsers
+                    .AsNoTracking()
+                    .FirstOrDefault(d => d.UserId == currentUserName);
+
+                if (currentUser == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
+                }
+
+                // Get record once
+                var record = db.TrnSalesInvoices
+                    .FirstOrDefault(d => d.Id == invoiceId);
+
+                if (record == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These details are not found in the server.");
+                }
+
+                if (record.IsLocked)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Delete Error. You cannot delete this record because it is locked.");
+                }
+
+                // Delete record
+                db.TrnSalesInvoices.DeleteOnSubmit(record);
+                db.SubmitChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Something's went wrong from the server.");
+            }
+        }
     }
 }

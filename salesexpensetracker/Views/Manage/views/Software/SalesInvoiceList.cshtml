@@ -1,0 +1,375 @@
+﻿@*@model easyfis.Entities.MstUserForm*@
+@{
+    // =====================
+    // User Rights Variables
+    // =====================
+    //var canAdd = Model.CanAdd;
+    //var canEdit = Model.CanEdit;
+    //var canDelete = Model.CanDelete;
+    //var canLock = Model.CanLock;
+    //var canUnlock = Model.CanUnlock;
+    //var canPrint = Model.CanPrint;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Sales Invoice List</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    @Styles.Render("~/Content/Software-css")
+</head>
+<body>
+    <div id="o-wrapper" class="o-wrapper">
+        <main class="o-content">
+            @Html.Partial("_SoftwareHeader")
+
+            <div class="container">
+                <h3>
+                    🧾 Sales Invoice List
+                </h3>
+            </div>
+            <section class="container">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <table style="width: 100%" border="0">
+                            <tr>
+                                <td style="width:70%">
+                                    <div style="display:flex; gap:10px; align-items:center;">
+                                        <div class="date-wrapper">
+                                            <label for="startDateInput">From:</label>
+                                            <input type="text" id="startDateInput" class="form-control custom-date" placeholder="Select date" />
+                                            <button type="button" class="calendar-button" data-target="#startDateInput" tabindex="-1">📅</button>
+                                        </div>
+
+                                        <div class="date-wrapper">
+                                            <label for="endDateInput">To:</label>
+                                            <input type="text" id="endDateInput" class="form-control custom-date" placeholder="Select date" />
+                                            <button type="button" class="calendar-button" data-target="#endDateInput" tabindex="-1">📅</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 30%" align="right">
+                                    <button class="btn btn-primary" id="btnAdd" onclick="addRecord()">🞧 Add</button>
+                                    <button class="btn btn-danger" id="btnClose" onclick="closeList()">🗙 Close</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <table id="datagridList" class="table table-striped table-bordered">
+                        <thead>
+                            <tr class="selected">
+                                <th></th>
+                                <th>SI No.</th>
+                                <th>SI Date</th>
+                                <th>Client</th>
+                                <th>SI Amount</th>
+                                <th>Paid Amount</th>
+                                <th>Balance Amount</th>
+                                <th>Locked</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!--
+                Confirm Delete Modal
+            -->
+            <div class="modal fade" id="deleteConfirm" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Delete</h4>
+                        </div>
+                        <div class="modal-body">
+                            Delete?
+                        </div>
+                        <div class="modal-footer">
+                            <button id="btnConfirmDelete" class="btn btn-danger" onclick="confirmDelete()">🗑 Delete</button>
+                            <button id="btnCloseConfirmDelete" class="btn btn-primary" data-dismiss="modal">🗙 Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @Html.Partial("_SoftwareFooter")
+        </main>
+    </div>
+    <div id="c-mask" class="c-mask"></div>
+
+    @Scripts.Render("~/Scripts/Software-js")
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript">
+        var Id = 0;
+        function populateList() {
+            Loader.show();
+            //Destroy existing DataTable if already initialized
+            if ($.fn.DataTable.isDataTable('#datagridList')) {
+                $('#datagridList').DataTable().clear().destroy();
+            }
+
+            //Clear previous row click bindings (optional but recommended to avoid duplicates)
+            $('#datagridList tbody').off('click');
+
+            //Row selection logic
+            $('#datagridList tbody').on('click', 'tr', function () {
+                $('#datagridList tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            const startDate = $('#startDateInput').val();
+            const endDate = $('#endDateInput').val();
+
+            //Initialize DataTable
+            $('#datagridList').DataTable({
+                ajax: {
+                    url: '/api/salesInvoice/list/' + startDate + "/" + endDate,
+                    dataSrc: ''
+                },
+                columns: [
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary btn-sm" onclick="editRecord(' + row.Id + ')">📝 Edit</button>';
+                        }, width: '8%'
+                    },
+                    { data: 'SalesNumber', className: 'text-left', width: '10%' },
+                    {
+                        data: 'SalesDate',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.getFullYear() + '-' +
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(date.getDate()).padStart(2, '0');
+                        }, className: 'text-left', width: '10%'
+                    },
+                    { data: 'Client', width: '20%' },
+                    {
+                        data: 'SalesAmount',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            }
+                            return data;
+                        }, width: '10%'
+                    },
+                    {
+                        data: 'PaidAmount',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            }
+                            return data;
+                        }, width: '10%'
+                    },
+                    {
+                        data: 'BalanceAmount',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            }
+                            return data;
+                        }, width: '10%'
+                    },
+                    {
+                        data: 'IsLocked',
+                        className: 'dt-checkboxes',
+                        render: function (data) {
+                            return '<input type="checkbox" ' + (data ? 'checked' : '') + ' disabled>';
+                        }, width: '5%'
+                    },
+                    {
+                        data: null,
+                        className: 'text-center',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteRecord(' + row.Id + ', ' + row.IsLocked + ')">🗑 Delete</button>';
+                        }, width: '8%'
+                    }
+                ],
+                columnDefs: [
+                    {
+                        targets: 1,
+                        className: 'text-left'
+                    },
+                    {
+                        targets: [0, 8],
+                        orderable: false
+                    }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "Search:  ",
+                    emptyTable: "No record(s) available",
+                    "lengthMenu": "_MENU_ Records per page",
+                    "info": "_START_ - _END_ of _TOTAL_ record(s) is displayed"
+                }
+            });
+
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        }
+        function isValidDate(dateStr) {
+            const d = new Date(dateStr);
+            return !isNaN(d.getTime()) && d >= new Date('1753-01-01') && d <= new Date('9999-12-31');
+        }
+
+        $('#startDateInput, #endDateInput').on('change', function () {
+            const startDate = $('#startDateInput').val();
+            const endDate = $('#endDateInput').val();
+
+            if (isValidDate(startDate) && isValidDate(endDate)) {
+                populateList();
+            }
+        });
+        function initializeDateFilters() {
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            flatpickr("#startDateInput", {
+                dateFormat: "Y-m-d",
+                defaultDate: firstDayOfMonth,
+                minDate: "1753-01-01",
+                maxDate: "9999-12-31",
+                disableMobile: true
+            });
+
+
+            flatpickr("#endDateInput", {
+                dateFormat: "Y-m-d",
+                defaultDate: lastDayOfMonth,
+                minDate: "1753-01-01",
+                maxDate: "9999-12-31",
+                disableMobile: true
+            });
+
+            populateList();
+        }
+        // Add
+        function addRecord() {
+            document.getElementById('btnAdd').innerHTML = "🞧 Adding...";
+            $('#btnAdd').prop('disabled', true);
+            $('#btnClose').prop('disabled', true);
+
+            $.ajax({
+                type: "POST",
+                url: '/api/salesInvoice/add',
+                contentType: "application/json; charset=utf-8",
+                statusCode: {
+                    200: function (id) {
+                        window.location = '/Software/SalesInvoiceDetail?id=' + id;
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnAdd').innerHTML = "🞧 Add";
+                        $('#btnAdd').prop('disabled', false);
+                        $('#btnClose').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnAdd').innerHTML = "🞧 Add";
+                        $('#btnAdd').prop('disabled', false);
+                        $('#btnClose').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        document.getElementById('btnAdd').innerHTML = "🞧 Add";
+                        $('#btnAdd').prop('disabled', false);
+                        $('#btnClose').prop('disabled', false);
+                    }
+                }
+            });
+        }
+        // Edit
+        function editRecord(salesId) {
+            window.location = '/Software/SalesInvoiceDetail?id=' + clientId;
+        }
+
+        // Delete
+        function deleteRecord(salesId, isLocked) {
+            Id = clientId;
+            if (isLocked) {
+                toastr.error("Please unlock the record first before deleting...", "", { positionClass: "toast-bottom-right" });
+            } else {
+                $('#deleteClientConfirm').modal({
+                    show: true,
+                    backdrop: 'static'
+                });
+
+                document.getElementById('btnClientConfirmDelete').innerHTML = "🗑 Delete";
+                $('#btnClientConfirmDelete').prop('disabled', false);
+                $('#btnClientCloseConfirmDelete').prop('disabled', false);
+            }
+        }
+
+        // Confirm Delete
+        function confirmDelete() {
+            document.getElementById('btnConfirmDelete').innerHTML = "🗑 Deleting...";
+            $('#btnConfirmDelete').prop('disabled', true);
+            $('#btnCloseConfirmDelete').prop('disabled', true);
+
+            $.ajax({
+                url: '/api/salesInvoice/delete/' + Id,
+                type: "DELETE",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                statusCode: {
+                    200: function () {
+                        toastr.success("Delete Successful", "", { positionClass: "toast-bottom-right" });
+                        $('#deleteConfirm').modal('hide');
+                        populateList();
+                    },
+                    404: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
+                        $('#deleteConfirm').modal('hide');
+                        document.getElementById('btnConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnConfirmDelete').prop('disabled', false);
+                        $('#btnCloseConfirmDelete').prop('disabled', false);
+                    },
+                    400: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
+                        $('#deleteConfirm').modal('hide');
+                        document.getElementById('btnConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnConfirmDelete').prop('disabled', false);
+                        $('#btnCloseConfirmDelete').prop('disabled', false);
+                    },
+                    500: function (message) {
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
+                        $('#deleteConfirm').modal('hide');
+                        document.getElementById('btnConfirmDelete').innerHTML = "🗑 Delete";
+                        $('#btnConfirmDelete').prop('disabled', false);
+                        $('#btnCloseConfirmDelete').prop('disabled', false);
+                    }
+                }
+            });
+        }
+
+        // Close
+        function closeList() {
+            window.location = '/Software';
+        }
+
+        // On Load Page
+        $(document).ready(function () {
+            initializeDateFilters();
+        });
+    </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
+</body>
+</html>
