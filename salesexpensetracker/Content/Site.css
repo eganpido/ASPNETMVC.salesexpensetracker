@@ -297,9 +297,22 @@ h3 {
                 background-color: #f0f0f0;
             }
 
+/* Normal header */
 #datagridList thead th {
-    text-align: center;
-    vertical-align: middle; /* optional */
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Cloned header when using scrollX/scrollY */
+#datagridList_wrapper .dataTables_scrollHead thead th {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* FixedHeader plugin */
+table.dataTable.fixedHeader-floating thead th {
+    text-align: center !important;
+    vertical-align: middle !important;
 }
 
 .btn-info {

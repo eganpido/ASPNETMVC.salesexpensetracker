@@ -10,35 +10,39 @@ using System.Web.Http;
 
 namespace salesexpensetracker.ApiControllers
 {
-    public class ApiTrnSalesInvoiceController : ApiController
+    public class ApiTrnDisbursementController : ApiController
     {
         // ============
         // Data Context
         // ============
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
-        // List Sales Invoice
-        [Authorize, HttpGet, Route("api/salesInvoice/list/{fromDate}/{toDate}")]
-        public List<Entities.TrnSalesInvoice> List(string fromDate, string toDate)
+        // List Disbursement
+        [Authorize, HttpGet, Route("api/disbursement/list/{fromDate}/{toDate}")]
+        public List<Entities.TrnDisbursement> List(string fromDate, string toDate)
         {
             DateTime from = Convert.ToDateTime(fromDate);
             DateTime to = Convert.ToDateTime(toDate);
 
-            var list = db.TrnSalesInvoices
+            var list = db.TrnDisbursements
                     .AsNoTracking()
-                    .Where(d => d.SalesDate >= from && d.SalesDate <= to)
+                    .Where(d => d.DisbursementDate >= from && d.DisbursementDate <= to)
                     .OrderByDescending(d => d.Id)
-                    .Select(d => new Entities.TrnSalesInvoice
+                    .Select(d => new Entities.TrnDisbursement
                     {
                         Id = d.Id,
-                        SalesNumber = d.SalesNumber,
-                        SalesDate = d.SalesDate.ToShortDateString(),
-                        ClientId = d.ClientId,
-                        Client = d.MstClient.ClientName,
+                        DisbursementNumber = d.DisbursementNumber,
+                        DisbursementDate = d.DisbursementDate.ToShortDateString(),
+                        SupplierId = d.SupplierId,
+                        Supplier = d.MstSupplier.SupplierName,
                         Remarks = d.Remarks,
-                        SalesAmount = d.SalesAmount,
-                        PaidAmount = d.PaidAmount,
-                        BalanceAmount = d.BalanceAmount,
+                        DisbursementAmount = d.DisbursementAmount,
+                        PayTypeId = d.PayTypeId,
+                        PayType = d.MstPayType.PayType,
+                        CheckNumber = d.CheckNumber,
+                        CheckDate = d.CheckDate.ToShortDateString(),
+                        BankId = d.BankId,
+                        Bank = d.MstBank.Bank,
                         IsLocked = d.IsLocked,
                         CreatedBy = d.MstUser.FullName,
                         CreatedDateTime = d.CreatedDateTime.ToShortDateString(),
@@ -50,49 +54,99 @@ namespace salesexpensetracker.ApiControllers
             return list;
 
         }
-        // Dropdown List Client
-        [Authorize, HttpGet, Route("api/salesInvoice/list/client")]
-        public List<Entities.MstClient> DropdownListClient()
+        // Dropdown List Supplier
+        [Authorize, HttpGet, Route("api/disbursement/list/supplier")]
+        public List<Entities.MstSupplier> DropdownListSupplier()
         {
-            var list = db.MstClients
+            var list = db.MstSuppliers
                         .AsNoTracking()
                         .Where(d => d.IsLocked)
-                        .OrderBy(d => d.ClientName)
+                        .OrderBy(d => d.SupplierName)
                         .Select(d => new
                         {
                             d.Id,
-                            d.ClientName
+                            d.SupplierName
                         })
                         .ToList()
-                        .Select(d => new Entities.MstClient
+                        .Select(d => new Entities.MstSupplier
                         {
                             Id = d.Id,
-                            ClientName = d.ClientName,
+                            SupplierName = d.SupplierName,
                         })
                         .ToList();
 
             return list;
         }
-        // Detail Sales Invoice
-        [Authorize, HttpGet, Route("api/salesInvoice/detail/{id}")]
-        public Entities.TrnSalesInvoice Detail(String id)
+        // Dropdown List Pay Type
+        [Authorize, HttpGet, Route("api/disbursement/list/paytype")]
+        public List<Entities.MstPayType> DropdownListPayType()
+        {
+            var list = db.MstPayTypes
+                        .AsNoTracking()
+                        .Where(d => d.IsLocked)
+                        .OrderBy(d => d.PayType)
+                        .Select(d => new
+                        {
+                            d.Id,
+                            d.PayType
+                        })
+                        .ToList()
+                        .Select(d => new Entities.MstPayType
+                        {
+                            Id = d.Id,
+                            PayType = d.PayType,
+                        })
+                        .ToList();
+
+            return list;
+        }
+        // Dropdown List Bank
+        [Authorize, HttpGet, Route("api/disbursement/list/bank")]
+        public List<Entities.MstBank> DropdownListBank()
+        {
+            var list = db.MstBanks
+                        .AsNoTracking()
+                        .Where(d => d.IsLocked)
+                        .OrderBy(d => d.Bank)
+                        .Select(d => new
+                        {
+                            d.Id,
+                            d.Bank
+                        })
+                        .ToList()
+                        .Select(d => new Entities.MstBank
+                        {
+                            Id = d.Id,
+                            Bank = d.Bank,
+                        })
+                        .ToList();
+
+            return list;
+        }
+        // Detail Disbursement
+        [Authorize, HttpGet, Route("api/disbursement/detail/{id}")]
+        public Entities.TrnDisbursement Detail(String id)
         {
             int invoiceId = Convert.ToInt32(id);
 
-            var detail = db.TrnSalesInvoices
+            var detail = db.TrnDisbursements
                         .AsNoTracking()
                         .Where(d => d.Id == invoiceId)
-                        .Select(d => new Entities.TrnSalesInvoice
+                        .Select(d => new Entities.TrnDisbursement
                         {
                             Id = d.Id,
-                            SalesNumber = d.SalesNumber,
-                            SalesDate = d.SalesDate.ToShortDateString(),
-                            ClientId = d.ClientId,
-                            Client = d.MstClient.ClientName,
+                            DisbursementNumber = d.DisbursementNumber,
+                            DisbursementDate = d.DisbursementDate.ToShortDateString(),
+                            SupplierId = d.SupplierId,
+                            Supplier = d.MstSupplier.SupplierName,
                             Remarks = d.Remarks,
-                            SalesAmount = d.SalesAmount,
-                            PaidAmount = d.PaidAmount,
-                            BalanceAmount = d.BalanceAmount,
+                            DisbursementAmount = d.DisbursementAmount,
+                            PayTypeId = d.PayTypeId,
+                            PayType = d.MstPayType.PayType,
+                            CheckNumber = d.CheckNumber,
+                            CheckDate = d.CheckDate.ToShortDateString(),
+                            BankId = d.BankId,
+                            Bank = d.MstBank.Bank,
                             IsLocked = d.IsLocked,
                             CreatedBy = d.MstUser.FullName,
                             CreatedDateTime = d.CreatedDateTime.ToShortDateString(),
@@ -118,8 +172,8 @@ namespace salesexpensetracker.ApiControllers
             return result;
         }
 
-        // Add Sales Invoice
-        [Authorize, HttpPost, Route("api/salesInvoice/add")]
+        // Add Disbursement
+        [Authorize, HttpPost, Route("api/disbursement/add")]
         public HttpResponseMessage Add()
         {
             try
@@ -133,25 +187,27 @@ namespace salesexpensetracker.ApiControllers
 
                 string defaultNumber = "0000000001";
 
-                var lastRecord = db.TrnSalesInvoices
+                var lastRecord = db.TrnDisbursements
                                    .OrderByDescending(d => d.Id)
                                    .FirstOrDefault();
 
                 if (lastRecord != null)
                 {
-                    int number = Convert.ToInt32(lastRecord.SalesNumber) + 1;
+                    int number = Convert.ToInt32(lastRecord.DisbursementNumber) + 1;
                     defaultNumber = FillLeadingZeroes(number, 10);
                 }
 
-                var newRecord = new Data.TrnSalesInvoice
+                var newRecord = new Data.TrnDisbursement
                 {
-                    SalesNumber = defaultNumber,
-                    SalesDate = DateTime.Today,
-                    ClientId = 1,
+                    DisbursementNumber = defaultNumber,
+                    DisbursementDate = DateTime.Today,
+                    SupplierId = 1,
                     Remarks = "NA",
-                    SalesAmount = 0,
-                    PaidAmount = 0,
-                    BalanceAmount = 0,
+                    DisbursementAmount = 0,
+                    PayTypeId = 1,
+                    CheckNumber = "NA",
+                    CheckDate = DateTime.Today,
+                    BankId = 1,
                     IsLocked = false,
                     CreatedById = currentUser.Id,
                     CreatedDateTime = DateTime.Now,
@@ -159,7 +215,7 @@ namespace salesexpensetracker.ApiControllers
                     UpdatedDateTime = DateTime.Now
                 };
 
-                db.TrnSalesInvoices.InsertOnSubmit(newRecord);
+                db.TrnDisbursements.InsertOnSubmit(newRecord);
                 db.SubmitChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK, newRecord.Id);
@@ -171,13 +227,13 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Save Sales Invoice
-        [Authorize, HttpPut, Route("api/salesInvoice/save/{id}")]
-        public HttpResponseMessage Save(Entities.TrnSalesInvoice detail, String id)
+        // Save Disbursement
+        [Authorize, HttpPut, Route("api/disbursement/save/{id}")]
+        public HttpResponseMessage Save(Entities.TrnDisbursement detail, String id)
         {
             try
             {
-                int invoiceId = Convert.ToInt32(id);
+                int disbursementId = Convert.ToInt32(id);
                 string currentUserName = User.Identity.GetUserId();
 
                 var currentUser = db.MstUsers.FirstOrDefault(d => d.UserId == currentUserName);
@@ -186,7 +242,7 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
                 }
 
-                var record = db.TrnSalesInvoices.FirstOrDefault(d => d.Id == invoiceId);
+                var record = db.TrnDisbursements.FirstOrDefault(d => d.Id == disbursementId);
                 if (record == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These order details are not found in the server.");
@@ -197,10 +253,14 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "Saving Error. These order details are already locked.");
                 }
 
-                record.SalesDate = Convert.ToDateTime(detail.SalesDate);
-                record.ClientId = detail.ClientId;
+                record.DisbursementDate = Convert.ToDateTime(detail.DisbursementDate);
+                record.SupplierId = detail.SupplierId;
                 record.Remarks = detail.Remarks;
-                record.SalesAmount = detail.SalesAmount;
+                record.DisbursementAmount = detail.DisbursementAmount;
+                record.PayTypeId = detail.PayTypeId;
+                record.CheckNumber = detail.CheckNumber;
+                record.CheckDate = Convert.ToDateTime(detail.CheckDate);
+                record.BankId = detail.BankId;
                 record.UpdatedById = currentUser.Id;
                 record.UpdatedDateTime = DateTime.Now;
 
@@ -216,13 +276,13 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Lock Sales Invoice
-        [Authorize, HttpPut, Route("api/salesInvoice/lock/{id}")]
-        public HttpResponseMessage Lock(Entities.TrnSalesInvoice detail, String id)
+        // Lock Disbursement
+        [Authorize, HttpPut, Route("api/disbursement/lock/{id}")]
+        public HttpResponseMessage Lock(Entities.TrnDisbursement detail, String id)
         {
             try
             {
-                int invoiceId = Convert.ToInt32(id);
+                int disbursementId = Convert.ToInt32(id);
                 string currentUserName = User.Identity.GetUserId();
 
                 var currentUser = db.MstUsers.FirstOrDefault(d => d.UserId == currentUserName);
@@ -231,7 +291,7 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
                 }
 
-                var record = db.TrnSalesInvoices.FirstOrDefault(d => d.Id == invoiceId);
+                var record = db.TrnDisbursements.FirstOrDefault(d => d.Id == disbursementId);
                 if (record == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.NotFound, "Data not found. These details are not found in the server.");
@@ -242,18 +302,19 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "Locking Error. This record is already locked.");
                 }
 
-                record.SalesDate = Convert.ToDateTime(detail.SalesDate);
-                record.ClientId = detail.ClientId;
+                record.DisbursementDate = Convert.ToDateTime(detail.DisbursementDate);
+                record.SupplierId = detail.SupplierId;
                 record.Remarks = detail.Remarks;
-                record.SalesAmount = detail.SalesAmount;
+                record.DisbursementAmount = detail.DisbursementAmount;
+                record.PayTypeId = detail.PayTypeId;
+                record.CheckNumber = detail.CheckNumber;
+                record.CheckDate = Convert.ToDateTime(detail.CheckDate);
+                record.BankId = detail.BankId;
                 record.IsLocked = true;
                 record.UpdatedById = currentUser.Id;
                 record.UpdatedDateTime = DateTime.Now;
 
                 db.SubmitChanges();
-
-                Controllers.AccountsReceivable accountsReceivable = new Controllers.AccountsReceivable();
-                accountsReceivable.UpdateAccountsReceivable(record.Id);
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -264,13 +325,13 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Unlock Sales Invoice
-        [Authorize, HttpPut, Route("api/salesInvoice/unlock/{id}")]
+        // Unlock Disbursement
+        [Authorize, HttpPut, Route("api/disbursement/unlock/{id}")]
         public HttpResponseMessage Unlock(String id)
         {
             try
             {
-                int invoiceId = Convert.ToInt32(id);
+                int disbursementId = Convert.ToInt32(id);
                 string currentUserName = User.Identity.GetUserId();
 
                 var currentUser = db.MstUsers
@@ -281,7 +342,7 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
                 }
 
-                var record = db.TrnSalesInvoices.FirstOrDefault(d => d.Id == invoiceId);
+                var record = db.TrnDisbursements.FirstOrDefault(d => d.Id == disbursementId);
 
                 if (record == null)
                 {
@@ -299,9 +360,6 @@ namespace salesexpensetracker.ApiControllers
 
                 db.SubmitChanges();
 
-                Controllers.AccountsReceivable accountsReceivable = new Controllers.AccountsReceivable();
-                accountsReceivable.UpdateAccountsReceivable(record.Id);
-
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception e)
@@ -311,13 +369,13 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Delete Sales Invoice
-        [Authorize, HttpDelete, Route("api/salesInvoice/delete/{id}")]
+        // Delete Disbursement
+        [Authorize, HttpDelete, Route("api/disbursement/delete/{id}")]
         public HttpResponseMessage DeleteOrder(String id)
         {
             try
             {
-                int invoiceId = Convert.ToInt32(id);
+                int disbursementId = Convert.ToInt32(id);
                 string currentUserName = User.Identity.GetUserId();
 
                 var currentUser = db.MstUsers
@@ -329,8 +387,8 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
                 }
 
-                var record = db.TrnSalesInvoices
-                    .FirstOrDefault(d => d.Id == invoiceId);
+                var record = db.TrnDisbursements
+                    .FirstOrDefault(d => d.Id == disbursementId);
 
                 if (record == null)
                 {
@@ -342,7 +400,7 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "Delete Error. You cannot delete this record because it is locked.");
                 }
 
-                db.TrnSalesInvoices.DeleteOnSubmit(record);
+                db.TrnDisbursements.DeleteOnSubmit(record);
                 db.SubmitChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK);

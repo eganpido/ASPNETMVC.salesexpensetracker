@@ -183,6 +183,10 @@ namespace salesexpensetracker.Controllers
         // Activity
         public ActionResult SalesInvoiceList() { return View(); }
         public ActionResult SalesInvoiceDetail() { return View(); ; }
+        public ActionResult CollectionList() { return View(); }
+        public ActionResult CollectionDetail() { return View(); ; }
+        public ActionResult DisbursementList() { return View(); }
+        public ActionResult DisbursementDetail() { return View(); ; }
 
         // ======
         // System

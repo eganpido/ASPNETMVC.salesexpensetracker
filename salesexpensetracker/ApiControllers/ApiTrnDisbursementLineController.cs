@@ -11,28 +11,27 @@ using System.Web.Http;
 
 namespace salesexpensetracker.ApiControllers
 {
-    public class ApiTrnSalesInvoiceLineController : ApiController
+    public class ApiTrnDisbursementLineController : ApiController
     {
         // ============
         // Data Context
         // ============
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
-        // List Sales Invoice Line
-        [Authorize, HttpGet, Route("api/salesInvoiceLine/list/{salesId}")]
-        public List<Entities.TrnSalesInvoiceLine> ListLine(int salesId)
+        // List Disbursement Line
+        [Authorize, HttpGet, Route("api/disbursementLine/list/{disbursementId}")]
+        public List<Entities.TrnDisbursementLine> ListLine(int disbursementId)
         {
-            var listLines = db.TrnSalesInvoiceLines
+            var listLines = db.TrnDisbursementLines
                 .AsNoTracking()
-                .Where(d => d.SalesId == salesId)
-                .Select(d => new Entities.TrnSalesInvoiceLine
+                .Where(d => d.DisbursementId == disbursementId)
+                .Select(d => new Entities.TrnDisbursementLine
                 {
                     Id = d.Id,
-                    SalesId = d.SalesId,
-                    ProductId = d.ProductId,
-                    Product = d.MstProduct.ProductDescription,
-                    Price = d.Price,
-                    Quantity = d.Quantity,
+                    DisbursementId = d.DisbursementId,
+                    ExpenseId = d.ExpenseId,
+                    Expense = d.MstExpense.ExpenseName,
+                    Particulars = d.Particulars,
                     Amount = d.Amount
                 })
                 .ToList();
@@ -40,50 +39,47 @@ namespace salesexpensetracker.ApiControllers
             return listLines;
         }
 
-        // Dropdown List Product
-        [Authorize, HttpGet, Route("api/salesInvoiceLine/list/product")]
-        public List<Entities.MstProduct> DropdownListProduct()
+        // Dropdown List Expense
+        [Authorize, HttpGet, Route("api/disbursementLine/list/expense")]
+        public List<Entities.MstExpense> DropdownListExpense()
         {
-            var products = db.MstProducts
+            var expenses = db.MstExpenses
                         .AsNoTracking()
                         .Where(d => d.IsLocked)
-                        .OrderBy(d => d.ProductDescription)
+                        .OrderBy(d => d.ExpenseName)
                         .Select(d => new
                         {
                             d.Id,
-                            d.ProductDescription,
-                            d.Price
+                            d.ExpenseName
                         })
                         .ToList()
-                        .Select(d => new Entities.MstProduct
+                        .Select(d => new Entities.MstExpense
                         {
                             Id = d.Id,
-                            ProductDescription = d.ProductDescription,
-                            Price = d.Price.ToString("#,##0.00")
+                            ExpenseName = d.ExpenseName
                         })
                         .ToList();
 
-            return products;
+            return expenses;
         }
 
-        // Detail Sales Invoice Line
-        [Authorize, HttpGet, Route("api/salesInvoiceLine/detail/{lineId}/{salesId}")]
-        public Entities.TrnSalesInvoiceLine DetailLine(string lineId, string salesId)
+        // Detail Disbursement Line
+        [Authorize, HttpGet, Route("api/disbursementLine/detail/{lineId}/{disbursementId}")]
+        public Entities.TrnDisbursementLine DetailLine(string lineId, string disbursementId)
         {
             int intLineId = Convert.ToInt32(lineId);
-            int inSalesId = Convert.ToInt32(salesId);
+            int inDisbursementId = Convert.ToInt32(disbursementId);
 
-            var line = db.TrnSalesInvoiceLines
+            var line = db.TrnDisbursementLines
                 .AsNoTracking()
-                .Where(d => d.Id == intLineId && d.SalesId == inSalesId)
-                .Select(d => new Entities.TrnSalesInvoiceLine
+                .Where(d => d.Id == intLineId && d.DisbursementId == inDisbursementId)
+                .Select(d => new Entities.TrnDisbursementLine
                 {
                     Id = d.Id,
-                    SalesId = d.SalesId,
-                    ProductId = d.ProductId,
-                    Product = d.MstProduct.ProductDescription,
-                    Price = d.Price,
-                    Quantity = d.Quantity,
+                    DisbursementId = d.DisbursementId,
+                    ExpenseId = d.ExpenseId,
+                    Expense = d.MstExpense.ExpenseName,
+                    Particulars = d.Particulars,
                     Amount = d.Amount
                 })
                 .FirstOrDefault();
@@ -91,13 +87,13 @@ namespace salesexpensetracker.ApiControllers
             return line;
         }
 
-        // Add Sales Invoice Line
-        [Authorize, HttpPost, Route("api/salesInvoiceLine/add/{salesId}")]
-        public HttpResponseMessage AddLine(Entities.TrnSalesInvoiceLine line, string salesId)
+        // Add Disbursement Line
+        [Authorize, HttpPost, Route("api/disbursementLine/add/{disbursementId}")]
+        public HttpResponseMessage AddLine(Entities.TrnDisbursementLine line, string disbursementId)
         {
             try
             {
-                int intSalesId = Convert.ToInt32(salesId);
+                int intDisbursementId = Convert.ToInt32(disbursementId);
                 string currentUserName = User.Identity.GetUserId();
 
                 var currentUser = db.MstUsers
@@ -109,8 +105,8 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
                 }
 
-                var header = db.TrnSalesInvoices
-                    .FirstOrDefault(d => d.Id == intSalesId);
+                var header = db.TrnDisbursements
+                    .FirstOrDefault(d => d.Id == intDisbursementId);
 
                 if (header == null)
                 {
@@ -122,28 +118,27 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "You cannot add a new line if the current detail is locked.");
                 }
 
-                var product = db.MstProducts
+                var expense = db.MstExpenses
                     .AsNoTracking()
-                    .FirstOrDefault(d => d.Id == line.ProductId && d.IsLocked);
+                    .FirstOrDefault(d => d.Id == line.ExpenseId && d.IsLocked);
 
-                if (product == null)
+                if (expense == null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "The selected product was not found in the server.");
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "The selected expense was not found in the server.");
                 }
 
-                var newLine = new Data.TrnSalesInvoiceLine
+                var newLine = new Data.TrnDisbursementLine
                 {
-                    SalesId = intSalesId,
-                    ProductId = line.ProductId,
-                    Quantity = line.Quantity,
-                    Price = line.Price,
+                    DisbursementId = intDisbursementId,
+                    ExpenseId = line.ExpenseId,
+                    Particulars = line.Particulars,
                     Amount = line.Amount
                 };
 
-                db.TrnSalesInvoiceLines.InsertOnSubmit(newLine);
+                db.TrnDisbursementLines.InsertOnSubmit(newLine);
                 db.SubmitChanges();
 
-                header.SalesAmount = header.TrnSalesInvoiceLines.Sum(d => d.Amount);
+                header.DisbursementAmount = header.TrnDisbursementLines.Sum(d => d.Amount);
                 db.SubmitChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -155,13 +150,13 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Update Sales Invoice Line
-        [Authorize, HttpPut, Route("api/salesInvoiceLine/update/{lineId}/{salesId}")]
-        public HttpResponseMessage UpdateLine(Entities.TrnSalesInvoiceLine line, string lineId, string salesId)
+        // Update Disbursement Line
+        [Authorize, HttpPut, Route("api/disbursementLine/update/{lineId}/{disbursementId}")]
+        public HttpResponseMessage UpdateLine(Entities.TrnDisbursementLine line, string lineId, string disbursementId)
         {
             try
             {
-                int intSalesId = Convert.ToInt32(salesId);
+                int intDisbursementId = Convert.ToInt32(disbursementId);
                 int intLineId = Convert.ToInt32(lineId);
                 string currentUserName = User.Identity.GetUserId();
 
@@ -174,8 +169,8 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
                 }
 
-                var header = db.TrnSalesInvoices
-                    .FirstOrDefault(d => d.Id == intSalesId);
+                var header = db.TrnDisbursements
+                    .FirstOrDefault(d => d.Id == intDisbursementId);
 
                 if (header == null)
                 {
@@ -187,7 +182,7 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "You cannot edit and update record if the current detail is locked.");
                 }
 
-                var lineData = db.TrnSalesInvoiceLines
+                var lineData = db.TrnDisbursementLines
                     .FirstOrDefault(d => d.Id == intLineId);
 
                 if (lineData == null)
@@ -195,23 +190,22 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.NotFound, "This current detail no longer exists in the server.");
                 }
 
-                var product = db.MstProducts
+                var product = db.MstExpenses
                     .AsNoTracking()
-                    .FirstOrDefault(d => d.Id == line.ProductId && d.IsLocked);
+                    .FirstOrDefault(d => d.Id == line.ExpenseId && d.IsLocked);
 
                 if (product == null)
                 {
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "The selected product was not found in the server.");
                 }
 
-                lineData.SalesId = intSalesId;
-                lineData.ProductId = line.ProductId;
-                lineData.Quantity = line.Quantity;
-                lineData.Price = line.Price;
+                lineData.DisbursementId = intDisbursementId;
+                lineData.ExpenseId = line.ExpenseId;
+                lineData.Particulars = line.Particulars;
                 lineData.Amount = line.Amount;
                 db.SubmitChanges();
 
-                header.SalesAmount = header.TrnSalesInvoiceLines.Sum(d => d.Amount);
+                header.DisbursementAmount = header.TrnDisbursementLines.Sum(d => d.Amount);
                 db.SubmitChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -223,13 +217,13 @@ namespace salesexpensetracker.ApiControllers
             }
         }
 
-        // Delete Sales Invoice Line
-        [Authorize, HttpDelete, Route("api/salesInvoiceLine/delete/{lineId}/{salesId}")]
-        public HttpResponseMessage DeleteLine(string lineId, string salesId)
+        // Delete Disbursement Line
+        [Authorize, HttpDelete, Route("api/disbursementLine/delete/{lineId}/{disbursementId}")]
+        public HttpResponseMessage DeleteLine(string lineId, string disbursementId)
         {
             try
             {
-                int intSalesId = Convert.ToInt32(salesId);
+                int intDisbursementId = Convert.ToInt32(disbursementId);
                 int intLineId = Convert.ToInt32(lineId);
                 string currentUserName = User.Identity.GetUserId();
 
@@ -242,8 +236,8 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "There is no current user logged in.");
                 }
 
-                var header = db.TrnSalesInvoices
-                    .FirstOrDefault(d => d.Id == intSalesId);
+                var header = db.TrnDisbursements
+                    .FirstOrDefault(d => d.Id == intDisbursementId);
 
                 if (header == null)
                 {
@@ -255,7 +249,7 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "You cannot delete a record if the current detail is locked.");
                 }
 
-                var line = db.TrnSalesInvoiceLines
+                var line = db.TrnDisbursementLines
                     .FirstOrDefault(d => d.Id == intLineId);
 
                 if (line == null)
@@ -263,10 +257,10 @@ namespace salesexpensetracker.ApiControllers
                     return Request.CreateResponse(HttpStatusCode.NotFound, "This current detail no longer exists in the server.");
                 }
 
-                db.TrnSalesInvoiceLines.DeleteOnSubmit(line);
+                db.TrnDisbursementLines.DeleteOnSubmit(line);
                 db.SubmitChanges();
 
-                header.SalesAmount = header.TrnSalesInvoiceLines.Sum(d => d.Amount);
+                header.DisbursementAmount = header.TrnDisbursementLines.Sum(d => d.Amount);
                 db.SubmitChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK);

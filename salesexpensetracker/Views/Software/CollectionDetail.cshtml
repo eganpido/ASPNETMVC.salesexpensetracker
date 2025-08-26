@@ -16,7 +16,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
-    <title>Sales Invoice Detail</title>
+    <title>Collection Detail</title>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -41,7 +41,7 @@
             @Html.Partial("_SoftwareHeader")
             <div class="container">
                 <h3>
-                    🧾 Sales Invoice Detail
+                    💰 Collection Detail
                 </h3>
             </div>
             <section class="container">
@@ -72,16 +72,16 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label col-sm-2">SI No.</label>
+                                        <label class="control-label col-sm-2">Coll. No.</label>
                                         <div class="col-sm-4">
-                                            <input type="text" class="form-control" id="salesNumber" placeholder="SI No." disabled />
+                                            <input type="text" class="form-control" id="collectionNumber" placeholder="Coll. No." disabled />
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-2">SI Date</label>
+                                        <label class="control-label col-sm-2">Coll. Date</label>
                                         <div class="col-sm-4">
-                                            <input type="text" id="salesDateInput" class="form-control custom-date" placeholder="Select date" />
-                                            <button type="button" class="calendar-button" data-target="#salesDateInput" tabindex="-1">📅</button>
+                                            <input type="text" id="collectionDateInput" class="form-control custom-date" placeholder="Select date" />
+                                            <button type="button" class="calendar-button" data-target="#collectionDateInput" tabindex="-1">📅</button>
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -90,8 +90,8 @@
                                             <div class="combo-container">
                                                 <input type="text"
                                                        class="form-control combo-input"
-                                                       id="salesClientId"
-                                                       data-url="/api/salesInvoice/list/client"
+                                                       id="collectionClientId"
+                                                       data-url="/api/collection/list/client"
                                                        data-value-field="Id"
                                                        data-text-field="ClientName"
                                                        data-display-fields="ClientName"
@@ -110,7 +110,7 @@
                                     <div class="form-group">
                                         <label class="control-label col-sm-2">Remarks</label>
                                         <div class="col-sm-8">
-                                            <textarea id="salesRemarks" class="textarea-custom form-control" rows="2" placeholder="Remarks..."></textarea>
+                                            <textarea id="collectionRemarks" class="textarea-custom form-control" rows="2" placeholder="Remarks..."></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -118,7 +118,7 @@
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Amount</label>
                                         <div class="col-sm-4">
-                                            <input type="text" class="form-control numberField" id="salesAmount" placeholder="0.00" disabled />
+                                            <input type="text" class="form-control numberField" id="collectionAmount" placeholder="0.00" disabled />
                                         </div>
                                     </div>
                                     <div class="row" style="margin-top:40px;">
@@ -156,16 +156,18 @@
                             <thead>
                                 <tr class="selected">
                                     <th></th>
-                                    <th>Product</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
+                                    <th>SI Number</th>
+                                    <th>Pay Type</th>
                                     <th>Amount</th>
+                                    <th>Bank</th>
+                                    <th>Check No.</th>
+                                    <th>Check Date</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tfoot>
                                 <tr>
-                                    <th colspan="4" style="text-align: right;">Total :</th>
+                                    <th colspan="3" style="text-align: right;">Total :</th>
                                     <th class="text-right" id="amountTotalFooter"></th>
                                     <th></th>
                                 </tr>
@@ -188,7 +190,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="lineModalTitle">Sales Invoice Line Detail</h4>
+                    <h4 class="modal-title" id="lineModalTitle">Collection Line Detail</h4>
                 </div>
                 <div class="modal-body">
                     <center>
@@ -201,17 +203,18 @@
                                 <div class="form-group">
                                     <input type="hidden" id="lineId" />
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3">Product</label>
+                                        <label class="control-label col-sm-3">SI No.</label>
                                         <div class="col-sm-7">
                                             <div class="combo-container">
                                                 <input type="text"
                                                        class="form-control combo-input"
-                                                       id="lineProductId"
-                                                       data-url="/api/salesInvoiceLine/list/product"
+                                                       id="lineSalesId"
+                                                       data-url="/api/collectionLine/list/salesInvoice/{clientId}"
+                                                       data-client-id="1"
                                                        data-value-field="Id"
-                                                       data-text-field="ProductDescription"
-                                                       data-display-fields="ProductDescription"
-                                                       data-placeholder="Select product..."
+                                                       data-text-field="SalesNumber"
+                                                       data-display-fields="SalesNumber,SalesDate,BalanceAmount"
+                                                       data-placeholder="Select sales invoice..."
                                                        data-allow-add="false" />
                                                 <span class="combo-clear" style="display:none;">&times;</span>
                                                 <span class="combo-toggle">
@@ -224,21 +227,68 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3">Price</label>
-                                        <div class="col-sm-4">
-                                            <input type="text" class="form-control numberField" id="linePrice" placeholder="0.00" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-sm-3">Quantity</label>
-                                        <div class="col-sm-4">
-                                            <input type="text" class="form-control numberField" id="lineQuantity" placeholder="0.00" />
+                                        <label class="control-label col-sm-3">Pay Type</label>
+                                        <div class="col-sm-7">
+                                            <div class="combo-container">
+                                                <input type="text"
+                                                       class="form-control combo-input"
+                                                       id="linePayTypeId"
+                                                       data-url="/api/collectionLine/list/paytype"
+                                                       data-value-field="Id"
+                                                       data-text-field="PayType"
+                                                       data-display-fields="PayType"
+                                                       data-placeholder="Select pay type..."
+                                                       data-allow-add="false" />
+                                                <span class="combo-clear" style="display:none;">&times;</span>
+                                                <span class="combo-toggle">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path d="M1.5 5.5l6 6 6-6H1.5z" />
+                                                    </svg>
+                                                </span>
+                                                <ul class="dropdown-menu combo-suggestions"></ul>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="control-label col-sm-3">Amount</label>
                                         <div class="col-sm-4">
-                                            <input type="text" class="form-control numberField" id="lineAmount" placeholder="0.00" disabled />
+                                            <input type="text" class="form-control numberField" id="lineAmount" placeholder="0.00" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Bank</label>
+                                        <div class="col-sm-7">
+                                            <div class="combo-container">
+                                                <input type="text"
+                                                       class="form-control combo-input"
+                                                       id="lineBankId"
+                                                       data-url="/api/collectionLine/list/bank"
+                                                       data-value-field="Id"
+                                                       data-text-field="Bank"
+                                                       data-display-fields="Bank"
+                                                       data-placeholder="Select bank..."
+                                                       data-allow-add="false" />
+                                                <span class="combo-clear" style="display:none;">&times;</span>
+                                                <span class="combo-toggle">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path d="M1.5 5.5l6 6 6-6H1.5z" />
+                                                    </svg>
+                                                </span>
+                                                <ul class="dropdown-menu combo-suggestions"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Check No.</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control" id="lineCheckNumber" placeholder="Check No." />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">Check Date</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" id="lineCheckDateInput" class="form-control custom-date" placeholder="Select date" />
+                                            <button type="button" class="calendar-button" data-target="#lineCheckDateInput" tabindex="-1">📅</button>
                                         </div>
                                     </div>
                                 </div>
@@ -281,6 +331,7 @@
     <script type="text/javascript">
         var isLocked = false;
         var _lineId = 0;
+        var cbClientId = 0;
 
         // Get URL Parameter Value
         function getURLParameterValue(name) {
@@ -297,48 +348,44 @@
             }
         }
 
-        // Get Sales Invoice Detail Data
+        // Get Collection Detail Data
         function getDetailData() {
             Loader.show();
 
             if (document.location.search.length > 0) {
                 $.ajax({
-                    url: '/api/salesInvoice/detail/' + getURLParameterValue("id"),
+                    url: '/api/collection/detail/' + getURLParameterValue("id"),
                     cache: false,
                     type: 'GET',
                     contentType: 'application/json; charset=utf-8',
                     success: function (results) {
                         if (results != null) {
-                            document.getElementById('salesNumber').value = results.SalesNumber;
+                            document.getElementById('collectionNumber').value = results.CollectionNumber;
 
-                            const salesDate = new Date(results.SalesDate);
-                            const formattedSalesDate = salesDate.getFullYear() + '-' +
-                                String(salesDate.getMonth() + 1).padStart(2, '0') + '-' +
-                                String(salesDate.getDate()).padStart(2, '0');
-                            document.querySelector("#salesDateInput")._flatpickr.setDate(formattedSalesDate);
+                            const collectionDate = new Date(results.CollectionDate);
+                            const formattedCollectionDate = collectionDate.getFullYear() + '-' +
+                                String(collectionDate.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(collectionDate.getDate()).padStart(2, '0');
+                            document.querySelector("#collectionDateInput")._flatpickr.setDate(formattedCollectionDate);
 
-                            const $input = $('#salesClientId');
+                            const $input = $('#collectionClientId');
                             $input.val(results.Client).data('selected-id', results.ClientId);
-                            document.getElementById('salesRemarks').value = results.Remarks;
-                            document.getElementById('salesAmount').value = parseFloat(results.SalesAmount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');;
+                            cbClientId = results.ClientId;
+                            document.getElementById('collectionRemarks').value = results.Remarks;
+                            document.getElementById('collectionAmount').value = parseFloat(results.CollectionAmount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');;
                             document.getElementById('createdBy').innerHTML = results.CreatedBy;
                             document.getElementById('createdDate').innerHTML = results.CreatedDateTime;
                             document.getElementById('updatedBy').innerHTML = results.UpdatedBy;
                             document.getElementById('updatedDate').innerHTML = results.UpdatedDateTime;
 
                             if (results.IsLocked) {
-                                document.getElementById('salesDateInput').disabled = true;
-                                document.getElementById('salesClientId').disabled = true;
-                                document.getElementById('salesRemarks').disabled = true;
+                                document.getElementById('collectionDateInput').disabled = true;
+                                document.getElementById('collectionClientId').disabled = true;
+                                document.getElementById('collectionRemarks').disabled = true;
 
                                 $('#btnDetailSave').prop('disabled', true);
                                 $('#btnDetailLock').prop('disabled', true);
                                 $('#btnDetailAdd').prop('disabled', true);
-
-                                //$('#datagridList_wrapper').css({
-                                //    'pointer-events': 'none',
-                                //    'opacity': '0.8'
-                                //});
 
                                 isLocked = true;
                             } else {
@@ -374,7 +421,7 @@
 
             let table = $('#datagridList').DataTable({
                 ajax: {
-                    url: '/api/salesInvoiceLine/list/' + getURLParameterValue("id"),
+                    url: '/api/collectionLine/list/' + getURLParameterValue("id"),
                     dataSrc: '',
                 },
                 columns: [
@@ -385,27 +432,8 @@
                             return '<button class="btn btn-primary btn-sm" onclick="editLineRecord(' + row.Id + ')">📝 Edit</button>';
                         }, width: '8%'
                     },
-                    { data: 'Product', className: 'text-left', width: 'auto' },
-                    {
-                        data: 'Price',
-                        render: function (data, type, row) {
-                            if (type === 'display') {
-                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-                            }
-                            return data;
-                        },
-                        width: '10%'
-                    },
-                    {
-                        data: 'Quantity',
-                        render: function (data, type, row) {
-                            if (type === 'display') {
-                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-                            }
-                            return data;
-                        },
-                        width: '10%'
-                    },
+                    { data: 'SalesNumber', className: 'text-left', width: 'auto' },
+                    { data: 'PayType', className: 'text-left', width: 'auto' },
                     {
                         data: 'Amount',
                         render: function (data, type, row) {
@@ -416,17 +444,29 @@
                         },
                         width: '15%'
                     },
+                    { data: 'Bank', className: 'text-left', width: 'auto' },
+                    { data: 'CheckNumber', className: 'text-left', width: 'auto' },
+                    {
+                        data: 'CheckDate',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.getFullYear() + '-' +
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(date.getDate()).padStart(2, '0');
+                        }, className: 'text-left', width: '10%'
+                    },
                     {
                         data: null,
                         className: 'text-center',
                         render: function (data, type, row) {
-                            return '<button class="btn btn-danger btn-sm" onclick="deleteLineRecord(' + row.Id + ',' + row.SalesId + ')">🗑 Delete</button>';
+                            return '<button class="btn btn-danger btn-sm" onclick="deleteLineRecord(' + row.Id + ',' + row.CollectionId + ')">🗑 Delete</button>';
                         }, width: '8%'
                     }
                 ],
                 columnDefs: [
                     { targets: 1, className: 'text-left' },
-                    { targets: [0, 5], orderable: false }
+                    { targets: [0, 7], orderable: false }
                 ],
                 pageLength: 10,
                 responsive: true,
@@ -440,17 +480,17 @@
                     const api = this.api();
 
                     let total = api
-                        .column(4, { page: 'current' })
+                        .column(3, { page: 'current' })
                         .data()
                         .reduce(function (a, b) {
                             return parseFloat(a || 0) + parseFloat(b || 0);
                         }, 0);
 
-                    $(api.column(4).footer()).html(
+                    $(api.column(3).footer()).html(
                         total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
                     );
 
-                    document.getElementById('salesAmount').value = total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                    document.getElementById('collectionAmount').value = total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
                 },
                 drawCallback: function () {
                     if (isLocked) {
@@ -470,17 +510,17 @@
         // Detail Data Object
         function detailDataObject() {
             var detailObject = new Object();
-            detailObject.SalesNumber = document.getElementById('salesNumber').value;
-            detailObject.SalesDate = document.getElementById('salesDateInput').value;
-            const selectedId = $('#salesClientId').data('selected-id');
+            detailObject.CollectionNumber = document.getElementById('collectionNumber').value;
+            detailObject.CollectionDate = document.getElementById('collectionDateInput').value;
+            const selectedId = $('#collectionClientId').data('selected-id');
             detailObject.ClientId = selectedId;
-            detailObject.Remarks = document.getElementById('salesRemarks').value;
-            detailObject.SalesAmount = document.getElementById('salesAmount').value;
+            detailObject.Remarks = document.getElementById('collectionRemarks').value;
+            detailObject.CollectionAmount = document.getElementById('collectionAmount').value;
             var data = JSON.stringify(detailObject);
             return data;
         }
 
-        // Save Sales Invoice
+        // Save Collection
         function saveRecord() {
             document.getElementById('btnDetailSave').innerHTML = "💾 Saving...";
             $('#btnDetailSave').prop('disabled', true);
@@ -490,7 +530,7 @@
 
             $.ajax({
                 type: "PUT",
-                url: '/api/salesInvoice/save/' + getURLParameterValue("id"),
+                url: '/api/collection/save/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: detailDataObject(),
@@ -544,7 +584,7 @@
             });
         }
 
-        // Lock Sales Invoice
+        // Lock Collection
         function lockRecord() {
             document.getElementById('btnDetailLock').innerHTML = "🔒 Locking...";
             $('#btnDetailSave').prop('disabled', true);
@@ -554,7 +594,7 @@
 
             $.ajax({
                 type: "PUT",
-                url: '/api/salesInvoice/lock/' + getURLParameterValue("id"),
+                url: '/api/collection/lock/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: detailDataObject(),
@@ -590,7 +630,7 @@
             });
         }
 
-        // Unlock Sales Invoice
+        // Unlock Collection
         function unlockRecord() {
             document.getElementById('btnDetailUnlock').innerHTML = "🔓 Unlocking...";
             $('#btnDetailSave').prop('disabled', true);
@@ -600,7 +640,7 @@
 
             $.ajax({
                 type: "PUT",
-                url: '/api/salesInvoice/unlock/' + getURLParameterValue("id"),
+                url: '/api/collection/unlock/' + getURLParameterValue("id"),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 statusCode: {
@@ -635,15 +675,15 @@
             });
         }
 
-        // Print Sales Invoice
+        // Print Collection
         function printRecord() {
             var salesId = getURLParameterValue("id");
 
-            var printLink = '/RepSalesInvoice/SalesInvoice?SalesId=' + salesId;
+            var printLink = '/RepCollection/Collection?CollectionId=' + collectionId;
             window.open(printLink, '_blank');
         }
 
-        // Add Sales Invoice Line
+        // Add Collection Line
         function addLineRecord() {
             _lineId = 0;
             $('#lineEdit').modal({
@@ -655,24 +695,32 @@
             document.getElementById("lineLoading").innerHTML = 'Loading...';
             $("#lineContent").hide();
 
-            document.getElementById("lineModalTitle").innerHTML = 'Add Sales Invoice Line';
+            document.getElementById("lineModalTitle").innerHTML = 'Add Collection Line';
 
             document.getElementById('btnLineSave').innerHTML = "💾 Save";
             $("#btnLineSave").prop("disabled", true);
             $("#btnLineCloseModal").prop("disabled", false);
 
-            $('#lineProductId').val('');
+            const selectedItem = $('#collectionClientId').data('selected-item');
+            const clientId = selectedItem ? selectedItem.Id : cbClientId;
 
-            document.getElementById('linePrice').value = formatDecimalValues(1);
-            document.getElementById('lineQuantity').value = formatDecimalValues(1);
-            computeAmount();
+            $('#lineSalesId').val('');
+            $('#linePayTypeId').val('');
+            $('#lineBankId').val('');
+            $('#lineCheckNumber').val('');
+            $('#lineCheckDateInput').val('');
+            initializeDate();
+
+            // Call the function with the ID
+            enableDisableSalesInvoiceCombobox(clientId);
+            document.getElementById('lineAmount').value = formatDecimalValues(1);
 
             $("#lineLoading").hide();
             $("#lineContent").show();
             $("#btnLineSave").prop("disabled", false);
         }
 
-        // Edit Sales Invoice Line
+        // Edit Collection Line
         function editLineRecord(lineId) {
             $('#lineEdit').modal({
                 show: true,
@@ -683,48 +731,61 @@
             document.getElementById("lineLoading").innerHTML = 'Loading...';
             $("#lineContent").hide();
 
-            document.getElementById("lineModalTitle").innerHTML = 'Edit Sales Invoice Line';
+            document.getElementById("lineModalTitle").innerHTML = 'Edit Collection Line';
 
             document.getElementById('btnLineSave').innerHTML = "💾 Save";
             $("#btnLineSave").prop("disabled", true);
             $("#btnLineCloseModal").prop("disabled", false);
 
             $.ajax({
-                url: '/api/salesInvoiceLine/detail/' + lineId + '/' + getURLParameterValue("id"),
+                url: '/api/collectionLine/detail/' + lineId + '/' + getURLParameterValue("id"),
                 cache: false,
                 type: 'GET',
                 contentType: 'application/json; charset=utf-8',
                 success: function (results) {
                     if (results != null) {
-                        const $input = $('#lineProductId');
+                        const $inputSalesId = $('#lineSalesId');
+                        const $inputPayTypeId = $('#linePayTypeId');
+                        const $inputBankId = $('#lineBankId');
+
                         document.getElementById('lineId').value = results.Id;
                         _lineId = results.Id;
-                        $input.val(results.Product).data('selected-id', results.ProductId);
-                        document.getElementById('linePrice').value = formatDecimalValues(results.Price);
-                        document.getElementById('lineQuantity').value = formatDecimalValues(results.Quantity);
+                        $inputSalesId.val(results.SalesNumber).data('selected-id', results.SalesId);
+                        $inputPayTypeId.val(results.PayType).data('selected-id', results.PayTypeId);
+                        $inputBankId.val(results.Bank).data('selected-id', results.BankId);
                         document.getElementById('lineAmount').value = formatDecimalValues(results.Amount);
+                        document.getElementById('lineCheckNumber').value = results.CheckNumber;
+                        const lineCheckDate = new Date(results.CheckDate);
+                        const formattedCheckDate = lineCheckDate.getFullYear() + '-' +
+                            String(lineCheckDate.getMonth() + 1).padStart(2, '0') + '-' +
+                            String(lineCheckDate.getDate()).padStart(2, '0');
+                        document.querySelector("#lineCheckDateInput")._flatpickr.setDate(formattedCheckDate);
 
                         $("#btnLineSave").prop("disabled", false);
                         $("#lineLoading").hide();
                         $("#lineContent").show();
                     } else {
                         alert("No Data");
-                        window.location = "/Software/SalesInvoiceList";
+                        window.location = "/Software/CollectionList";
                     }
                 }
             });
         }
 
-        // Save Sales Invoice Line
+        // Save Collection Line
         function saveLineRecord() {
-            const selectedId = $('#lineProductId').data('selected-id');
+            const selectedSalesId = $('#lineSalesId').data('selected-id');
+            const selectedPayTypeId = $('#linePayTypeId').data('selected-id');
+            const selectedBankId = $('#lineBankId').data('selected-id');
             var lineObject = new Object();
             var detailId = getURLParameterValue('id');
-            lineObject.SalesId = detailId;
-            lineObject.ProductId = selectedId;
-            lineObject.Price = document.getElementById('linePrice').value;
-            lineObject.Quantity = document.getElementById('lineQuantity').value;
+            lineObject.CollectionId = detailId;
+            lineObject.SalesId = selectedSalesId;
+            lineObject.PayTypeId = selectedPayTypeId;
+            lineObject.BankId = selectedBankId;
             lineObject.Amount = document.getElementById('lineAmount').value;
+            lineObject.CheckNumber = document.getElementById('lineCheckNumber').value;
+            lineObject.CheckDate = document.getElementById('lineCheckDateInput').value;
             var lineData = JSON.stringify(lineObject);
 
             document.getElementById('btnLineSave').innerHTML = "💾 Saving...";
@@ -734,7 +795,7 @@
             if (_lineId == 0) {
                 $.ajax({
                     type: "POST",
-                    url: '/api/salesInvoiceLine/add/' + detailId,
+                    url: '/api/collectionLine/add/' + detailId,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: lineData,
@@ -771,7 +832,7 @@
             } else {
                 $.ajax({
                     type: "PUT",
-                    url: '/api/salesInvoiceLine/update/' + _lineId + '/' + detailId,
+                    url: '/api/collectionLine/update/' + _lineId + '/' + detailId,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     data: lineData,
@@ -808,7 +869,7 @@
             }
         }
 
-        // Delete Sales Invoice Line
+        // Delete Collection Line
         var delLineId = 0;
         var delDetailId = 0;
         function deleteLineRecord(lineId, detailId) {
@@ -824,14 +885,14 @@
             $("#btnLineCloseConfirmDelete").prop("disabled", false);
         }
 
-        // Delete Confirm Sales Invoice Line
+        // Delete Confirm Collection Line
         function confirmDeleteLineRecord() {
             document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Deleting...";
             $("#btnLineConfirmDelete").prop("disabled", true);
             $("#btnLineCloseConfirmDelete").prop("disabled", true);
 
             $.ajax({
-                url: '/api/salesInvoiceLine/delete/' + delLineId + '/' + delDetailId,
+                url: '/api/collectionLine/delete/' + delLineId + '/' + delDetailId,
                 type: "DELETE",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -867,34 +928,30 @@
             });
         }
 
-        $("#linePrice").keyup(function (e) { computeAmount(); });
-        $("#lineQuantity").keyup(function (e) { computeAmount(); });
-        $('#lineProductId').on('change', function () {
+        $('#lineSalesId').on('change', function () {
             const list = $(this).data('selected-item');
             if (list) {
-                $('#linePrice').val(list.Price); // Assign to hidden or display field
-                computeAmount();
+                $('#lineAmount').val(formatDecimalValues(list.BalanceAmount)); // Assign to hidden or display field
             }
         });
 
-        // Compute Amount
-        function computeAmount() {
-            var price = document.getElementById('linePrice').value.replace(/\,/g, '');
-            var quantity = document.getElementById('lineQuantity').value.replace(/\,/g, '');
-            var amount = price * quantity;
-
-            document.getElementById('lineAmount').value = formatDecimalValues(amount);
-        }
-
-        // Close Sales Invoice
+        // Close Collection Detail
         function closeDetail() {
-            window.location = '/Software/SalesInvoiceList';
+            window.location = '/Software/CollectionList';
         }
 
         function initializeDate() {
             const today = new Date();
 
-            flatpickr("#salesDateInput", {
+            flatpickr("#collectionDateInput", {
+                dateFormat: "Y-m-d",
+                defaultDate: today,
+                minDate: "1753-01-01",
+                maxDate: "9999-12-31",
+                disableMobile: true
+            });
+
+            flatpickr("#lineCheckDateInput", {
                 dateFormat: "Y-m-d",
                 defaultDate: today,
                 minDate: "1753-01-01",
@@ -913,6 +970,54 @@
                 }
             });
         });
+
+        $(document).on("change", "#collectionClientId", function () {
+            const $clientInput = $(this);
+            const selectedItem = $clientInput.data("selected-item"); // set in your combobox.js
+            const clientId = selectedItem ? selectedItem.Id : null;
+
+            const $salesInput = $("#lineSalesId");
+
+            if (clientId) {
+                // Update clientId
+                $salesInput.data("clientId", clientId);
+
+                // Clear old value
+                $salesInput.val("")
+                    .removeAttr("data-selected-id")
+                    .removeData("selected-item")
+                    .trigger("change");
+            } else {
+                // Reset
+                $salesInput.data("clientId", null);
+                $salesInput.val("")
+                    .removeAttr("data-selected-id")
+                    .removeData("selected-item")
+                    .trigger("change");
+            }
+        });
+
+        function enableDisableSalesInvoiceCombobox(clientId) {
+            const $salesInput = $("#lineSalesId");
+            const urlTemplate = $salesInput.data("url");
+            const url = urlTemplate.replace("{clientId}", clientId);
+
+            if (!clientId) {
+                // No client selected → disable input
+                $salesInput.prop("disabled", true);
+                return;
+            }
+
+            $.getJSON(url, function (data) {
+                if (!data || data.length === 0) {
+                    $salesInput.prop("disabled", true);
+                } else {
+                    $salesInput.prop("disabled", false);
+                }
+            }).fail(function () {
+                $salesInput.prop("disabled", true);
+            });
+        }
 
         // ============
         // On Load Page
