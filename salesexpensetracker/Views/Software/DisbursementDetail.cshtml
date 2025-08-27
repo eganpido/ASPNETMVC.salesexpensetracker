@@ -785,7 +785,7 @@
                     data: lineData,
                     statusCode: {
                         200: function () {
-                            toastr.success("Save Succesful");
+                            toastr.success("Save Succesful", "", { positionClass: "toast-bottom-right" });
                             $('#lineEdit').modal('hide');
                             Loader.show();
                             populateLines();
@@ -794,19 +794,19 @@
                             }, 1000);
                         },
                         404: function (message) {
-                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
                             document.getElementById('btnLineSave').innerHTML = "💾 Save";
                             $("#btnLineSave").prop("disabled", false);
                             $("#btnLineCloseModal").prop("disabled", false);
                         },
                         400: function (message) {
-                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
                             document.getElementById('btnLineSave').innerHTML = "💾 Save";
                             $("#btnLineSave").prop("disabled", false);
                             $("#btnLineCloseModal").prop("disabled", false);
                         },
                         500: function (message) {
-                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
                             document.getElementById('btnLineSave').innerHTML = "💾 Save";
                             $("#btnLineSave").prop("disabled", false);
                             $("#btnLineCloseModal").prop("disabled", false);
@@ -822,7 +822,7 @@
                     data: lineData,
                     statusCode: {
                         200: function () {
-                            toastr.success("Update Successful");
+                            toastr.success("Update Successful", "", { positionClass: "toast-bottom-right" });
                             $('#lineEdit').modal('hide');
                             Loader.show();
                             populateLines();
@@ -831,19 +831,19 @@
                             }, 1000);
                         },
                         404: function (message) {
-                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
                             document.getElementById('btnLineSave').innerHTML = "💾 Save";
                             $("#btnLineSave").prop("disabled", false);
                             $("#btnLineCloseModal").prop("disabled", false);
                         },
                         400: function (message) {
-                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
                             document.getElementById('btnLineSave').innerHTML = "💾 Save";
                             $("#btnLineSave").prop("disabled", false);
                             $("#btnLineCloseModal").prop("disabled", false);
                         },
                         500: function (message) {
-                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
+                            toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
                             document.getElementById('btnLineSave').innerHTML = "💾 Save";
                             $("#btnLineSave").prop("disabled", false);
                             $("#btnLineCloseModal").prop("disabled", false);
@@ -882,7 +882,7 @@
                 dataType: "json",
                 statusCode: {
                     200: function () {
-                        toastr.success("Delete Successful");
+                        toastr.success("Delete Successful", "", { positionClass: "toast-bottom-right" });
                         $('#deleteLineConfirmModal').modal('hide');
                         Loader.show();
                         populateLines();
@@ -891,19 +891,19 @@
                         }, 1000);
                     },
                     404: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404");
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 404", { positionClass: "toast-bottom-right" });
                         document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Delete";
                         $("#btnLineConfirmDelete").prop("disabled", false);
                         $("#btnLineCloseConfirmDelete").prop("disabled", false);
                     },
                     400: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400");
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 400", { positionClass: "toast-bottom-right" });
                         document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Delete";
                         $("#btnLineConfirmDelete").prop("disabled", false);
                         $("#btnLineCloseConfirmDelete").prop("disabled", false);
                     },
                     500: function (message) {
-                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500");
+                        toastr.error(message.responseText.replace(/^"(.*)"$/, '$1'), "Error 500", { positionClass: "toast-bottom-right" });
                         document.getElementById('btnLineConfirmDelete').innerHTML = "🗑 Delete";
                         $("#btnLineConfirmDelete").prop("disabled", false);
                         $("#btnLineCloseConfirmDelete").prop("disabled", false);

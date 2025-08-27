@@ -147,7 +147,8 @@ body.account-body-custom {
 }
 
 .panel-default {
-    border-color: transparent;
+    border-color: lightgray;
+    border-radius: 5px;
 }
 
 .panel-theme {
