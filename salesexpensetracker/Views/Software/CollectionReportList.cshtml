@@ -1,0 +1,164 @@
+﻿@*@model easyfis.Entities.MstUserForm*@
+@{
+    // =====================
+    // User Rights Variables
+    // =====================
+    //var canAdd = Model.CanAdd;
+    //var canEdit = Model.CanEdit;
+    //var canDelete = Model.CanDelete;
+    //var canLock = Model.CanLock;
+    //var canUnlock = Model.CanUnlock;
+    //var canPrint = Model.CanPrint;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="~/Images/icon/streetsmartLogo.ico">
+    <title>Collection Report</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    @Styles.Render("~/Content/Software-css")
+    <style>
+        .panel-default > .panel-heading {
+            border-radius: 11px;
+        }
+        .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+            background-color: #3f9794;
+            border-color: #3f9794;
+        }
+    </style>
+</head>
+<body>
+    <div id="o-wrapper" class="o-wrapper">
+        <main class="o-content">
+            @Html.Partial("_SoftwareHeader")
+
+            <div class="container">
+                <h3>
+                    🖨️ Collection Report
+                </h3>
+            </div>
+            <section class="container">
+                <div class="panel panel-default" style="border-radius:12px;">
+                    <div class="panel-heading">
+                        <h5>
+                            Please select a report . . .
+                        </h5>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <!-- Left side: Report menu -->
+                            <div class="col-md-3">
+                                <div class="list-group">
+                                    <a href="#" id="btnSummary" class="list-group-item active">Collection Summary</a>
+                                    <a href="#" id="btnDetail" class="list-group-item">Collection Details</a>
+                                </div>
+                            </div>
+
+                            <!-- Right side: Date filters -->
+                            <div class="col-md-9">
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">Date From :</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" id="startDateInput" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">Date To :</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" id="endDateInput" class="form-control" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <!-- Action buttons -->
+                        <div class="text-right">
+                            <button type="button" class="btn btn-success" onclick="printReport()">
+                                <span class="glyphicon glyphicon-print"></span> Print
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="closeReport()">
+                                <span class="glyphicon glyphicon-remove"></span> Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            @Html.Partial("_SoftwareFooter")
+        </main>
+    </div>
+    <div id="c-mask" class="c-mask"></div>
+
+    @Scripts.Render("~/Scripts/Software-js")
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript">
+        function isValidDate(dateStr) {
+            const d = new Date(dateStr);
+            return !isNaN(d.getTime()) && d >= new Date('1753-01-01') && d <= new Date('9999-12-31');
+        }
+        function initializeDateFilters() {
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            flatpickr("#startDateInput", {
+                dateFormat: "Y-m-d",
+                defaultDate: firstDayOfMonth,
+                minDate: "1753-01-01",
+                maxDate: "9999-12-31",
+                disableMobile: true
+            });
+
+
+            flatpickr("#endDateInput", {
+                dateFormat: "Y-m-d",
+                defaultDate: lastDayOfMonth,
+                minDate: "1753-01-01",
+                maxDate: "9999-12-31",
+                disableMobile: true
+            });
+        }
+        function printReport() {
+            const activeReport = $('.list-group-item.active').attr('id');
+            const startDate = $('#startDateInput').val();
+            const endDate = $('#endDateInput').val();
+
+            if (activeReport === "btnSummary") {
+                window.open(`/Reports/CollectionSummary?start=${startDate}&end=${endDate}`, "_blank");
+            } else if (activeReport === "btnDetail") {
+                window.open(`/Reports/CollectionDetail?start=${startDate}&end=${endDate}`, "_blank");
+            }
+        }
+
+        // Toggle active tab
+        $('#btnSummary, #btnDetail').on('click', function (e) {
+            e.preventDefault();
+            $('.list-group-item').removeClass('active');
+            $(this).addClass('active');
+        });
+        // Close
+        function closeReport() {
+            window.location = '/Software';
+        }
+
+        // On Load Page
+        $(document).ready(function () {
+            Loader.show();
+            initializeDateFilters();
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        });
+    </script>
+    <div id="loader-overlay">
+        <div class="loader-circle"></div>
+    </div>
+</body>
+</html>

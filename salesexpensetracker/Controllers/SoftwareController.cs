@@ -195,9 +195,10 @@ namespace salesexpensetracker.Controllers
         public ActionResult UserDetail() { return View(); }
 
         // Reports
-        public ActionResult AccountsPayable() { return UserRights("AccountsPayableReport"); }
-        public ActionResult AccountsPayableReport() { return UserRights("ViewAccountsPayableReport"); }
-        public ActionResult DisbursementSummaryReport() { return UserRights("ViewDisbursementSummaryReport"); }
-        public ActionResult DisbursementDetailReport() { return UserRights("ViewDisbursementDetailReport"); }
+        public ActionResult SalesInvoiceReportList() { return View(); }
+        public ActionResult CollectionReportList() { return View(); }
+        public ActionResult DisbursementReportList() { return View(); }
+        public ActionResult CashFlowReportList() { return View(); }
+        //public ActionResult DisbursementDetailReport() { return UserRights("ViewDisbursementDetailReport"); }
     }
 }

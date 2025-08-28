@@ -1079,6 +1079,10 @@
     <Content Include="Views\Software\CollectionDetail.cshtml" />
     <Content Include="Views\Software\DisbursementList.cshtml" />
     <Content Include="Views\Software\DisbursementDetail.cshtml" />
+    <Content Include="Views\Software\SalesInvoiceReportList.cshtml" />
+    <Content Include="Views\Software\CollectionReportList.cshtml" />
+    <Content Include="Views\Software\DisbursementReportList.cshtml" />
+    <Content Include="Views\Software\CashFlowReportList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
