@@ -59,17 +59,19 @@
 
                             <!-- Right side: Date filters -->
                             <div class="col-md-9">
-                                <form class="form-horizontal">
+                                <form class="form-horizontal" style="margin-left:10%;">
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">Date From :</label>
-                                        <div class="col-sm-4">
-                                            <input type="text" id="startDateInput" class="form-control" />
+                                        <div class="date-wrapper">
+                                            <label for="startDateInput">From:</label>
+                                            <input type="text" id="startDateInput" class="form-control custom-date" placeholder="Select date" />
+                                            <button type="button" class="calendar-button" data-target="#startDateInput" tabindex="-1">📅</button>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">Date To :</label>
-                                        <div class="col-sm-4">
-                                            <input type="text" id="endDateInput" class="form-control" />
+                                        <div class="date-wrapper">
+                                            <label for="endDateInput">To:</label>
+                                            <input type="text" id="endDateInput" class="form-control custom-date" placeholder="Select date" />
+                                            <button type="button" class="calendar-button" data-target="#endDateInput" tabindex="-1">📅</button>
                                         </div>
                                     </div>
                                 </form>
