@@ -300,13 +300,13 @@ h3 {
             }
 
 /* Normal header */
-#datagridList thead th {
+table.dataTable thead th {
     text-align: center !important;
     vertical-align: middle !important;
 }
 
 /* Cloned header when using scrollX/scrollY */
-#datagridList_wrapper .dataTables_scrollHead thead th {
+table.dataTable_wrapper .dataTables_scrollHead thead th {
     text-align: center !important;
     vertical-align: middle !important;
 }

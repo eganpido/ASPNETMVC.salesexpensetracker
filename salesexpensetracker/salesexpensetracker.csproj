@@ -888,6 +888,7 @@
     <Compile Include="ApiControllers\ApiTrnCollectionLineController.cs" />
     <Compile Include="ApiControllers\ApiTrnDisbursementController.cs" />
     <Compile Include="ApiControllers\ApiTrnDisbursementLineController.cs" />
+    <Compile Include="ApiControllers\ApiRepSalesInvoiceController.cs" />
     <Compile Include="ApiControllers\ApiTrnSalesInvoiceLineController.cs" />
     <Compile Include="ApiControllers\ApiMstUserController.cs" />
     <Compile Include="ApiControllers\ApiMstPayTypeController.cs" />
@@ -918,6 +919,8 @@
     <Compile Include="Entities\TrnCollectionLine.cs" />
     <Compile Include="Entities\TrnDisbursement.cs" />
     <Compile Include="Entities\TrnDisbursementLine.cs" />
+    <Compile Include="Entities\RepSalesInvoiceSummary.cs" />
+    <Compile Include="Entities\RepSalesInvoiceDetail.cs" />
     <Compile Include="Entities\TrnSalesInvoiceLine.cs" />
     <Compile Include="Entities\TrnSalesInvoice.cs" />
     <Compile Include="Entities\MstUser.cs" />
