@@ -126,7 +126,7 @@
                             <button type="button" class="btn btn-primary" onclick="exportCollectionSummaryToCSV()">
                                 <span class="glyphicon glyphicon-export"></span> Export (CSV)
                             </button>
-                            <button type="button" class="btn btn-success" onclick="exportCollectionSummaryToPDF()">
+                            <button type="button" class="btn btn-success" onclick="exportCollectionSummaryToPDF()" data-toggle="modal" data-target="#pdfCollectionSummaryModal">
                                 <span class="glyphicon glyphicon-print"></span> Print
                             </button>
                         </div>
@@ -159,7 +159,7 @@
                             <button type="button" class="btn btn-primary" onclick="exportCollectionDetailToCSV()">
                                 <span class="glyphicon glyphicon-export"></span> Export (CSV)
                             </button>
-                            <button type="button" class="btn btn-success" onclick="exportCollectionDetailToPDF()">
+                            <button type="button" class="btn btn-success" onclick="exportCollectionDetailToPDF()" data-toggle="modal" data-target="#pdfCollectionDetailModal">
                                 <span class="glyphicon glyphicon-print"></span> Print
                             </button>
                         </div>
@@ -186,6 +186,36 @@
                         </tfoot>
                         <tbody></tbody>
                     </table>
+                </div>
+                <!-- Collection Summary Modal -->
+                <div class="modal fade" id="pdfCollectionSummaryModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:0;">
+                                <iframe id="pdfCollectionSummaryPreview" style="width: 100%; height: 85vh; border: 0;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Collection Detail Modal -->
+                <div class="modal fade" id="pdfCollectionDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:0;">
+                                <iframe id="pdfCollectionDetailPreview" style="width: 100%; height: 85vh; border: 0;"></iframe>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             @Html.Partial("_SoftwareFooter")
@@ -441,7 +471,8 @@
                     }
                 });
 
-                doc.save("CollectionSummaryReport.pdf");
+                const pdfData = doc.output("bloburl");
+                document.getElementById("pdfCollectionSummaryPreview").src = pdfData;
             });
         }
 
@@ -655,7 +686,8 @@
                     }
                 });
 
-                doc.save("CollectionDetailReport.pdf");
+                const pdfData = doc.output("bloburl");
+                document.getElementById("pdfCollectionDetailPreview").src = pdfData;
             });
         }
 

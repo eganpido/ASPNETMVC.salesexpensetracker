@@ -126,7 +126,7 @@
                             <button type="button" class="btn btn-primary" onclick="exportSalesSummaryToCSV()">
                                 <span class="glyphicon glyphicon-export"></span> Export (CSV)
                             </button>
-                            <button type="button" class="btn btn-success" onclick="exportSalesSummaryToPDF()">
+                            <button type="button" class="btn btn-success" onclick="exportSalesSummaryToPDF()" data-toggle="modal" data-target="#pdfSalesInvoiceSummaryModal">
                                 <span class="glyphicon glyphicon-print"></span> Print
                             </button>
                         </div>
@@ -162,7 +162,7 @@
                             <button type="button" class="btn btn-primary" onclick="exportSalesDetailToCSV()">
                                 <span class="glyphicon glyphicon-export"></span> Export (CSV)
                             </button>
-                            <button type="button" class="btn btn-success" onclick="exportSalesDetailToPDF()">
+                            <button type="button" class="btn btn-success" onclick="exportSalesDetailToPDF()" data-toggle="modal" data-target="#pdfSalesInvoiceDetailModal">
                                 <span class="glyphicon glyphicon-print"></span> Print
                             </button>
                         </div>
@@ -188,6 +188,36 @@
                         </tfoot>
                         <tbody></tbody>
                     </table>
+                </div>
+                <!-- Sales Invoice Summary Modal -->
+                <div class="modal fade" id="pdfSalesInvoiceSummaryModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:0;">
+                                <iframe id="pdfSalesInvoiceSummaryPreview" style="width: 100%; height: 85vh; border: 0;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sales Invoice Detail Modal -->
+                <div class="modal fade" id="pdfSalesInvoiceDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:0;">
+                                <iframe id="pdfSalesInvoiceDetailPreview" style="width: 100%; height: 85vh; border: 0; "></iframe>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             @Html.Partial("_SoftwareFooter")
@@ -478,7 +508,8 @@
                     }
                 });
 
-                doc.save("SalesInvoiceSummaryReport.pdf");
+                const pdfData = doc.output("bloburl");
+                document.getElementById("pdfSalesInvoiceSummaryPreview").src = pdfData;
             });
         }
 
@@ -691,7 +722,8 @@
                     }
                 });
 
-                doc.save("SalesInvoiceDetailReport.pdf");
+                const pdfData = doc.output("bloburl");
+                document.getElementById("pdfSalesInvoiceDetailPreview").src = pdfData;
             });
         }
 

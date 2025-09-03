@@ -126,7 +126,7 @@
                             <button type="button" class="btn btn-primary" onclick="exportDisbursementSummaryToCSV()">
                                 <span class="glyphicon glyphicon-export"></span> Export (CSV)
                             </button>
-                            <button type="button" class="btn btn-success" onclick="exportDisbursementSummaryToPDF()">
+                            <button type="button" class="btn btn-success" onclick="exportDisbursementSummaryToPDF()" data-toggle="modal" data-target="#pdfDisbursementSummaryModal">
                                 <span class="glyphicon glyphicon-print"></span> Print
                             </button>
                         </div>
@@ -162,7 +162,7 @@
                             <button type="button" class="btn btn-primary" onclick="exportDisbursementDetailToCSV()">
                                 <span class="glyphicon glyphicon-export"></span> Export (CSV)
                             </button>
-                            <button type="button" class="btn btn-success" onclick="exportDisbursementDetailToPDF()">
+                            <button type="button" class="btn btn-success" onclick="exportDisbursementDetailToPDF()" data-toggle="modal" data-target="#pdfDisbursementDetailModal">
                                 <span class="glyphicon glyphicon-print"></span> Print
                             </button>
                         </div>
@@ -186,6 +186,36 @@
                         </tfoot>
                         <tbody></tbody>
                     </table>
+                </div>
+                <!-- Disbursement Summary Modal -->
+                <div class="modal fade" id="pdfDisbursementSummaryModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:0;">
+                                <iframe id="pdfDisbursementSummaryPreview" style="width: 100%; height: 85vh; border: 0;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Disbursement Detail Modal -->
+                <div class="modal fade" id="pdfDisbursementDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:0;">
+                                <iframe id="pdfDisbursementDetailPreview" style="width: 100%; height: 85vh; border: 0;"></iframe>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             @Html.Partial("_SoftwareFooter")
@@ -472,7 +502,8 @@
                     }
                 });
 
-                doc.save("DisbursementSummaryReport.pdf");
+                const pdfData = doc.output("bloburl");
+                document.getElementById("pdfDisbursementSummaryPreview").src = pdfData;
             });
         }
 
@@ -661,7 +692,8 @@
                     }
                 });
 
-                doc.save("DisbursementDetailReport.pdf");
+                const pdfData = doc.output("bloburl");
+                document.getElementById("pdfDisbursementDetailPreview").src = pdfData;
             });
         }
 
