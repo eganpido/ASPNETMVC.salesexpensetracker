@@ -46,6 +46,33 @@
             color: #0d6efd;
         }
 
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 1rem;
+            padding: 2rem;
+            min-height: 300px;
+            max-width: 280px; /* 👈 limit the width */
+            margin: 0 auto; /* 👈 center it inside column */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+            .feature-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            }
+
+        .feature-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.4); /* bigger than 1.2 */
+        }
+
         /* Footer styles (your existing ones) */
         .footer-custom { /* Changed from generic 'footer' to 'footer-custom' to be specific */
             background-color: lightgray;
@@ -112,19 +139,33 @@
                 <h2 class="mb-4">Key Features</h2>
                 <div class="row g-4">
                     <div class="col-md-4">
-                        <div class="feature-icon mb-2">💰</div>
-                        <h4 class="feature-title">Real-Time Sales Tracking</h4>
-                        <p class="feature-description">Monitor daily sales with live updates and detailed summaries.</p>
+                        <div class="card feature-card shadow-sm border-0 text-center h-100">
+                            <div class="card-body p-4">
+                                <div class="feature-icon mb-3">💰</div>
+                                <h4 class="feature-title">Real-Time Sales Tracking</h4>
+                                <p class="feature-description">Monitor daily sales with live updates and detailed summaries.</p>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="col-md-4">
-                        <div class="feature-icon mb-2">📉</div>
-                        <h4 class="feature-title">Expense Monitoring</h4>
-                        <p class="feature-description">Log, categorize, and review all expenses with full transparency.</p>
+                        <div class="card feature-card shadow-sm border-0 text-center h-100">
+                            <div class="card-body p-4">
+                                <div class="feature-icon mb-3">📉</div>
+                                <h4 class="feature-title">Expense Monitoring</h4>
+                                <p class="feature-description">Log, categorize, and review all expenses with full transparency.</p>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="col-md-4">
-                        <div class="feature-icon mb-2">📊</div>
-                        <h4 class="feature-title">Reports & Analytics</h4>
-                        <p class="feature-description">Generate visual reports to help guide smart financial decisions.</p>
+                        <div class="card feature-card shadow-sm border-0 text-center h-100">
+                            <div class="card-body p-4">
+                                <div class="feature-icon mb-3">📊</div>
+                                <h4 class="feature-title">Reports & Analytics</h4>
+                                <p class="feature-description">Generate visual reports to help guide smart financial decisions.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
