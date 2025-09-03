@@ -19,15 +19,43 @@
     <title>Disbursement Report</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     @Styles.Render("~/Content/Software-css")
     <style>
         .panel-default > .panel-heading {
             border-radius: 11px;
         }
+
         .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
             background-color: #3f9794;
             border-color: #3f9794;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .m-0 {
+            margin: 0.8%;
+        }
+
+        .header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+            .header-flex h5 {
+                margin: 0;
+            }
+
+        .panel-title {
+            font-family: Poppins;
         }
     </style>
 </head>
@@ -43,10 +71,18 @@
             </div>
             <section class="container">
                 <div class="panel panel-default" style="border-radius:12px;">
-                    <div class="panel-heading">
+                    <div class="panel-heading header-flex">
                         <h5>
                             Please select a report . . .
                         </h5>
+                        <div style="display: inline-flex; gap: 10px;">
+                            <button type="button" class="btn btn-primary" onclick="generate()">
+                                <span class="glyphicon glyphicon-search"></span> Generate
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="closeReport()">
+                                <span class="glyphicon glyphicon-remove"></span> Close
+                            </button>
+                        </div>
                     </div>
                     <div class="panel-body">
                         <div class="row">
@@ -78,19 +114,78 @@
                                 </form>
                             </div>
                         </div>
-
                         <hr />
-
-                        <!-- Action buttons -->
-                        <div class="text-right">
-                            <button type="button" class="btn btn-success" onclick="printReport()">
-                                <span class="glyphicon glyphicon-print"></span> Print
+                    </div>
+                </div>
+                <hr />
+                <!-- Summary Table -->
+                <div id="summaryTableContainer" style="display:none;">
+                    <div class="table-header">
+                        <h3 class="m-0">📑 Disbursement Summary</h3>
+                        <div style="display: inline-flex; gap: 10px; margin-right: 0.9%;">
+                            <button type="button" class="btn btn-primary" onclick="exportDisbursementSummaryToCSV()">
+                                <span class="glyphicon glyphicon-export"></span> Export (CSV)
                             </button>
-                            <button type="button" class="btn btn-danger" onclick="closeReport()">
-                                <span class="glyphicon glyphicon-remove"></span> Close
+                            <button type="button" class="btn btn-success" onclick="exportDisbursementSummaryToPDF()">
+                                <span class="glyphicon glyphicon-print"></span> Print
                             </button>
                         </div>
                     </div>
+                    <table id="summaryTable" class="table table-striped table-bordered">
+                        <thead>
+                            <tr class="selected">
+                                <th>CV No.</th>
+                                <th>CV Date</th>
+                                <th>Supplier</th>
+                                <th>Pay Type</th>
+                                <th>Check No.</th>
+                                <th>Check Date</th>
+                                <th>Bank</th>
+                                <th>CV Amount</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th colspan="7" style="text-align: right;">Totals :</th>
+                                <th class="text-right" id="disbursementAmountTotalFooter"></th>
+                            </tr>
+                        </tfoot>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- Detail Table -->
+                <div id="detailTableContainer" style="display:none;">
+                    <div class="table-header">
+                        <h3 class="m-0">📑 Disbursement Details</h3>
+                        <div style="display: inline-flex; gap: 10px; margin-right: 0.9%;">
+                            <button type="button" class="btn btn-primary" onclick="exportDisbursementDetailToCSV()">
+                                <span class="glyphicon glyphicon-export"></span> Export (CSV)
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="exportDisbursementDetailToPDF()">
+                                <span class="glyphicon glyphicon-print"></span> Print
+                            </button>
+                        </div>
+                    </div>
+                    <table id="detailTable" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>CV No.</th>
+                                <th>CV Date</th>
+                                <th>Supplier</th>
+                                <th>Expense</th>
+                                <th>Particulars</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th colspan="5" style="text-align: right;">Totals :</th>
+                                <th class="text-right" id="amountTotalFooter"></th>
+                            </tr>
+                        </tfoot>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </section>
             @Html.Partial("_SoftwareFooter")
@@ -99,7 +194,14 @@
     <div id="c-mask" class="c-mask"></div>
 
     @Scripts.Render("~/Scripts/Software-js")
+
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+
     <script type="text/javascript">
         function isValidDate(dateStr) {
             const d = new Date(dateStr);
@@ -127,24 +229,442 @@
                 disableMobile: true
             });
         }
-        function printReport() {
-            const activeReport = $('.list-group-item.active').attr('id');
-            const startDate = $('#startDateInput').val();
-            const endDate = $('#endDateInput').val();
 
-            if (activeReport === "btnSummary") {
-                window.open(`/Reports/DisbursementSummary?start=${startDate}&end=${endDate}`, "_blank");
-            } else if (activeReport === "btnDetail") {
-                window.open(`/Reports/DisbursementDetail?start=${startDate}&end=${endDate}`, "_blank");
-            }
-        }
-
-        // Toggle active tab
         $('#btnSummary, #btnDetail').on('click', function (e) {
             e.preventDefault();
             $('.list-group-item').removeClass('active');
             $(this).addClass('active');
         });
+
+        function generate() {
+            const activeId = document.querySelector(".list-group-item.active").id;
+            document.getElementById("summaryTableContainer").style.display = "none";
+            document.getElementById("detailTableContainer").style.display = "none";
+
+            if (activeId === "btnSummary") {
+                document.getElementById("summaryTableContainer").style.display = "block";
+                loadSummaryData();
+            } else if (activeId === "btnDetail") {
+                document.getElementById("detailTableContainer").style.display = "block";
+                loadDetailData();
+            }
+        }
+        function getBase64Image(imgUrl, callback) {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = imgUrl;
+            img.onload = function () {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL("image/png");
+                callback(dataURL);
+            };
+        }
+        // Disbursement Summary Report Population, Export CSV, and Print
+        function loadSummaryData() {
+            Loader.show();
+            if ($.fn.DataTable.isDataTable('#summaryTable')) {
+                $('#summaryTable').DataTable().clear().destroy();
+            }
+            $('#summaryTable tbody').off('click');
+
+            $('#summaryTable tbody').on('click', 'tr', function () {
+                $('#summaryTable tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            const startDate = $('#startDateInput').val();
+            const endDate = $('#endDateInput').val();
+
+            $('#summaryTable').DataTable({
+                ajax: {
+                    url: '/api/disbursementReport/disbursementSummaryReport/' + startDate + "/" + endDate,
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'DisbursementNumber', className: 'text-left', width: '10%' },
+                    {
+                        data: 'DisbursementDate',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.getFullYear() + '-' +
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(date.getDate()).padStart(2, '0');
+                        }, className: 'text-left', width: '10%'
+                    },
+                    { data: 'Supplier', width: '20%' },
+                    { data: 'PayType', width: '10%' },
+                    { data: 'CheckNumber', width: '10%' },
+                    {
+                        data: 'CheckDate',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.getFullYear() + '-' +
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(date.getDate()).padStart(2, '0');
+                        }, className: 'text-left', width: '10%'
+                    },
+                    { data: 'Bank', width: '10%' },
+                    {
+                        data: 'DisbursementAmount',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            }
+                            return data;
+                        }, width: '10%'
+                    }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "Search:  ",
+                    emptyTable: "No record(s) available",
+                    lengthMenu: "_MENU_ Records per page",
+                    info: "_START_ - _END_ of _TOTAL_ record(s) is displayed"
+                },
+                footerCallback: function (row, data, start, end, display) {
+                    const api = this.api();
+
+                    const parseNumber = (val) => parseFloat(val || 0);
+
+                    const formatNumber = (num) =>
+                        num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+                    let pageInfo = api.page.info();
+                    let currentPage = pageInfo.page;
+                    let length = pageInfo.length;
+                    let rowsUpToCurrentPage = api.rows({ search: 'applied' }).indexes().filter((idx, i) => {
+                        return i < (currentPage + 1) * length;
+                    });
+
+                    let amountTotal = api
+                        .cells(rowsUpToCurrentPage, 7)
+                        .data()
+                        .reduce((a, b) => parseNumber(a) + parseNumber(b), 0);
+                    $('#disbursementAmountTotalFooter').html(formatNumber(amountTotal));
+                }
+            });
+
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        }
+        function exportDisbursementSummaryToCSV() {
+            const table = $('#summaryTable').DataTable();
+            const data = table.rows({ search: 'applied' }).data().toArray();
+
+            if (!data.length) {
+                alert("No data to export!");
+                return;
+            }
+            const headers = ["CV No.", "CV Date", "Supplier", "Pay Type", "Check No.", "Check Date", "Bank", "CV Amount"];
+            let csvContent = headers.join(",") + "\n";
+            data.forEach(row => {
+                const disbusementDate = row.DisbursementDate ? new Date(row.DisbursementDate) : "";
+                const checkDate = row.CheckDate ? new Date(row.CheckDate) : "";
+                const formattedDisbursementDate = disbusementDate
+                    ? disbusementDate.getFullYear() + "-" +
+                    String(disbusementDate.getMonth() + 1).padStart(2, "0") + "-" +
+                    String(disbusementDate.getDate()).padStart(2, "0")
+                    : "";
+                const formattedCheckDate = checkDate
+                    ? checkDate.getFullYear() + "-" +
+                    String(checkDate.getMonth() + 1).padStart(2, "0") + "-" +
+                    String(checkDate.getDate()).padStart(2, "0")
+                    : "";
+
+                csvContent += [
+                    row.DisbursementNumber,
+                    formattedDisbursementDate,
+                    `"${row.Supplier}"`,
+                    `"${row.PayType}"`,
+                    `"${row.CheckNumber}"`,
+                    formattedCheckDate,
+                    `"${row.Bank}"`,
+                    parseFloat(row.DisbursementAmount).toFixed(2)
+                ].join(",") + "\n";
+            });
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "DisbursementSummaryReport.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        async function exportDisbursementSummaryToPDF() {
+            const table = $('#summaryTable').DataTable();
+            const data = table.rows({ search: 'applied' }).data().toArray();
+            if (!data.length) {
+                alert("No data to export!");
+                return;
+            }
+            const headers = ["CV No.", "CV Date", "Supplier", "Pay Type", "Check No.", "Check Date", "Bank", "CV Amount"];
+            const totalDisbursement = data.reduce((sum, row) => sum + parseFloat(row.DisbursementAmount || 0), 0);
+            const formatAmount = (val) =>
+                parseFloat(val || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const rows = data.map(row => {
+                const disbusementDate = row.DisbursementDate ? new Date(row.DisbursementDate) : "";
+                const checkDate = row.CheckDate ? new Date(row.CheckDate) : "";
+                const formattedDisbursementDate = disbusementDate
+                    ? disbusementDate.getFullYear() + "-" +
+                    String(disbusementDate.getMonth() + 1).padStart(2, "0") + "-" +
+                    String(disbusementDate.getDate()).padStart(2, "0")
+                    : "";
+                const formattedCheckDate = checkDate
+                    ? checkDate.getFullYear() + "-" +
+                    String(checkDate.getMonth() + 1).padStart(2, "0") + "-" +
+                    String(checkDate.getDate()).padStart(2, "0")
+                    : "";
+
+                return [
+                    row.DisbursementNumber,
+                    formattedDisbursementDate,
+                    row.Supplier,
+                    row.PayType,
+                    row.CheckNumber,
+                    formattedCheckDate,
+                    row.Bank,
+                    formatAmount(row.DisbursementAmount)
+                ];
+            });
+            rows.push([
+                { content: "TOTALS : ", colSpan: 7, styles: { halign: "right", fontStyle: "bold" } },
+                { content: formatAmount(totalDisbursement), styles: { halign: "right", fontStyle: "bold" } }
+            ]);
+            getBase64Image("/Images/logo/streetsmartLogo.png", function (logoBase64) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF("landscape");
+
+                doc.setFont("helvetica", "normal");
+                doc.addImage(logoBase64, "PNG", 14, 10, 20, 20); // x, y, w, h
+                doc.setFontSize(14);
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const title = "Disbursement Summary Report";
+                const textWidth = doc.getTextWidth(title);
+                const x = (pageWidth - textWidth) / 2;
+                doc.text(title, x, 22);
+
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 35,
+                    styles: { font: "helvetica", fontSize: 9 },
+                    headStyles: { fillColor: [36, 156, 124], font: "helvetica", halign: "center", lineColor: [211, 211, 211], lineWidth: 0.2 },
+                    columnStyles: {
+                        2: { cellWidth: 50 },
+                        3: { cellWidth: 30 },
+                        6: { cellWidth: 30 },
+                        7: { halign: "right", cellWidth: 30 }
+                    },
+                    theme: "grid",
+                    didDrawPage: function (data) {
+                        const str = "Printed on: " + new Date().toLocaleString();
+                        doc.setFontSize(8);
+                        doc.text(str, data.settings.margin.left, doc.internal.pageSize.getHeight() - 5);
+                    }
+                });
+
+                doc.save("DisbursementSummaryReport.pdf");
+            });
+        }
+
+        // Disbursement Detail Report Population, Export CSV, Print
+        function loadDetailData() {
+            Loader.show();
+            if ($.fn.DataTable.isDataTable('#detailTable')) {
+                $('#detailTable').DataTable().clear().destroy();
+            }
+
+            $('#detailTable tbody').off('click');
+
+            $('#detailTable tbody').on('click', 'tr', function () {
+                $('#detailTable tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            const startDate = $('#startDateInput').val();
+            const endDate = $('#endDateInput').val();
+
+            $('#detailTable').DataTable({
+                ajax: {
+                    url: '/api/disbursementReport/disbursementDetailReport/' + startDate + "/" + endDate,
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'DisbursementNumber', className: 'text-left', width: '10%' },
+                    {
+                        data: 'DisbursementDate',
+                        render: function (data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            return date.getFullYear() + '-' +
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                                String(date.getDate()).padStart(2, '0');
+                        }, className: 'text-left', width: '10%'
+                    },
+                    { data: 'Supplier', width: '20%' },
+                    { data: 'Expense', width: '20%' },
+                    { data: 'Particulars', width: '30%' },
+                    {
+                        data: 'Amount',
+                        render: function (data, type, row) {
+                            if (type === 'display') {
+                                return parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            }
+                            return data;
+                        }, width: '10%'
+                    }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "Search:  ",
+                    emptyTable: "No record(s) available",
+                    lengthMenu: "_MENU_ Records per page",
+                    info: "_START_ - _END_ of _TOTAL_ record(s) is displayed"
+                },
+                footerCallback: function (row, data, start, end, display) {
+                    const api = this.api();
+
+                    const parseNumber = (val) => parseFloat(val) || 0;
+                    const formatNumber = (num) =>
+                        num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                    let pageInfo = api.page.info();
+                    let currentPage = pageInfo.page;
+                    let length = pageInfo.length;
+                    let rowsUpToCurrentPage = api.rows({ search: 'applied' }).indexes().filter((idx, i) => {
+                        return i < (currentPage + 1) * length;
+                    });
+
+                    let amountTotal = api
+                        .cells(rowsUpToCurrentPage, 5)
+                        .data()
+                        .reduce((a, b) => parseNumber(a) + parseNumber(b), 0);
+
+                    $('#amountTotalFooter').html(formatNumber(amountTotal));
+                }
+            });
+
+            setTimeout(() => {
+                Loader.hide();
+            }, 1000);
+        }
+        function exportDisbursementDetailToCSV() {
+            const table = $('#detailTable').DataTable();
+            const data = table.rows({ search: 'applied' }).data().toArray();
+
+            if (!data.length) {
+                alert("No data to export!");
+                return;
+            }
+            const headers = ["CV No.", "CV Date", "Supplier", "Expense", "Particulars", "Amount"];
+            let csvContent = headers.join(",") + "\n";
+            data.forEach(row => {
+                const disbursementDate = row.DisbursementDate ? new Date(row.DisbursementDate) : "";
+                const formattedDate = disbursementDate
+                    ? disbursementDate.getFullYear() + "-" +
+                    String(disbursementDate.getMonth() + 1).padStart(2, "0") + "-" +
+                    String(disbursementDate.getDate()).padStart(2, "0")
+                    : "";
+
+                csvContent += [
+                    row.DisbursementNumber,
+                    formattedDate,
+                    `"${row.Supplier}"`,
+                    `"${row.Expense}"`,
+                    `"${row.Particulars}"`,
+                    parseFloat(row.Amount).toFixed(2)
+                ].join(",") + "\n";
+            });
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "DisbursementDetailReport.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        async function exportDisbursementDetailToPDF() {
+            const table = $('#detailTable').DataTable();
+            const data = table.rows({ search: 'applied' }).data().toArray();
+            if (!data.length) {
+                alert("No data to export!");
+                return;
+            }
+            const headers = ["CV No.", "CV Date", "Supplier", "Expense", "Particulars", "Amount"];
+            const totalQuantity = data.reduce((sum, row) => sum + parseFloat(row.Quantity || 0), 0);
+            const totalAmount = data.reduce((sum, row) => sum + parseFloat(row.Amount || 0), 0);
+            const formatAmount = (val) =>
+                parseFloat(val || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const rows = data.map(row => {
+                const disbursementDate = row.DisbursementDate ? new Date(row.DisbursementDate) : "";
+                const formattedDate = disbursementDate
+                    ? disbursementDate.getFullYear() + "-" +
+                    String(disbursementDate.getMonth() + 1).padStart(2, "0") + "-" +
+                    String(disbursementDate.getDate()).padStart(2, "0")
+                    : "";
+
+                return [
+                    row.DisbursementNumber,
+                    formattedDate,
+                    row.Supplier,
+                    row.Expense,
+                    row.Particulars,
+                    formatAmount(row.Amount)
+                ];
+            });
+            rows.push([
+                { content: "TOTALS : ", colSpan: 5, styles: { halign: "right", fontStyle: "bold" } },
+                { content: formatAmount(totalAmount), styles: { halign: "right", fontStyle: "bold" } }
+            ]);
+            getBase64Image("/Images/logo/streetsmartLogo.png", function (logoBase64) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF("landscape");
+
+                doc.setFont("helvetica", "normal");
+                doc.addImage(logoBase64, "PNG", 14, 10, 20, 20); // x, y, w, h
+                doc.setFontSize(14);
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const title = "Disbursement Detail Report";
+                const textWidth = doc.getTextWidth(title);
+                const x = (pageWidth - textWidth) / 2;
+                doc.text(title, x, 22);
+
+                doc.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 35,
+                    styles: { font: "helvetica", fontSize: 9 },
+                    headStyles: { fillColor: [36, 156, 124], font: "helvetica", halign: "center", lineColor: [211, 211, 211], lineWidth: 0.2 },
+                    columnStyles: {
+                        0: { cellWidth: 30 },
+                        1: { cellWidth: 30 },
+                        2: { cellWidth: 40 },
+                        3: { cellWidth: 40 },
+                        5: { halign: "right", cellWidth: 30 }
+                    },
+                    theme: "grid",
+                    didDrawPage: function (data) {
+                        const str = "Printed on: " + new Date().toLocaleString();
+                        doc.setFontSize(8);
+                        doc.text(str, data.settings.margin.left, doc.internal.pageSize.getHeight() - 5);
+                    }
+                });
+
+                doc.save("DisbursementDetailReport.pdf");
+            });
+        }
+
         // Close
         function closeReport() {
             window.location = '/Software';

@@ -382,7 +382,7 @@
                 alert("No data to export!");
                 return;
             }
-            const headers = ["Sales Number", "Sales Date", "Client", "Sales Amount", "Paid Amount", "Balance Amount"];
+            const headers = ["Sales No.", "Sales Date", "Client", "Sales Amount", "Paid Amount", "Balance Amount"];
             let csvContent = headers.join(",") + "\n";
             data.forEach(row => {
                 const salesDate = row.SalesDate ? new Date(row.SalesDate) : "";
@@ -417,7 +417,7 @@
                 alert("No data to export!");
                 return;
             }
-            const headers = ["Sales Number", "Sales Date", "Client", "Sales Amount", "Paid Amount", "Balance Amount"];
+            const headers = ["Sales No.", "Sales Date", "Client", "Sales Amount", "Paid Amount", "Balance Amount"];
             const totalSales = data.reduce((sum, row) => sum + parseFloat(row.SalesAmount || 0), 0);
             const totalPaid = data.reduce((sum, row) => sum + parseFloat(row.PaidAmount || 0), 0);
             const totalBalance = data.reduce((sum, row) => sum + parseFloat(row.BalanceAmount || 0), 0);
@@ -464,7 +464,7 @@
                     body: rows,
                     startY: 35,
                     styles: { font: "helvetica", fontSize: 9 },
-                    headStyles: { fillColor: [36, 156, 124], font: "helvetica", halign: "center" },
+                    headStyles: { fillColor: [36, 156, 124], font: "helvetica", halign: "center", lineColor: [211, 211, 211], lineWidth: 0.2},
                     columnStyles: {
                         3: { halign: "right" },
                         4: { halign: "right" },
@@ -595,7 +595,7 @@
                 alert("No data to export!");
                 return;
             }
-            const headers = ["Sales Number", "Sales Date", "Client", "Product", "Price", "Quantity", "Amount"];
+            const headers = ["Sales No.", "Sales Date", "Client", "Product", "Price", "Quantity", "Amount"];
             let csvContent = headers.join(",") + "\n";
             data.forEach(row => {
                 const salesDate = row.SalesDate ? new Date(row.SalesDate) : "";
@@ -631,7 +631,7 @@
                 alert("No data to export!");
                 return;
             }
-            const headers = ["Sales Number", "Sales Date", "Client", "Product", "Price", "Amount"];
+            const headers = ["Sales No.", "Sales Date", "Client", "Product", "Price", "Amount"];
             const totalQuantity = data.reduce((sum, row) => sum + parseFloat(row.Quantity || 0), 0);
             const totalAmount = data.reduce((sum, row) => sum + parseFloat(row.Amount || 0), 0);
             const formatAmount = (val) =>
@@ -677,7 +677,7 @@
                     body: rows,
                     startY: 35,
                     styles: { font: "helvetica", fontSize: 9 },
-                    headStyles: { fillColor: [36, 156, 124], font: "helvetica", halign: "center" },
+                    headStyles: { fillColor: [36, 156, 124], font: "helvetica", halign: "center", lineColor: [211, 211, 211], lineWidth: 0.2 },
                     columnStyles: {
                         4: { halign: "right" },
                         5: { halign: "right" },

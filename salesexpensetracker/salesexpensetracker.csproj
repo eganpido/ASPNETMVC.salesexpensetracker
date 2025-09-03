@@ -884,6 +884,8 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiControllers\ApiRepCollectionController.cs" />
+    <Compile Include="ApiControllers\ApiRepDisbursementController.cs" />
     <Compile Include="ApiControllers\ApiTrnCollectionController.cs" />
     <Compile Include="ApiControllers\ApiTrnCollectionLineController.cs" />
     <Compile Include="ApiControllers\ApiTrnDisbursementController.cs" />
@@ -915,7 +917,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>setdb.dbml</DependentUpon>
     </Compile>
+    <Compile Include="Entities\RepCollectionSummary.cs" />
+    <Compile Include="Entities\RepDisbursementDetail.cs" />
+    <Compile Include="Entities\RepDisbursementSummary.cs" />
     <Compile Include="Entities\TrnCollection.cs" />
+    <Compile Include="Entities\RepCollectionDetail.cs" />
     <Compile Include="Entities\TrnCollectionLine.cs" />
     <Compile Include="Entities\TrnDisbursement.cs" />
     <Compile Include="Entities\TrnDisbursementLine.cs" />

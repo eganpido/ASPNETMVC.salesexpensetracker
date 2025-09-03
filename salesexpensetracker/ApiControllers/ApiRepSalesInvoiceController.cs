@@ -18,7 +18,7 @@ namespace salesexpensetracker.ApiControllers
         // ============
         private Data.setdbDataContext db = new Data.setdbDataContext();
 
-        // List Sales Invoice
+        // List Sales Invoice Summary
         [Authorize, HttpGet, Route("api/salesInvoiceReport/salesSummaryReport/{fromDate}/{toDate}")]
         public List<Entities.RepSalesInvoiceSummary> ListSalesSummary(string fromDate, string toDate)
         {
@@ -27,7 +27,7 @@ namespace salesexpensetracker.ApiControllers
 
             var list = db.TrnSalesInvoices
                     .AsNoTracking()
-                    .Where(d => d.SalesDate >= from && d.SalesDate <= to)
+                    .Where(d => d.SalesDate >= from && d.SalesDate <= to && d.IsLocked == true)
                     .OrderByDescending(d => d.Id)
                     .Select(d => new Entities.RepSalesInvoiceSummary
                     {
@@ -52,8 +52,7 @@ namespace salesexpensetracker.ApiControllers
 
         }
         // List Sales Detail
-        //[Authorize, HttpGet, Route("api/salesInvoiceReport/salesDetailReport/{fromDate}/{toDate}")]
-        [HttpGet, Route("api/salesInvoiceReport/salesDetailReport/{fromDate}/{toDate}")]
+        [Authorize, HttpGet, Route("api/salesInvoiceReport/salesDetailReport/{fromDate}/{toDate}")]
         public List<Entities.RepSalesInvoiceDetail> ListSalesDetail(string fromDate, string toDate)
         {
             // ✅ safer parsing
@@ -64,7 +63,8 @@ namespace salesexpensetracker.ApiControllers
                 .AsNoTracking()
                 .Where(d => d.TrnSalesInvoice != null &&
                             d.TrnSalesInvoice.SalesDate >= from &&
-                            d.TrnSalesInvoice.SalesDate <= to)
+                            d.TrnSalesInvoice.SalesDate <= to &&
+                            d.TrnSalesInvoice.IsLocked == true)
                 .OrderByDescending(d => d.Id)
                 .Select(d => new
                 {
