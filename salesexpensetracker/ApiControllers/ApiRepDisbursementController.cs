@@ -110,28 +110,5 @@ namespace salesexpensetracker.ApiControllers
 
             return list;
         }
-        //// Dropdown List Client
-        //[Authorize, HttpGet, Route("api/salesInvoice/list/client")]
-        //public List<Entities.MstClient> DropdownListClient()
-        //{
-        //    var list = db.MstClients
-        //                .AsNoTracking()
-        //                .Where(d => d.IsLocked)
-        //                .OrderBy(d => d.ClientName)
-        //                .Select(d => new
-        //                {
-        //                    d.Id,
-        //                    d.ClientName
-        //                })
-        //                .ToList()
-        //                .Select(d => new Entities.MstClient
-        //                {
-        //                    Id = d.Id,
-        //                    ClientName = d.ClientName,
-        //                })
-        //                .ToList();
-
-        //    return list;
-        //}
     }
 }

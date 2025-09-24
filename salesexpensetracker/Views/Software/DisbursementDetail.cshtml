@@ -382,7 +382,7 @@
                             const $inputBankId = $('#cvBankId');
                             $inputBankId.val(results.Bank).data('selected-id', results.BankId);
                             document.getElementById('cvRemarks').value = results.Remarks;
-                            document.getElementById('cvCheckNumber').value = results.Remarks;
+                            document.getElementById('cvCheckNumber').value = results.CheckNumber;
                             document.getElementById('cvAmount').value = parseFloat(results.DisbursementAmount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');;
                             document.getElementById('createdBy').innerHTML = results.CreatedBy;
                             document.getElementById('createdDate').innerHTML = results.CreatedDateTime;
